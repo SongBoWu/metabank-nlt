@@ -1,3 +1,8 @@
+const webpack = require('webpack');
+const dotenv = require('dotenv').config({
+  path: './process.stage.env',
+});
+
 const path = require('path');
 
 module.exports = {
@@ -31,5 +36,18 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js']
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env": {
+        API_KEY: JSON.stringify(`${dotenv.parsed.API_KEY}`),
+        AUTH_DOMAIN: JSON.stringify(`${dotenv.parsed.AUTH_DOMAIN}`),
+        PROJECT_ID: JSON.stringify(`${dotenv.parsed.PROJECT_ID}`),
+        STORAGE_BUCKET: JSON.stringify(`${dotenv.parsed.STORAGE_BUCKET}`),
+        MESSAGING_SENDER_ID: JSON.stringify(`${dotenv.parsed.MESSAGING_SENDER_ID}`),
+        APP_ID: JSON.stringify(`${dotenv.parsed.APP_ID}`),
+        MEASUREMENT_ID: JSON.stringify(`${dotenv.parsed.MEASUREMENT_ID}`),
+      }
+    }),
+  ]
 };
