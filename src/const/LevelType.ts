@@ -4,12 +4,7 @@ export enum LevelType {
   LOAN = "Loan",
 }
 
-export enum LevelMode {
+export enum RoundMode {
   PRACTICE = 1,
   CHALLENGE,
-}
-
-export enum LevelStatus {
-  STARTED = 1,
-  FINISHED,
 }
