@@ -17,21 +17,30 @@ export class HomeScene extends BaseLogPanelScene {
 
   override preload(): void {
       super.preload();
+
+      this.load.html('logintable', 'assets/loginform.html');
   }
 
   override create(): void {
     super.create();
 
-    var signInTxt = this.make.text({
-      x: 10,
-      y: 500,
-      text: 'SignIn',
-      style: { font: 'bold 30px Arial', color: '#00ff00' }
-    });
-    signInTxt.setInteractive();
-    signInTxt.on('pointerdown', () => {
-      this.firebaseAuth.signIn('hv46328@gmail.com', '123456');
-      this.showLog('[SignIn]')
+    var loginformElement = this.add.dom(400, 300).createFromCache('logintable');
+    loginformElement.addListener('click');
+    loginformElement.on('click', (event : any) => {
+      
+      if (event.target.name === 'loginButton') {
+        var userNameElement = loginformElement.getChildByID('username');
+        var passwordElement = loginformElement.getChildByID('password');
+
+        var userNameValue = (<HTMLInputElement>userNameElement).value;
+        var passwordValue = (<HTMLInputElement>passwordElement).value;
+        
+        if (userNameValue !== '' && passwordValue !== '') {
+          this.showLog('[SignIn]')
+          this.firebaseAuth.signIn(userNameValue, passwordValue);
+        }
+      }
+      
     });
 
     var signOutTxt = this.make.text({
@@ -70,7 +79,7 @@ export class HomeScene extends BaseLogPanelScene {
     addDocTxt.setInteractive();
     addDocTxt.on('pointerdown', ()=>{
       this.firestoreUserinfo.add('testid_123');
-      this.showLog('[Add]')
+      this.showLog('[Add]');
     });
   
     var getDocTxt = this.make.text({
@@ -82,8 +91,9 @@ export class HomeScene extends BaseLogPanelScene {
     getDocTxt.setInteractive();
     getDocTxt.on('pointerdown', ()=>{
       this.firestoreUserinfo.get('testid_123');
-      this.showLog('[GetDoc]')
+      this.showLog('[GetDoc]');
       this.scene.start('LevelScene');
     });
   }
+
 }
