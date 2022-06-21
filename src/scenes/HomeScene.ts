@@ -1,53 +1,26 @@
+import { BaseLogPanelScene } from "./BaseLogPanelScene";
 import { FirebaseAuthUtil } from "../databridge/FirebaseAuthUtil";
 import { FirestoreUserInfoUtil } from "../databridge/FirestoreUserInfoUtil";
 
-export class HomeScene extends Phaser.Scene {
+export class HomeScene extends BaseLogPanelScene {
   private firebaseAuth : FirebaseAuthUtil;
   private firestoreUserinfo: FirestoreUserInfoUtil;
-  private logElement : Element;
-  private logSnippet : string = '';
 
   constructor() {
-    super({
-      key: 'HomeScene'
-    })
+    super('HomeScene');
+
     this.firebaseAuth = new FirebaseAuthUtil();
     this.firebaseAuth.onAuthChanged();
 
     this.firestoreUserinfo = new FirestoreUserInfoUtil();
   }
 
-  preload(): void {
-      // this.load.setBaseURL('https://labs.phaser.io');
-
-      // this.load.image('sky', 'assets/skies/space3.png');
-      // this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-      this.load.image('red', 'assets/blue-flare.png');
-
-      this.load.html('log', 'assets/log-text-area.html');
+  override preload(): void {
+      super.preload();
   }
 
-  create(): void {
-    var domElement = this.add.dom(400, 250).createFromCache('log');
-    this.logElement = domElement.getChildByName('logPreview');
-    // this.add.image(400, 300, 'sky');
-
-    // var particles = this.add.particles('red');
-
-    // var emitter = particles.createEmitter({
-    //     speed: 100,
-    //     scale: { start: 1, end: 0 },
-    //     blendMode: 'ADD'
-    // });
-
-    // var logo = this.physics.add.image(400, 100, 'logo');
-
-    // logo.setVelocity(100, 200);
-    // logo.setBounce(1, 1);
-    // logo.setCollideWorldBounds(true);
-    // logo.setInteractive();
-
-    // emitter.startFollow(logo);
+  override create(): void {
+    super.create();
 
     var signInTxt = this.make.text({
       x: 10,
@@ -58,7 +31,7 @@ export class HomeScene extends Phaser.Scene {
     signInTxt.setInteractive();
     signInTxt.on('pointerdown', () => {
       this.firebaseAuth.signIn('hv46328@gmail.com', '123456');
-      this.updateLogPanel('[SignIn]')
+      this.showLog('[SignIn]')
     });
 
     var signOutTxt = this.make.text({
@@ -70,7 +43,7 @@ export class HomeScene extends Phaser.Scene {
     signOutTxt.setInteractive();
     signOutTxt.on('pointerdown', ()=>{
       this.firebaseAuth.signOut();
-      this.updateLogPanel('[SignOut]')
+      this.showLog('[SignOut]')
     });
 
     var currentUserTxt = this.make.text({
@@ -83,7 +56,7 @@ export class HomeScene extends Phaser.Scene {
     currentUserTxt.on('pointerdown', ()=>{
       console.log('current user: ', this.firebaseAuth.getUser());
       var user = this.firebaseAuth.getUser().uid;
-      this.updateLogPanel('current user: ' + user)
+      this.showLog('current user: ' + user)
     });
     
     // -------------------------------------
@@ -97,7 +70,7 @@ export class HomeScene extends Phaser.Scene {
     addDocTxt.setInteractive();
     addDocTxt.on('pointerdown', ()=>{
       this.firestoreUserinfo.add('testid_123');
-      this.updateLogPanel('[Add]')
+      this.showLog('[Add]')
     });
   
     var getDocTxt = this.make.text({
@@ -109,15 +82,8 @@ export class HomeScene extends Phaser.Scene {
     getDocTxt.setInteractive();
     getDocTxt.on('pointerdown', ()=>{
       this.firestoreUserinfo.get('testid_123');
-      this.updateLogPanel('[GetDoc]')
+      this.showLog('[GetDoc]')
       this.scene.start('LevelScene');
     });
   }
-
-
-  private updateLogPanel(snippet: string) : void {
-    this.logSnippet = '[' + new Date().toLocaleString() + '] ' + snippet + '\n' + this.logSnippet;
-    this.logElement.textContent = this.logSnippet;
-  }
-
 }
