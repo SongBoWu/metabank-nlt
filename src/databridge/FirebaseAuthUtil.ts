@@ -33,19 +33,21 @@ export class FirebaseAuthUtil {
           });
     }
 
-    signUp(email:string, password:string): void {
+    signUp(email:string, password:string, onSuccess:Function, onFailed: Function): void {
         createUserWithEmailAndPassword(this.auth, email, password)
         .then((userCredential) => {
           // Signed in 
           const user = userCredential.user;
 
           console.log('[signUp] success: ', user);
+          onSuccess && onSuccess(user);
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
 
           console.log('[signUp] error: ', errorCode, errorMessage);
+          onFailed && onFailed(errorCode);
         });
     }
 

@@ -39,6 +39,8 @@ export class HomeScene extends BaseLogPanelScene {
           this.showLog('[SignIn]')
           this.firebaseAuth.signIn(userNameValue, passwordValue);
         }
+      } else if (event.target.name === 'registerButton') {
+        this.scene.start('SignUpScene');
       }
       
     });
@@ -69,18 +71,6 @@ export class HomeScene extends BaseLogPanelScene {
     });
     
     // -------------------------------------
-
-    var addDocTxt = this.make.text({
-      x: 10, 
-      y: 550, 
-      text: 'AddUserInfo', 
-      style: { font: 'bold 30px Arial', color: '#00ff00' }
-    });
-    addDocTxt.setInteractive();
-    addDocTxt.on('pointerdown', ()=>{
-      this.firestoreUserinfo.add('testid_123');
-      this.showLog('[Add]');
-    });
   
     var getDocTxt = this.make.text({
       x: 300, 
@@ -92,7 +82,6 @@ export class HomeScene extends BaseLogPanelScene {
     getDocTxt.on('pointerdown', ()=>{
       this.firestoreUserinfo.get('testid_123');
       this.showLog('[GetDoc]');
-      this.scene.start('LevelScene');
     });
   }
 

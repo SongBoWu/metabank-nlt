@@ -1,13 +1,13 @@
 <style>
-.login {
+.register {
   background: #eceeee;
   border: 1px solid #42464b;
   border-radius: 6px;
-  height: 307px;
+  height: 427px;
   margin: 20px auto 0;
   width: 298px;
 }
-.login h1 {
+.register h1 {
   background-image: linear-gradient(top, #f1f3f3, #d4dae0);
   border-bottom: 1px solid #a6abaf;
   border-radius: 6px 6px 0 0;
@@ -117,11 +117,12 @@ input[type="submit"]:active {
 }    
 </style>
 
-<div class="login">
-    <input type="text" placeholder="Username" id="username" name="username">
+<div class="register">
+    <input type="text" placeholder="Nickname" id="nickname" name="nickname">
+    <input type="text" placeholder="Score" id="score" name="score">
+    <input type="text" placeholder="Account (E-mail)" id="account" name="account">
     <input type="password" placeholder="password" id="password" name="password">
-    <a href="#" class="forgot">forgot password?</a>
-    <input type="submit" value="Sign In" name="loginButton">
-    <input type="submit" value="Sign Up" name="registerButton">
+    <input type="submit" value="Register" name="registerButton">
+    <input type="submit" value="Back" name="backButton">
 </div>
 <div class="shadow"></div>

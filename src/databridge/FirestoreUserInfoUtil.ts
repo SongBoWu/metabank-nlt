@@ -25,17 +25,16 @@ export class FirestoreUserInfoUtil {
         console.log('firestore: ', this.firestore);
     }
 
-    async add(userId: string, name ?: string) : Promise<void> {
+    async add(userId: string, name : string, score : number) : Promise<void> {
         try {
             const collectionRef = collection(this.firestore, COLLECTION_NAME);
             const docRef = doc(collectionRef, userId);
             await setDoc(docRef, {
               nickName: name,
               points: 0,
-              group: GroupType.EXPERIMENTAL,
+              group: score >= 100 ? GroupType.EXPERIMENTAL : GroupType.CONTROL,
               level: LevelType.LOAN,
-              title: "test",
-              hasPracticed: false
+              title: "test"
             });
           
             console.log("Document written with ID: ", docRef.id);
