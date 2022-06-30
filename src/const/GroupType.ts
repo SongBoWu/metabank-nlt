@@ -1,4 +1,4 @@
 export enum GroupType {
-  EXPERIMENTAL = 1,
-  CONTROL,
+    EXPERIMENTAL = 1,
+    CONTROL,
 }

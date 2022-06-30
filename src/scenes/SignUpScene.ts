@@ -1,6 +1,7 @@
 import { User } from "firebase/auth";
 import { FirebaseAuthUtil } from "../databridge/FirebaseAuthUtil";
 import { FirestoreUserInfoUtil } from "../databridge/FirestoreUserInfoUtil";
+import { UserData, UserDataBuilder } from "../dto/UserData";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class SignUpScene extends BaseLogPanelScene {
@@ -14,8 +15,6 @@ export class SignUpScene extends BaseLogPanelScene {
         super('SignUpScene');
 
         this.firebaseAuth = new FirebaseAuthUtil();
-        this.firebaseAuth.onAuthChanged();
-
         this.firestoreUserinfo = new FirestoreUserInfoUtil();
     }
 
@@ -55,10 +54,25 @@ export class SignUpScene extends BaseLogPanelScene {
 
     onRegisterSuccess(user : User) : void {
         this.showLog('[onRegisterSuccess]')
-        this.firestoreUserinfo.add(user.uid, this.nickname, this.score)
+        var userData = new UserDataBuilder()
+            .id(user.uid)
+            .nickName(this.nickname)
+            .groupByScore(this.score)
+            .build();
+        this.firestoreUserinfo.add(userData, this.onUserCreatedSuccess.bind(this), this.onUserCreatedFailed.bind(this));
     }
 
     onRegisterFailed(errorCode : number) : void {
-        this.showLog('[onRegisterFailed] ' + errorCode)
+        this.showLog('[onRegisterFailed] ' + errorCode);
+    }
+
+    onUserCreatedSuccess(user: UserData) : void {
+        this.showLog('[onUserCreatedSuccess] ' + JSON.stringify(user));
+        this.scene.start('LevelScene');
+    }
+
+    onUserCreatedFailed(): void {
+        this.showLog('[onUserCreatedFailed] ');
+
     }
 }

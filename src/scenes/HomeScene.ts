@@ -1,6 +1,7 @@
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 import { FirebaseAuthUtil } from "../databridge/FirebaseAuthUtil";
 import { FirestoreUserInfoUtil } from "../databridge/FirestoreUserInfoUtil";
+import { UserData } from "../dto/UserData";
 
 export class HomeScene extends BaseLogPanelScene {
   private firebaseAuth : FirebaseAuthUtil;
@@ -80,9 +81,20 @@ export class HomeScene extends BaseLogPanelScene {
     });
     getDocTxt.setInteractive();
     getDocTxt.on('pointerdown', ()=>{
-      this.firestoreUserinfo.get('testid_123');
-      this.showLog('[GetDoc]');
+      this.firestoreUserinfo.get('testid_123').then((userData: UserData) => {
+        this.showLog('[GetDoc] ' + JSON.stringify(userData));
+      });
+      
+      
     });
   }
+
+    onSignInSuccess(): void {
+        this.showLog('[onSignInSuccess]');
+    }
+
+    onSignInFailed(): void {
+      this.showLog('[onSignInFailed]');
+    }
 
 }

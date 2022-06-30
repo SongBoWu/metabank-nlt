@@ -1,4 +1,4 @@
-import { LevelType, RoundMode } from "../const/LevelType";
+import { RoundMode } from "../const/RoundMode";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class LevelScene extends BaseLogPanelScene {

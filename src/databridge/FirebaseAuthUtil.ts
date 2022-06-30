@@ -1,25 +1,13 @@
-import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from "firebase/auth";
-
-const firebaseConfig = {
-  apiKey: process.env.API_KEY || '',
-  authDomain: process.env.AUTH_DOMAIN || '',
-  projectId: process.env.PROJECT_ID || '',
-  storageBucket: process.env.STORAGE_BUCKET || '',
-  messagingSenderId: process.env.MESSAGING_SENDER_ID || '',
-  appId: process.env.APP_ID || '',
-  measurementId: process.env.MEASUREMENT_ID || ''
-};
+import { DatabaseCore } from "./DatabaseCore";
 
 export class FirebaseAuthUtil {
-    private app : FirebaseApp;
     private auth : Auth;
     private currentUser : User;
 
     constructor() {
-        this.app = initializeApp(firebaseConfig);
-        this.auth = getAuth(this.app);
+        this.auth = getAuth(DatabaseCore.getInstance().getApp());
     }
 
     onAuthChanged(): void {
