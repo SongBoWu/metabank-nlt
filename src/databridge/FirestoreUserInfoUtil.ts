@@ -1,10 +1,9 @@
-import { Firestore, getFirestore, collection, getDocs, doc, setDoc, getDoc } from "firebase/firestore";
+import { Firestore, getFirestore, collection, getDocs, doc, setDoc, getDoc, DocumentSnapshot, SnapshotOptions } from "firebase/firestore";
 import { GroupType } from "../const/GroupType";
 import { LevelType } from "../dto/LevelInfo";
 import { TitleType } from "../const/TitleType";
-import { UserData } from "../dto/UserData";
+import { UserData, UserDataBuilder } from "../dto/UserData";
 import { DatabaseCore } from "./DatabaseCore";
-import { userDataConverter } from "./UserInfoConverter";
 
 
 const COLLECTION_NAME = 'userInfo';
@@ -33,7 +32,7 @@ export class FirestoreUserInfoUtil {
     async get(userId: string) : Promise<UserData> {
         try {
             const collectionRef = collection(this.firestore, COLLECTION_NAME);
-            const docRef = doc(collectionRef, userId).withConverter(userDataConverter);
+            const docRef = doc(collectionRef, userId).withConverter(UserInfoConverter);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
@@ -45,7 +44,7 @@ export class FirestoreUserInfoUtil {
             }
         } catch (e) {
             console.error("Error getting document: ", e);
-          }
+        }
     }
 
     async updatePoints(point: number, level?: LevelType, title?: string) : Promise<void> {
@@ -60,6 +59,20 @@ export class FirestoreUserInfoUtil {
     }
 }
 
-function UserInfoConverter(UserInfoConverter: any) {
-    throw new Error("Function not implemented.");
+
+const UserInfoConverter = {
+    toFirestore: (user: UserData) => {
+        return user;
+    },
+    fromFirestore: (snapshot: DocumentSnapshot<UserData>, options: SnapshotOptions) => {
+        const data = snapshot.data(options);
+        return new UserDataBuilder()
+            .id(data.id)
+            .nickName(data.nickName)
+            .group(data.group)
+            .level(data.level)
+            .points(data.points)
+            .title(data.title)
+            .build();
+    }
 }

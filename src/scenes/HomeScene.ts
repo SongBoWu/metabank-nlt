@@ -80,12 +80,15 @@ export class HomeScene extends BaseLogPanelScene {
       style: { font: 'bold 30px Arial', color: '#00ff00' }
     });
     getDocTxt.setInteractive();
-    getDocTxt.on('pointerdown', ()=>{
-      this.firestoreUserinfo.get('testid_123').then((userData: UserData) => {
-        this.showLog('[GetDoc] ' + JSON.stringify(userData));
-      });
-      
-      
+    getDocTxt.on('pointerdown', () => {
+        this.firestoreUserinfo.get('testid_123')
+            .then((userData: UserData) => {
+                this.showLog('[GetDoc] ' + JSON.stringify(userData));
+                return this.firestoreUserinfo.get('456');
+            })
+            .catch((err: any) => {
+
+        });
     });
   }
 
