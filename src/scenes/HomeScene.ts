@@ -1,19 +1,27 @@
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
-import { FirebaseAuthUtil } from "../databridge/FirebaseAuthUtil";
-import { FirestoreUserInfoUtil } from "../databridge/FirestoreUserInfoUtil";
+import { AuthImpl } from "../databridge/AuthImpl";
+import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { UserData } from "../dto/UserData";
+import { QuizImpl } from "../databridge/QuizImpl";
+import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
+import { Quiz } from "../dto/Quiz";
+import { Level, LevelBuilder, LevelType } from "../dto/LevelInfo";
 
 export class HomeScene extends BaseLogPanelScene {
-  private firebaseAuth : FirebaseAuthUtil;
-  private firestoreUserinfo: FirestoreUserInfoUtil;
+  private firebaseAuth : AuthImpl;
+  private firestoreUserinfo: UserInfoImpl;
+  private quizImpl: QuizImpl;
+  private levelInfoImpl: LevelInfoImpl;
 
   constructor() {
     super('HomeScene');
 
-    this.firebaseAuth = new FirebaseAuthUtil();
+    this.firebaseAuth = new AuthImpl();
     this.firebaseAuth.onAuthChanged();
 
-    this.firestoreUserinfo = new FirestoreUserInfoUtil();
+    this.firestoreUserinfo = new UserInfoImpl();
+    this.quizImpl = new QuizImpl();
+    this.levelInfoImpl = new LevelInfoImpl();
   }
 
   override preload(): void {
@@ -74,7 +82,7 @@ export class HomeScene extends BaseLogPanelScene {
     // -------------------------------------
   
     var getDocTxt = this.make.text({
-      x: 300, 
+      x: 0, 
       y: 550, 
       text: 'getUserInfo', 
       style: { font: 'bold 30px Arial', color: '#00ff00' }
@@ -89,6 +97,65 @@ export class HomeScene extends BaseLogPanelScene {
             .catch((err: any) => {
 
         });
+    });
+
+    var getQuizTxt = this.make.text({
+      x: 200, 
+      y: 550, 
+      text: 'getQuiz', 
+      style: { font: 'bold 30px Arial', color: '#00ff00' }
+    });
+    getQuizTxt.setInteractive();
+    getQuizTxt.on('pointerdown', () => {
+        // this.quizImpl.get('depo_0001')
+        //     .then((quiz: Quiz) => {
+        //         this.showLog('[GetQuiz] ' + JSON.stringify(quiz));
+        //     })
+        //     .catch((err: any) => {
+
+        //     });
+        this.quizImpl.getList(LevelType.DEPOSIT, ['0001', '0002', '0010'])
+        .then((quizzes: Quiz[]) => {
+            this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
+        })
+        .catch((err: any) => {
+
+        });
+    });
+
+    var getLevelTxt = this.make.text({
+      x: 350, 
+      y: 550, 
+      text: 'getLevel', 
+      style: { font: 'bold 30px Arial', color: '#00ff00' }
+    });
+    getLevelTxt.setInteractive();
+    getLevelTxt.on('pointerdown', () => {
+        // this.levelInfoImpl.getLevel('test123', LevelType.DEPOSIT)
+        //     .then((level: Level) => {
+        //         this.showLog('[getLevel] ' + JSON.stringify(level));
+        //     })
+        //     .catch((err: any) => {
+        //         this.showLog('[getLevel] ' + err);
+        // });
+        // this.levelInfoImpl.getLevels('test123')
+        //     .then((levels: Level[]) => {
+        //         this.showLog('[getLevels] ' + JSON.stringify(levels));
+        //     })
+        //     .catch((err: any) => {
+        //         this.showLog('[getLevels] ' + err);
+        // });
+        var newLevel = new LevelBuilder()
+            .uid('test_qq')
+            .type(LevelType.FOREX)
+            .build();
+        this.levelInfoImpl.add(newLevel)
+            .then(level => {
+                this.showLog('[addLevel] ' + JSON.stringify(level))
+            })
+            .catch(err => {
+                this.showLog('[addLevel] ' + err)
+            });
     });
   }
 

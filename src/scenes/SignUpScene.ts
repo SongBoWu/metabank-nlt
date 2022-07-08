@@ -1,12 +1,12 @@
 import { User } from "firebase/auth";
-import { FirebaseAuthUtil } from "../databridge/FirebaseAuthUtil";
-import { FirestoreUserInfoUtil } from "../databridge/FirestoreUserInfoUtil";
+import { AuthImpl } from "../databridge/AuthImpl";
+import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { UserData, UserDataBuilder } from "../dto/UserData";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class SignUpScene extends BaseLogPanelScene {
-    private firebaseAuth : FirebaseAuthUtil;
-    private firestoreUserinfo: FirestoreUserInfoUtil;
+    private firebaseAuth : AuthImpl;
+    private firestoreUserinfo: UserInfoImpl;
 
     private nickname : string;
     private score : number;
@@ -14,8 +14,8 @@ export class SignUpScene extends BaseLogPanelScene {
     constructor() {
         super('SignUpScene');
 
-        this.firebaseAuth = new FirebaseAuthUtil();
-        this.firestoreUserinfo = new FirestoreUserInfoUtil();
+        this.firebaseAuth = new AuthImpl();
+        this.firestoreUserinfo = new UserInfoImpl();
     }
 
     override preload(): void {

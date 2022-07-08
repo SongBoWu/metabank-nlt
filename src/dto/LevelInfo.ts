@@ -5,8 +5,8 @@ export enum LevelStatus {
 }
 
 export enum LevelType {
-    DEPOSIT = "Deposit",
-    FOREX = "Foreign Exchange",
+    DEPOSIT = "Depo",
+    FOREX = "ForEx",
     LOAN = "Loan"
 }
 

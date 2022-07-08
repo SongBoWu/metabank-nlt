@@ -1,22 +1,23 @@
+import { Timestamp } from "firebase/firestore";
 import { RoundMode } from "../const/RoundMode";
 import { LevelType } from "./LevelInfo";
 import { OptionID } from "./Quiz";
 
-export interface RoundSummary {
+export class RoundSummary {
     uid: string;
-    timestamp: number;
+    date_time: Timestamp;
     quizs: QuizSlice[];
     mode: RoundMode;
     level: LevelType;
 }
 
-export interface QuizSlice {
+export class QuizSlice {
     qid: string;
     selection: OptionID;
     traces: OptionTrace[];
 }
 
-export interface OptionTrace {
+export class OptionTrace {
     oid: OptionID;
-    times: number;
+    click_time: number;
 }

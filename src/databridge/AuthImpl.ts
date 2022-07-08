@@ -2,7 +2,7 @@ import { getAnalytics } from "firebase/analytics";
 import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from "firebase/auth";
 import { DatabaseCore } from "./DatabaseCore";
 
-export class FirebaseAuthUtil {
+export class AuthImpl {
     private auth : Auth;
     private currentUser : User;
 
