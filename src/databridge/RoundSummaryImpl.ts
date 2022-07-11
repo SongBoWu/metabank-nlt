@@ -1,8 +1,8 @@
-import { DocumentSnapshot, Firestore, getFirestore, SnapshotOptions } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentSnapshot, Firestore, getFirestore, SnapshotOptions } from "firebase/firestore";
 import { RoundSummary } from "../dto/RoundSummary";
 import { DatabaseCore } from "./DatabaseCore";
 
-const COLLECTION_NAME = 'RoundSummary';
+const COLLECTION_NAME = 'roundSummary';
 
 export class RoundSummaryImpl {
     private firestore : Firestore;
@@ -11,8 +11,17 @@ export class RoundSummaryImpl {
         this.firestore = getFirestore(DatabaseCore.getInstance().getApp());
     }
 
-    async add(rs: RoundSummary, onSuccess : Function, onFailed : Function) : Promise<void> {
+    async add(rs: RoundSummary) : Promise<RoundSummary> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        var docRef = await addDoc(collectionRef, rs);
 
+        return new Promise((resolve, reject) => {
+            if (docRef) {
+                resolve(rs);
+            } else {
+                reject('add failed');
+            }
+        });
     }
 
     async get(userId: string) : Promise<RoundSummary> {
