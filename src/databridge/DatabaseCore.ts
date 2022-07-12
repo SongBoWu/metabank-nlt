@@ -20,10 +20,10 @@ export class DatabaseCore {
     }
 
     public static getInstance(): DatabaseCore {
-        if (!this._core) {
-            this._core = new DatabaseCore();
+        if (!DatabaseCore._core) {
+            DatabaseCore._core = new DatabaseCore();
         }
-        return this._core;
+        return DatabaseCore._core;
     }
 
     public getApp(): FirebaseApp {

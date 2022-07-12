@@ -4,24 +4,28 @@ import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { UserData } from "../dto/UserData";
 import { QuizImpl } from "../databridge/QuizImpl";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
-import { Quiz } from "../dto/Quiz";
+import { OptionID, Quiz } from "../dto/Quiz";
 import { Level, LevelBuilder, LevelType } from "../dto/LevelInfo";
+import { RoundSummaryImpl } from "../databridge/RoundSummaryImpl";
+import { RoundSummaryBuilder } from "../dto/RoundSummary";
+import { TitleType } from "../const/TitleType";
 
 export class HomeScene extends BaseLogPanelScene {
   private firebaseAuth : AuthImpl;
   private firestoreUserinfo: UserInfoImpl;
   private quizImpl: QuizImpl;
   private levelInfoImpl: LevelInfoImpl;
+  private rsImpl: RoundSummaryImpl;
 
   constructor() {
     super('HomeScene');
 
     this.firebaseAuth = new AuthImpl();
-    this.firebaseAuth.onAuthChanged();
-
     this.firestoreUserinfo = new UserInfoImpl();
     this.quizImpl = new QuizImpl();
     this.levelInfoImpl = new LevelInfoImpl();
+    this.rsImpl = new RoundSummaryImpl();
+    this.firebaseAuth.onAuthChanged();
   }
 
   override preload(): void {
@@ -89,10 +93,9 @@ export class HomeScene extends BaseLogPanelScene {
     });
     getDocTxt.setInteractive();
     getDocTxt.on('pointerdown', () => {
-        this.firestoreUserinfo.get('testid_123')
-            .then((userData: UserData) => {
-                this.showLog('[GetDoc] ' + JSON.stringify(userData));
-                return this.firestoreUserinfo.get('456');
+        this.firestoreUserinfo.update('testid_123', 100, TitleType.T2)
+            .then(() => {
+                this.showLog('[UserInfo][Update] ');
             })
             .catch((err: any) => {
 
@@ -146,10 +149,54 @@ export class HomeScene extends BaseLogPanelScene {
         //         this.showLog('[getLevels] ' + err);
         // });
         var newLevel = new LevelBuilder()
-            .uid('test_qq')
+            .uid('test1111')
             .type(LevelType.FOREX)
             .build();
         this.levelInfoImpl.add(newLevel)
+            .then(level => {
+                this.showLog('[addLevel] ')
+                newLevel.points = 123;
+                return this.levelInfoImpl.update(newLevel);
+            })
+            .then(() => {
+              this.showLog('[addLevel] update')
+            })
+            .catch(err => {
+                this.showLog('[addLevel] ' + err)
+            });
+    });
+
+    var addRSTxt = this.make.text({
+      x: 500, 
+      y: 550, 
+      text: 'addRoundSummary', 
+      style: { font: 'bold 30px Arial', color: '#00ff00' }
+    });
+    addRSTxt.setInteractive();
+    addRSTxt.on('pointerdown', () => {
+        // this.levelInfoImpl.getLevel('test123', LevelType.DEPOSIT)
+        //     .then((level: Level) => {
+        //         this.showLog('[getLevel] ' + JSON.stringify(level));
+        //     })
+        //     .catch((err: any) => {
+        //         this.showLog('[getLevel] ' + err);
+        // });
+        // this.levelInfoImpl.getLevels('test123')
+        //     .then((levels: Level[]) => {
+        //         this.showLog('[getLevels] ' + JSON.stringify(levels));
+        //     })
+        //     .catch((err: any) => {
+        //         this.showLog('[getLevels] ' + err);
+        // });
+        var newRS = new RoundSummaryBuilder()
+            .uid('test_qq')
+            .quiz({
+                qid: 'loan_0003',
+                selection: OptionID.C,
+                click_time: [2, 0, 0, 2]
+            })
+            .build();
+        this.rsImpl.add(newRS)
             .then(level => {
                 this.showLog('[addLevel] ' + JSON.stringify(level))
             })
@@ -157,6 +204,8 @@ export class HomeScene extends BaseLogPanelScene {
                 this.showLog('[addLevel] ' + err)
             });
     });
+
+    
   }
 
     onSignInSuccess(): void {

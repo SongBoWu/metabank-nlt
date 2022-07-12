@@ -1,4 +1,5 @@
-import { Firestore, getFirestore, collection, getDocs, doc, setDoc, getDoc, DocumentSnapshot, SnapshotOptions } from "firebase/firestore";
+import { Firestore, getFirestore, collection, getDocs, doc, setDoc, getDoc, DocumentSnapshot, SnapshotOptions, updateDoc, serverTimestamp } from "firebase/firestore";
+import { TitleType } from "../const/TitleType";
 import { LevelType } from "../dto/LevelInfo";
 import { UserData, UserDataBuilder } from "../dto/UserData";
 import { DatabaseCore } from "./DatabaseCore";
@@ -27,9 +28,9 @@ export class UserInfoImpl {
         }
     }
 
-    async get(userId: string) : Promise<UserData> {
+    async get(uid: string) : Promise<UserData> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
-        const docRef = doc(collectionRef, userId).withConverter(UserInfoConverter);
+        const docRef = doc(collectionRef, uid).withConverter(UserInfoConverter);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -41,15 +42,14 @@ export class UserInfoImpl {
         }
     }
 
-    async updatePoints(point: number, level?: LevelType, title?: string) : Promise<void> {
-        try {
-            const querySnapshot = await getDocs(collection(this.firestore, "userinfo"));
-            querySnapshot.forEach((doc) => {
-                console.log(`${doc.id} => ${doc.data()}`);
-            });
-        } catch (e) {
-            console.error("Error getting document: ", e);
-        }
+    async update(uid: string, points: number, title: TitleType) : Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docRef = doc(collectionRef, uid)
+        return await updateDoc(docRef, {
+            points: points,
+            title: title,
+            update_time: serverTimestamp()
+        });
     }
 }
 

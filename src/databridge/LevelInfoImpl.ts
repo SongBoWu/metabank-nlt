@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, DocumentSnapshot, Firestore, getDoc, getDocs, getFirestore, query, setDoc, SnapshotOptions, where } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentSnapshot, Firestore, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, SnapshotOptions, updateDoc, where } from "firebase/firestore";
 import { Level, LevelBuilder, LevelType } from "../dto/LevelInfo";
 import { DatabaseCore } from "./DatabaseCore";
 
@@ -11,17 +11,11 @@ export class LevelInfoImpl {
         this.firestore = getFirestore(DatabaseCore.getInstance().getApp());
     }
 
-    async add(level: Level) : Promise<Level> {
+    async add(level: Level) : Promise<void> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
-        const docRef = await addDoc(collectionRef, level);
-        
-        return new Promise((resolve, reject) => {
-            if (docRef) {
-                resolve(level);
-            } else {
-                reject('add failed');
-            }
-        });
+        var docId = level.uid + '_' + level.type;
+        const docRef = doc(collectionRef, docId);
+        return await setDoc(docRef, level);
     }
 
     async getLevels(uid: string) : Promise<any[]> {
@@ -42,25 +36,30 @@ export class LevelInfoImpl {
         });
     }
 
-    async getLevel(uid: string, level: LevelType) : Promise<any> {
+    async getLevel(uid: string, level: LevelType) : Promise<Level> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
-        const docQuery = query(collectionRef, where("uid", "==", uid), where("type", "==", level));
-        const docQuerySnapshot = await getDocs(docQuery);
+        var docId = uid + '_' + level;
+        const docRef = doc(collectionRef, docId).withConverter(LevelInfoConverter);
+        const docSnap = await getDoc(docRef);
 
-        return new Promise((resolve, reject) => {
-            if (docQuerySnapshot.size == 1) {
-                resolve(docQuerySnapshot.docs.at(0).data());
-            } else if (docQuerySnapshot.empty) {
-                reject('empty result');
-            } else { 
-                reject('more than one result');
-            }
-        });
+        if (docSnap.exists()) {
+            console.log("Document data:", docSnap.data());
+            return docSnap.data();
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
     }
 
-    async update(level: Level): Promise<Level> {
-        return new Promise((resolve, reject) => {
-        
+    async update(level: Level): Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docId = level.uid + '_' + level.type;
+        const docRef = doc(collectionRef, docId);
+        return await updateDoc(docRef, {
+            points: level.points,
+            status: level.status,
+            timesOfPrac: level.timesOfPrac,
+            update_time: serverTimestamp()
         });
     }
 }
