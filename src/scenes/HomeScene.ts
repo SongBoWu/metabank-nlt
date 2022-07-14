@@ -9,9 +9,10 @@ import { Level, LevelBuilder, LevelType } from "../dto/LevelInfo";
 import { RoundSummaryImpl } from "../databridge/RoundSummaryImpl";
 import { RoundSummaryBuilder } from "../dto/RoundSummary";
 import { TitleType } from "../const/TitleType";
+import { DatabaseCore } from "../databridge/DatabaseCore";
 
 export class HomeScene extends BaseLogPanelScene {
-  private firebaseAuth : AuthImpl;
+  // private firebaseAuth : AuthImpl;
   private firestoreUserinfo: UserInfoImpl;
   private quizImpl: QuizImpl;
   private levelInfoImpl: LevelInfoImpl;
@@ -20,12 +21,12 @@ export class HomeScene extends BaseLogPanelScene {
   constructor() {
     super('HomeScene');
 
-    this.firebaseAuth = new AuthImpl();
+    // this.firebaseAuth = new AuthImpl();
     this.firestoreUserinfo = new UserInfoImpl();
     this.quizImpl = new QuizImpl();
     this.levelInfoImpl = new LevelInfoImpl();
     this.rsImpl = new RoundSummaryImpl();
-    this.firebaseAuth.onAuthChanged();
+    
   }
 
   override preload(): void {
@@ -50,7 +51,7 @@ export class HomeScene extends BaseLogPanelScene {
         
         if (userNameValue !== '' && passwordValue !== '') {
           this.showLog('[SignIn]')
-          this.firebaseAuth.signIn(userNameValue, passwordValue);
+          DatabaseCore.getInstance().getAuthImpl().signIn(userNameValue, passwordValue);
         }
       } else if (event.target.name === 'registerButton') {
         this.scene.start('SignUpScene');
@@ -58,30 +59,20 @@ export class HomeScene extends BaseLogPanelScene {
       
     });
 
-    var signOutTxt = this.make.text({
-      x: 150, 
-      y: 500, 
-      text: 'SignOut', 
-      style: { font: 'bold 30px Arial', color: '#00ff00' }
-    });
-    signOutTxt.setInteractive();
-    signOutTxt.on('pointerdown', ()=>{
-      this.firebaseAuth.signOut();
-      this.showLog('[SignOut]')
-    });
+    
 
-    var currentUserTxt = this.make.text({
-      x: 400, 
-      y: 500, 
-      text: 'GetUser', 
-      style: { font: 'bold 30px Arial', color: '#00ff00' }
-    });
-    currentUserTxt.setInteractive();
-    currentUserTxt.on('pointerdown', ()=>{
-      console.log('current user: ', this.firebaseAuth.getUser());
-      var user = this.firebaseAuth.getUser().uid;
-      this.showLog('current user: ' + user)
-    });
+    // var currentUserTxt = this.make.text({
+    //   x: 400, 
+    //   y: 500, 
+    //   text: 'GetUser', 
+    //   style: { font: 'bold 30px Arial', color: '#00ff00' }
+    // });
+    // currentUserTxt.setInteractive();
+    // currentUserTxt.on('pointerdown', ()=>{
+    //   console.log('current user: ', this.firebaseAuth.getUser());
+    //   var user = this.firebaseAuth.getUser().uid;
+    //   this.showLog('current user: ' + user)
+    // });
     
     // -------------------------------------
   

@@ -1,22 +1,45 @@
+import { DatabaseCore } from "../databridge/DatabaseCore";
+import eventsCenter from "../plugins/EventsCenter";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
-export class LandingScene extends BaseLogPanelScene {
+export class LandingScene extends Phaser.Scene {
     constructor() {
         super('LandingScene');
     }
 
-    override create(): void {
-        super.create();
+    preload(): void {
+        this.load.html('logintable', 'assets/loginform.html');
+    }
 
-        var signInTxt = this.make.text({
-          x: 10,
-          y: 500,
-          text: 'SignIn',
-          style: { font: 'bold 30px Arial', color: '#00ff00' }
+    create(): void {
+        var loginformElement = this.add.dom(400, 300).createFromCache('logintable');
+        loginformElement.addListener('click');
+        loginformElement.on('click', (event : any) => {
+            if (event.target.name === 'loginButton') {
+                var userNameElement = loginformElement.getChildByID('username');
+                var passwordElement = loginformElement.getChildByID('password');
+        
+                var userNameValue = (<HTMLInputElement>userNameElement).value;
+                var passwordValue = (<HTMLInputElement>passwordElement).value;
+                
+                if (userNameValue !== '' && passwordValue !== '') {
+                    DatabaseCore.getInstance().getAuthImpl().signIn(userNameValue, passwordValue);
+                }
+            } else if (event.target.name === 'registerButton') {
+                this.scene.start('SignUpScene');
+            }
+          
         });
-        signInTxt.setInteractive();
-        signInTxt.on('pointerdown', () => {
-          this.showLog('[SignIn]')
-        });
+
+        eventsCenter.on('onAuth', this.startGame, this)
+
+        // clean up when Scene is shutdown
+        this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            eventsCenter.off('onAuth', this.startGame, this)
+        })
+    }
+
+    private startGame(): void {
+        this.scene.start('WelcomeScene');
     }
 }

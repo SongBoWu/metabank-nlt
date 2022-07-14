@@ -1,45 +1,48 @@
 import { getAnalytics } from "firebase/analytics";
-import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from "firebase/auth";
-import { DatabaseCore } from "./DatabaseCore";
+import { FirebaseApp } from "firebase/app";
+import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, User, fetchSignInMethodsForEmail } from "firebase/auth";
+import eventsCenter from "../plugins/EventsCenter";
 
 export class AuthImpl {
     private auth : Auth;
     private currentUser : User;
 
-    constructor() {
-        this.auth = getAuth(DatabaseCore.getInstance().getApp());
+    constructor(app: FirebaseApp) {
+        this.auth = getAuth(app);
     }
 
     onAuthChanged(): void {
         onAuthStateChanged(this.auth, (user) => {
             this.currentUser = user;
             if (user) {
-              console.log('[authChange] success: ', user);
+                eventsCenter.emit('onAuth', user);
+                console.log('[authChange] success: ', user);
             } else {
-              console.log('[authChange] already signout');
+                eventsCenter.emit('onUnAuth');
+                console.log('[authChange] already signout');
             }
-          });
-    }
-
-    signUp(email:string, password:string, onSuccess:Function, onFailed: Function): void {
-        createUserWithEmailAndPassword(this.auth, email, password)
-        .then((userCredential) => {
-          // Signed in 
-          const user = userCredential.user;
-
-          console.log('[signUp] success: ', user);
-          onSuccess && onSuccess(user);
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-
-          console.log('[signUp] error: ', errorCode, errorMessage);
-          onFailed && onFailed(errorCode);
         });
     }
 
-    signIn(email:string, password:string): void {
+    signUp(email: string, password: string, onSuccess: Function, onFailed: Function): void {
+        createUserWithEmailAndPassword(this.auth, email, password)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+
+                console.log('[signUp] success: ', user);
+                onSuccess && onSuccess(user);
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                console.log('[signUp] error: ', errorCode, errorMessage);
+                onFailed && onFailed(errorCode);
+            });
+    }
+
+    signIn(email: string, password: string): void {
         signInWithEmailAndPassword(this.auth, email, password)
         .then((userCredential) => {
             // Signed in 

@@ -24,10 +24,14 @@ export class LogicController {
     }
 
     public static getInstance(): LogicController {
-        if (!this._ctrl) {
-            this._ctrl = new LogicController();
+        if (!LogicController._ctrl) {
+            LogicController._ctrl = new LogicController();
         }
-        return this._ctrl;
+        return LogicController._ctrl;
+    }
+
+    public getUser(): UserData {
+        return this.user;
     }
 
     public setUser(userData: UserData): void {

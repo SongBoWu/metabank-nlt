@@ -1,7 +1,9 @@
 import { HomeScene } from "./scenes/HomeScene"
+import { LandingScene } from "./scenes/LandingScene"
 import { LevelScene } from "./scenes/LevelScene"
 import { RoundScene } from "./scenes/RoundScene"
 import { SignUpScene } from "./scenes/SignUpScene"
+import { WelcomeScene } from "./scenes/WelcomeScene"
 
 export const GameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -18,9 +20,10 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     createContainer: true
   },
   scene: [
-    HomeScene,
+    LandingScene,
+    SignUpScene,
+    WelcomeScene,
     LevelScene,
     RoundScene,
-    SignUpScene,
   ]
 }

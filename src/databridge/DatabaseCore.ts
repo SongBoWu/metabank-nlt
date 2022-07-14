@@ -1,4 +1,7 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import eventsCenter from "../plugins/EventsCenter";
+import { AuthImpl } from "./AuthImpl";
 
 const firebaseConfig = {
     apiKey: process.env.API_KEY || '',
@@ -13,10 +16,14 @@ const firebaseConfig = {
 export class DatabaseCore {
     private static _core : DatabaseCore;
     private app : FirebaseApp;
+    private authImpl: AuthImpl;
 
     private constructor() {
         console.log('[FirebaseCore] constructor');
         this.app = initializeApp(firebaseConfig);
+        
+        this.authImpl = new AuthImpl(this.app);
+        this.authImpl.onAuthChanged();
     }
 
     public static getInstance(): DatabaseCore {
@@ -28,6 +35,10 @@ export class DatabaseCore {
 
     public getApp(): FirebaseApp {
         return this.app;
+    }
+
+    public getAuthImpl(): AuthImpl {
+        return this.authImpl;
     }
 
 }
