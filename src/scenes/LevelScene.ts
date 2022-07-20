@@ -6,9 +6,10 @@ export class LevelScene extends BaseLogPanelScene {
     super('LevelScene');
   }
 
-  override create(): void {
+  override create(data: any): void {
     super.create();
 
+    console.log('[LevelScene]', data.from);
     var practiceTxt = this.make.text({
       x: 10,
       y: 500,

@@ -13,11 +13,16 @@ export class BaseLogPanelScene extends Phaser.Scene {
         })
     }
 
+    init(): void {
+        window.addEventListener('online', this.onNetworkOnline.bind(this));
+        window.addEventListener('offline', this.onNetworkOffline.bind(this));
+    }
+
     preload(): void {
         this.load.html('logPanel', 'assets/log-text-area.html');
     }
 
-    create(): void {
+    create(data?: any): void {
         var domElement = this.add.dom(400, 250).createFromCache('logPanel');
         this.logElement = domElement.getChildByName('logPreview');
 
@@ -29,7 +34,7 @@ export class BaseLogPanelScene extends Phaser.Scene {
         })
 
         var signOutTxt = this.make.text({
-            x: 150, 
+            x: 500, 
             y: 500, 
             text: 'SignOut', 
             style: { font: 'bold 30px Arial', color: '#00ff00' }
@@ -47,5 +52,13 @@ export class BaseLogPanelScene extends Phaser.Scene {
 
     backToHome(): void {
         this.scene.start('LandingScene');
+    }
+
+    protected onNetworkOnline(event: Event): void {
+        console.log("You are now connected to the network.");
+    }
+
+    protected onNetworkOffline(event: Event): void {
+        console.log("The network connection has been lost.");
     }
 }

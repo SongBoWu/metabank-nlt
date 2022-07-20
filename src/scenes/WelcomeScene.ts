@@ -2,7 +2,7 @@ import { DatabaseCore } from "../databridge/DatabaseCore";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
-import { Level } from "../dto/LevelInfo";
+import { Level, LevelBuilder, LevelType } from "../dto/LevelInfo";
 import { UserDataBuilder } from "../dto/UserData";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
@@ -35,7 +35,31 @@ export class WelcomeScene extends BaseLogPanelScene {
                     console.log('[WelcomeScene] ' + JSON.stringify(level));
                 })
             })
+            .catch(() => {
+                // TODO
+            });
 
-        console.log('[WelcomeScene] ' + LogicController.getInstance().getUser());
+        var startTxt = this.make.text({
+            x: 10, 
+            y: 500, 
+            text: 'Start', 
+            style: { font: 'bold 30px Arial', color: '#00ff00' }
+            });
+            startTxt.setInteractive();
+            startTxt.on('pointerdown', ()=>{
+                this.scene.start('LevelScene',
+                {
+                    from: 'WelcomeScene'
+                });
+            })
+        ;
+    }
+
+    protected override onNetworkOnline(event: Event): void {
+        // TODO
+    }
+
+    protected override onNetworkOffline(event: Event): void {
+        // TODO
     }
 }

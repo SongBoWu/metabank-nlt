@@ -38,6 +38,10 @@ export class LogicController {
         this.user = userData;
     }
 
+    public getLevel(): Level {
+        return this.Level;
+    }
+    
     public setLevel(level: Level): void {
         this.Level = level;
     }
