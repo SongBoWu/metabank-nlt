@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, DocumentSnapshot, Firestore, getDoc, getDocs, getFirestore, query, setDoc, SnapshotOptions, where } from "firebase/firestore";
+import { collection, doc, DocumentSnapshot, Firestore, getDoc, getDocs, getFirestore, query, setDoc, SnapshotOptions, where } from "firebase/firestore";
 import { LevelType } from "../dto/LevelInfo";
 import { Quiz, QuizBuilder } from "../dto/Quiz";
 import { DatabaseCore } from "./DatabaseCore";
@@ -35,9 +35,15 @@ export class QuizImpl {
         }
     }
 
-    async getList(type: LevelType, qids: string[]) : Promise<any[]> {
+    async getList(type: LevelType, qids?: string[]) : Promise<any[]> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
-        const docQuery = query(collectionRef, where("type", "==", type), where("id", "in", qids));
+        var docQuery;
+        if (qids) {
+            docQuery = query(collectionRef, where("type", "==", type), where("id", "in", qids));
+        } else {
+            docQuery = query(collectionRef, where("type", "==", type));
+        }
+        
         const docQuerySnapshot = await getDocs(docQuery);
         
         return new Promise((resolve, reject) => {

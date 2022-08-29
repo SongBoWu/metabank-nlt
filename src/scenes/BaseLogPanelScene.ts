@@ -14,8 +14,7 @@ export class BaseLogPanelScene extends Phaser.Scene {
     }
 
     init(): void {
-        window.addEventListener('online', this.onNetworkOnline.bind(this));
-        window.addEventListener('offline', this.onNetworkOffline.bind(this));
+
     }
 
     preload(): void {
@@ -23,6 +22,9 @@ export class BaseLogPanelScene extends Phaser.Scene {
     }
 
     create(data?: any): void {
+        window.addEventListener('online', this.onNetworkOnline.bind(this));
+        window.addEventListener('offline', this.onNetworkOffline.bind(this));
+        
         var domElement = this.add.dom(400, 250).createFromCache('logPanel');
         this.logElement = domElement.getChildByName('logPreview');
 

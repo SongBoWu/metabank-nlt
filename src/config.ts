@@ -1,3 +1,4 @@
+import { FarmScene } from "./scenes/FarmScene"
 import { HomeScene } from "./scenes/HomeScene"
 import { LandingScene } from "./scenes/LandingScene"
 import { LevelScene } from "./scenes/LevelScene"
@@ -25,5 +26,6 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     WelcomeScene,
     LevelScene,
     RoundScene,
+    FarmScene,
   ]
 }
