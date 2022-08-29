@@ -1,10 +1,12 @@
 import { User } from "firebase/auth";
 import { DatabaseCore } from "../databridge/DatabaseCore";
+import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { UserData, UserDataBuilder } from "../dto/UserData";
 
 export class SignUpScene extends Phaser.Scene {
     private firestoreUserinfo: UserInfoImpl;
+    private levelInfo: LevelInfoImpl;
 
     private nickname : string;
     private score : number;
@@ -12,6 +14,7 @@ export class SignUpScene extends Phaser.Scene {
     constructor() {
         super('SignUpScene');
         this.firestoreUserinfo = new UserInfoImpl();
+        this.levelInfo = new LevelInfoImpl();
     }
 
     preload(): void {
@@ -60,7 +63,14 @@ export class SignUpScene extends Phaser.Scene {
 
     onUserCreatedSuccess(user: UserData) : void {
         console.log('[onUserCreatedSuccess] ' + JSON.stringify(user));
-        this.scene.start('WelcomeScene');
+        this.levelInfo.add(user.id, user.nickName)
+            .then(() => {
+                this.scene.start('WelcomeScene');
+            })
+            .catch(() => {
+                console.log('[addLevel] error');
+            });
+        
     }
 
     onUserCreatedFailed(): void {

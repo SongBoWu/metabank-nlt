@@ -143,7 +143,7 @@ export class HomeScene extends BaseLogPanelScene {
             .uid('test1111')
             .type(LevelType.FOREX)
             .build();
-        this.levelInfoImpl.add(newLevel)
+        this.levelInfoImpl.add(newLevel.uid, "test")
             .then(level => {
                 this.showLog('[addLevel] ')
                 newLevel.points = 123;

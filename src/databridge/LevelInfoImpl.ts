@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, DocumentSnapshot, Firestore, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, SnapshotOptions, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentSnapshot, Firestore, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, SnapshotOptions, updateDoc, where, writeBatch } from "firebase/firestore";
 import { Level, LevelBuilder, LevelType } from "../dto/LevelInfo";
 import { DatabaseCore } from "./DatabaseCore";
 
@@ -11,11 +11,20 @@ export class LevelInfoImpl {
         this.firestore = getFirestore(DatabaseCore.getInstance().getApp());
     }
 
-    async add(level: Level) : Promise<void> {
+    async add(uid: string, uName: string) : Promise<void> {
+        const batch = writeBatch(this.firestore);
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
-        var docId = level.uid + '_' + level.type;
-        const docRef = doc(collectionRef, docId);
-        return await setDoc(docRef, level);
+
+        var depLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.DEPOSIT).build();
+        var forLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.FOREX).build();
+        var loanLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.LOAN).build();
+
+        batch.set(doc(collectionRef, depLevel.uid + '_' + depLevel.type), depLevel);
+        batch.set(doc(collectionRef, forLevel.uid + '_' + forLevel.type), forLevel);
+        batch.set(doc(collectionRef, loanLevel.uid + '_' + loanLevel.type), loanLevel);
+
+        return await batch.commit();
+        // return await setDoc(docRef, level);
     }
 
     async getLevels(uid: string) : Promise<any[]> {
@@ -31,7 +40,7 @@ export class LevelInfoImpl {
                 })
                 resolve(ret);
             } else {
-                reject('empty result');
+                reject('No any level!');
             }
         });
     }

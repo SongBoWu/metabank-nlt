@@ -25,34 +25,37 @@ export class WelcomeScene extends BaseLogPanelScene {
 
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
 
-        this.firestoreUserinfo.get(user.uid)
-            .then(userData => {
-                LogicController.getInstance().setUser(userData);
-                return this.levelInfo.getLevels(user.uid);
-            })
-            .then((levels: Level[]) => {
-                levels.forEach(level => {
-                    console.log('[WelcomeScene] ' + JSON.stringify(level));
-                })
-            })
-            .catch(() => {
-                // TODO
-            });
-
         var startTxt = this.make.text({
             x: 10, 
             y: 500, 
             text: 'Start', 
             style: { font: 'bold 30px Arial', color: '#00ff00' }
             });
-            startTxt.setInteractive();
+            
             startTxt.on('pointerdown', ()=>{
                 this.scene.start('LevelScene',
                 {
                     from: 'WelcomeScene'
                 });
+            });
+
+        this.firestoreUserinfo.get(user.uid)
+            .then(userData => {
+                LogicController.getInstance().setUser(userData);
+                this.showLog(JSON.stringify(LogicController.getInstance().getUser()));
+                return this.levelInfo.getLevels(user.uid);
             })
-        ;
+            .then((levels: Level[]) => {
+                levels.forEach(level => {
+                    this.showLog('Levels: ' + JSON.stringify(level));
+                })
+                startTxt.setInteractive();
+            })
+            .catch((err: string) => {
+                // TODO
+                this.showLog(err);
+                startTxt.setInteractive();
+            });  
     }
 
     protected override onNetworkOnline(event: Event): void {
