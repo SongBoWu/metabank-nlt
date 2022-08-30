@@ -46,9 +46,8 @@ export class WelcomeScene extends BaseLogPanelScene {
                 return this.levelInfo.getLevels(user.uid);
             })
             .then((levels: Level[]) => {
-                levels.forEach(level => {
-                    this.showLog('Levels: ' + JSON.stringify(level));
-                })
+                LogicController.getInstance().setLevels(levels);
+                this.showLog(JSON.stringify(LogicController.getInstance().getCurrentLevel()))
                 startTxt.setInteractive();
             })
             .catch((err: string) => {

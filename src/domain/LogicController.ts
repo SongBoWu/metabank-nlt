@@ -1,4 +1,4 @@
-import { Level } from "../dto/LevelInfo";
+import { Level, LevelType } from "../dto/LevelInfo";
 import { OptionID, Quiz } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
 
@@ -12,8 +12,9 @@ export class LogicController {
     private static _ctrl: LogicController;
 
     private user: UserData;
-    private Level: Level;
-    private quizzes: Quiz[];
+    private levelMap: Map<LevelType, Level> = new Map();
+    private regularQuiz: Quiz[];
+    private bounsQuiz: Quiz[];
     private currentQuizIndex: number = 0;
 
     private remains: number = MAX_REMAINS;
@@ -38,21 +39,32 @@ export class LogicController {
         this.user = userData;
     }
 
-    public getLevel(): Level {
-        return this.Level;
+    public getLevels(): Map<LevelType, Level> {
+        return this.levelMap;
     }
     
-    public setLevel(level: Level): void {
-        this.Level = level;
+    public setLevels(levels: Level[]): void {
+        for(var index in levels) {
+            var level = levels[index];
+            this.levelMap.set(level.type, level);
+        }
+    }
+
+    public setCurrentLevel(type: LevelType) {
+        this.user.level = type;
+    }
+
+    public getCurrentLevel(): Level {
+        return this.levelMap.get(this.user.level);
     }
 
     public setQuizzes(quizzes: Quiz[]): void {
-        this.quizzes = quizzes;
+        this.regularQuiz = quizzes;
     }
 
     public extraQuizzes(extra: Quiz[]): void {
         extra.forEach(quiz => {
-            this.quizzes.push(quiz);
+            this.regularQuiz.push(quiz);
         });
     }
 
@@ -71,7 +83,7 @@ export class LogicController {
     }
 
     private getCurrentQuiz(): Quiz {
-        return this.quizzes.at(this.currentQuizIndex);
+        return this.regularQuiz.at(this.currentQuizIndex);
     }
 
     public verify(option: OptionID, onAward: Function, onPenalty: Function): void {
@@ -79,11 +91,11 @@ export class LogicController {
 
 
         if (bingo) {
-            this.Level.points += POINT_AWARD;
+            this.getCurrentLevel().points += POINT_AWARD;
 
             onAward && onAward();
         } else {
-            this.Level.points += POINT_PENALTY;
+            this.getCurrentLevel().points += POINT_PENALTY;
 
             onPenalty && onPenalty(this.getCurrentQuiz().answer);
         }

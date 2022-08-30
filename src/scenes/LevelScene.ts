@@ -1,5 +1,6 @@
 import { RoundMode } from "../const/RoundMode";
 import { QuizImpl } from "../databridge/QuizImpl";
+import { LogicController } from "../domain/LogicController";
 import { LevelType } from "../dto/LevelInfo";
 import { Quiz } from "../dto/Quiz";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
@@ -30,22 +31,30 @@ export class LevelScene extends BaseLogPanelScene {
       x: 110,
       y: 500,
       text: 'Challenge',
-      style: { font: 'bold 20px Arial', color: '#00ff00' }
+      style: { font: 'bold 20px Arial', color: '#00ff00', backgroundColor: '#ffffff' }
     });
     challengeTxt.on('pointerdown', () => {
       this.showLog('[Challenge]')
       this.scene.start('RoundScene', { mode: RoundMode.CHALLENGE })
     });
 
-    this.quizImpl.getList(LevelType.DEPOSIT)
-        .then((quizzes: Quiz[]) => {
-            this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
-            challengeTxt.setInteractive()
-            practiceTxt.setInteractive();
-        })
-        .catch((err: any) => {
-            this.showLog('[GetQuiz] ' + JSON.stringify(err));
-        }
-    );
+    // ==== fetch quiz ====
+    if (data.from == 'WelcomeScene') {
+      this.quizImpl.getList(LevelType.DEPOSIT)
+          .then((quizzes: Quiz[]) => {
+              LogicController.getInstance().setQuizzes(quizzes);
+              this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
+              challengeTxt.setInteractive()
+              practiceTxt.setInteractive();
+          })
+          .catch((err: any) => {
+              this.showLog('[GetQuiz] ' + JSON.stringify(err));
+          }
+      );
+    } else {
+        challengeTxt.setInteractive()
+        practiceTxt.setInteractive();
+    }
+    
   }
 }

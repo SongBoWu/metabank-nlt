@@ -34,7 +34,7 @@ export class UserInfoImpl {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
+            // console.log("Document data:", docSnap.data());
             return docSnap.data();
         } else {
             // doc.data() will be undefined in this case
@@ -44,7 +44,7 @@ export class UserInfoImpl {
 
     async update(uid: string, points: number, title: TitleType) : Promise<void> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
-        const docRef = doc(collectionRef, uid)
+        const docRef = doc(collectionRef, uid);
         return await updateDoc(docRef, {
             points: points,
             title: title,
