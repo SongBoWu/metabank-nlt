@@ -1,12 +1,11 @@
 import { Level, LevelType } from "../dto/LevelInfo";
 import { OptionID, Quiz } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
+import { DepoProperties, ForexProperties, ILevelProperties, LoanProperties } from "./ILevelProperties";
 
 const POINT_AWARD = 300;
 const POINT_PENALTY = -200;
 const MAX_COMBO = 2; 
-const MAX_REMAINS = 2; // 2 or 3 or 4
-const MAX_AMOUNT_OF_QUIZ = 7; // 7 or 9 or 11;
 
 export class LogicController {
     private static _ctrl: LogicController;
@@ -16,8 +15,9 @@ export class LogicController {
     private regularQuiz: Quiz[];
     private bounsQuiz: Quiz[];
     private currentQuizIndex: number = 0;
+    private levelConfig: ILevelProperties = new DepoProperties();
 
-    private remains: number = MAX_REMAINS;
+    private remains: number = 0
     private combo: number = 0;
 
     private constructor() {
@@ -52,6 +52,17 @@ export class LogicController {
 
     public setCurrentLevel(type: LevelType) {
         this.user.level = type;
+        switch(type) {
+            case LevelType.DEPOSIT:
+                this.levelConfig = new DepoProperties();
+                break;
+            case LevelType.FOREX:
+                this.levelConfig = new ForexProperties();
+                break;
+            case LevelType.LOAN:
+                this.levelConfig = new LoanProperties();
+                break;
+        }
     }
 
     public getCurrentLevel(): Level {
@@ -101,19 +112,20 @@ export class LogicController {
         }
     }
 
-    /**
-     * Get available quiz id list
-     * @param total the amount of quiz
-     * @param max the max id of quiz
-     */
-    private randomQuiz(total: number, max: number): string[] {
-        var list: string[];
-        
-        for (let i=0; i < total; i++) {
-            var rqid = Math.floor(Math.random() * max) + 1;
-            list.push(rqid.toString());
+    private mutableRandom(): number[] {
+        let size = this.levelConfig.amountOfQuiz;
+        let arr = [];
+        for (let i=1; i<=size; i++) {
+            arr.push(i);
         }
-        return list;
-    }
+
+        const output = [];
+        for (let i = 0; i < size; i++) {
+          const randomIndex = Math.floor(Math.random() * arr.length);
+          output.push(arr[randomIndex]);
+          arr.splice(randomIndex, 1);
+        }
+        return output;
+      }
 
 }
