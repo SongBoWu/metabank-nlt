@@ -50,6 +50,16 @@ export class QuizBuilder {
         };
     }
 
+    id(qid: string): QuizBuilder {
+        this._quiz.id = qid;
+        return this;
+    }
+
+    type(qtype: LevelType): QuizBuilder {
+        this._quiz.type = qtype;
+        return this;
+    }
+
     description(des: string): QuizBuilder {
         this._quiz.description = des;
         return this;

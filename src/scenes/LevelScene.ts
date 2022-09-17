@@ -15,17 +15,18 @@ export class LevelScene extends BaseLogPanelScene {
 
   override create(data: any): void {
     super.create();
+    console.log(JSON.stringify(data));
 
-    var practiceTxt = this.make.text({
-      x: 10,
-      y: 500,
-      text: 'Practice',
-      style: { font: 'bold 20px Arial', color: '#00ff00' }
-    });
-    practiceTxt.on('pointerdown', () => {
-      this.showLog('[Practice]')
-      this.scene.start('FarmScene', { mode: RoundMode.PRACTICE })
-    });
+    // var practiceTxt = this.make.text({
+    //   x: 10,
+    //   y: 500,
+    //   text: 'Practice',
+    //   style: { font: 'bold 20px Arial', color: '#00ff00' }
+    // });
+    // practiceTxt.on('pointerdown', () => {
+    //   this.showLog('[Practice]')
+    //   this.scene.start('FarmScene', { mode: RoundMode.PRACTICE })
+    // });
 
     var challengeTxt = this.make.text({
       x: 110,
@@ -35,17 +36,19 @@ export class LevelScene extends BaseLogPanelScene {
     });
     challengeTxt.on('pointerdown', () => {
       this.showLog('[Challenge]')
-      this.scene.start('RoundScene', { mode: RoundMode.CHALLENGE })
+      this.scene.start('RoundScene')
     });
 
     // ==== fetch quiz ====
     if (data.from == 'WelcomeScene') {
-      this.quizImpl.getList(LevelType.DEPOSIT)
+      this.showLog('You ar in Level: ' + data.levelType);
+      LogicController.getInstance().setCurrentLevel(data.levelType);
+      this.quizImpl.getList(data.levelType)
           .then((quizzes: Quiz[]) => {
               LogicController.getInstance().setQuizzes(quizzes);
-              this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
+              // this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
               challengeTxt.setInteractive()
-              practiceTxt.setInteractive();
+              // practiceTxt.setInteractive();
           })
           .catch((err: any) => {
               this.showLog('[GetQuiz] ' + JSON.stringify(err));
@@ -53,7 +56,7 @@ export class LevelScene extends BaseLogPanelScene {
       );
     } else {
         challengeTxt.setInteractive()
-        practiceTxt.setInteractive();
+        // practiceTxt.setInteractive();
     }
     
   }

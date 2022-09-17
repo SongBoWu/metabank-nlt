@@ -36,10 +36,10 @@ export class BaseLogPanelScene extends Phaser.Scene {
         })
 
         var signOutTxt = this.make.text({
-            x: 500, 
-            y: 500, 
+            x: 650, 
+            y: 550, 
             text: 'SignOut', 
-            style: { font: 'bold 30px Arial', color: '#00ff00' }
+            style: { font: 'bold 20px Arial', color: '#00ff00' }
           });
           signOutTxt.setInteractive();
           signOutTxt.on('pointerdown', ()=>{
@@ -50,6 +50,10 @@ export class BaseLogPanelScene extends Phaser.Scene {
     protected showLog(snippet: string): void {
         this.logSnippet = '[' + new Date().toLocaleString() + '] ' + snippet + '\n' + this.logSnippet;
         this.logElement.textContent = this.logSnippet;
+    }
+
+    protected cleanLog(): void {
+        this.logSnippet = '';
     }
 
     backToHome(): void {

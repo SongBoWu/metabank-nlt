@@ -1,11 +1,12 @@
 import { Level, LevelType } from "../dto/LevelInfo";
-import { OptionID, Quiz } from "../dto/Quiz";
+import { OptionID, Quiz, QuizBuilder } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
 import { DepoProperties, ForexProperties, ILevelProperties, LoanProperties } from "./ILevelProperties";
 
 const POINT_AWARD = 300;
 const POINT_PENALTY = -200;
-const MAX_COMBO = 2; 
+const MAX_COMBO = 2;
+const MAX_BOUNS = 4;
 
 export class LogicController {
     private static _ctrl: LogicController;
@@ -13,12 +14,18 @@ export class LogicController {
     private user: UserData;
     private levelMap: Map<LevelType, Level> = new Map();
     private regularQuiz: Quiz[];
-    private bounsQuiz: Quiz[];
+    private regularQuizOrder: number[];
     private currentQuizIndex: number = 0;
     private levelConfig: ILevelProperties = new DepoProperties();
+    private remains: number = 0;
 
-    private remains: number = 0
     private combo: number = 0;
+    private bonusQuiz: Quiz[];
+    private bonusQuizIndex: number = 0;
+    private extraQuizFilled: number = 0;
+
+    private onFinishCallback: Function;
+    private onGameOverCallback: Function;
 
     private constructor() {
         console.log('[LogicController] constructor');
@@ -63,6 +70,7 @@ export class LogicController {
                 this.levelConfig = new LoanProperties();
                 break;
         }
+        
     }
 
     public getCurrentLevel(): Level {
@@ -70,7 +78,24 @@ export class LogicController {
     }
 
     public setQuizzes(quizzes: Quiz[]): void {
-        this.regularQuiz = quizzes;
+        // this.regularQuiz = quizzes;
+        this.regularQuiz = this.mockQuizzes();
+        this.bonusQuiz = this.mockBonusQuizzes();
+    }
+
+    // TODO: for dev
+    private mockQuizzes(): Quiz[] {
+        var mockArr = [];
+        for(let i=0; i<this.levelConfig.amountOfQuiz; i++) {
+            let mockQuiz = new QuizBuilder()
+                .id('' + i)
+                .type(this.user.level)
+                .description('You are now answering question[' + i + ']...')
+                .answer(OptionID.A)
+                .build();
+            mockArr.push(mockQuiz);
+        }
+        return mockArr;
     }
 
     public extraQuizzes(extra: Quiz[]): void {
@@ -79,43 +104,107 @@ export class LogicController {
         });
     }
 
+    // TODO: for dev
+    private mockBonusQuizzes(): Quiz[] {
+        var mockArr = [];
+        for(let i=0; i<MAX_BOUNS; i++) {
+            let mockQuiz = new QuizBuilder()
+                .id('' + i)
+                .type(this.user.level)
+                .description('You are now answering bouns question[' + i + ']...')
+                .answer(OptionID.A)
+                .build();
+            mockArr.push(mockQuiz);
+        }
+        return mockArr;
+    }
+
     public setRoundBehaviors(): void {
 
     }
 
-    public nextQuiz(): Quiz {
-        this.currentQuizIndex ++;
-        return this.getCurrentQuiz();
+    public startQuiz(onFinish: Function, onGameOver: Function): void {
+        this.regularQuizOrder = this.mutableRandom(this.levelConfig.amountOfQuiz);
+        this.currentQuizIndex = -1;
+        
+        this.bonusQuizIndex = -1;
+        this.extraQuizFilled = 0;
+
+        this.remains = this.levelConfig.maxRemains;
+        this.combo = 0;
+
+        this.onFinishCallback = onFinish;
+        this.onGameOverCallback = onGameOver;
     }
 
-    public previousQuiz(): Quiz {
-        this.currentQuizIndex --;
+    public nextQuiz(): Quiz {
+        if (this.extraQuizFilled > 0) {
+            this.bonusQuizIndex ++;
+        } else {
+            this.currentQuizIndex ++;
+        }
         return this.getCurrentQuiz();
     }
 
     private getCurrentQuiz(): Quiz {
-        return this.regularQuiz.at(this.currentQuizIndex);
-    }
-
-    public verify(option: OptionID, onAward: Function, onPenalty: Function): void {
-        var bingo = (option == this.getCurrentQuiz().answer);
-
-
-        if (bingo) {
-            this.getCurrentLevel().points += POINT_AWARD;
-
-            onAward && onAward();
+        if (this.extraQuizFilled > 0) {
+            return this.bonusQuiz.at(this.bonusQuizIndex);
         } else {
-            this.getCurrentLevel().points += POINT_PENALTY;
-
-            onPenalty && onPenalty(this.getCurrentQuiz().answer);
+            let index = this.regularQuizOrder.at(this.currentQuizIndex);
+            console.log('[LC] currentQuizIndex: ' + this.currentQuizIndex + ", index: " + index);
+            return this.regularQuiz.at(index);
         }
     }
 
-    private mutableRandom(): number[] {
-        let size = this.levelConfig.amountOfQuiz;
+    public verify(option: OptionID, onAward: Function, onPenalty: Function, onBonus: Function): void {
+        var curQuiz = this.getCurrentQuiz();
+        var bingo = (option == curQuiz.answer);
+
+        this.getCurrentLevel().points += bingo ? POINT_AWARD : POINT_PENALTY;
+        if (this.getCurrentLevel().points < 0) {
+            this.getCurrentLevel().points = 0;
+        }
+
+        if (this.extraQuizFilled > 0) {
+            this.extraQuizFilled --;
+        }
+
+        if (bingo) {
+            this.combo ++;
+            if (this.combo == MAX_COMBO) {
+                this.combo = 0;
+                if (this.bonusQuizIndex < MAX_BOUNS - 1) {
+                    this.extraQuizFilled = 2;
+                }
+                
+                // TODO, add extra quiz
+                onBonus && onBonus();
+            }
+
+            onAward && onAward();
+        } else {
+            if (this.combo > 0) {
+                this.combo --;
+            }
+
+            this.remains --;
+            if (this.remains == 0) {
+                this.onGameOverCallback();
+            } else {
+                onPenalty && onPenalty(curQuiz.answer);
+            }
+        }
+
+        if (this.currentQuizIndex == this.levelConfig.amountOfQuiz - 1) {
+            if (this.extraQuizFilled == 0) {
+                this.onFinishCallback && this.onFinishCallback();
+            }
+        }
+    }
+
+    private mutableRandom(size: number): number[] {
         let arr = [];
-        for (let i=1; i<=size; i++) {
+        for (let i=0; i<size; i++) {
             arr.push(i);
         }
 
@@ -127,5 +216,10 @@ export class LogicController {
         }
         return output;
       }
+
+    // TODO, this is for dev only
+    public cleanUserLevelPoints(): void {
+        this.getCurrentLevel().points = 0;
+    }
 
 }
