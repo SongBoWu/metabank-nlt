@@ -196,7 +196,7 @@ export class LogicController {
         }
 
         if (this.currentQuizIndex == this.levelConfig.amountOfQuiz - 1) {
-            if (this.extraQuizFilled == 0) {
+            if (this.remains != 0 && this.extraQuizFilled == 0) {
                 this.onFinishCallback && this.onFinishCallback();
             }
         }
