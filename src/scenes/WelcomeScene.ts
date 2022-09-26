@@ -33,7 +33,7 @@ export class WelcomeScene extends BaseLogPanelScene {
             style: { font: 'bold 30px Arial', color: '#00ff00' }
             });
             
-            startTxt.on('pointerdown', ()=>{
+            startTxt.on('pointerdown', () => {
                 this.scene.start('LevelScene',
                 {
                     from: 'WelcomeScene',

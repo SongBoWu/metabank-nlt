@@ -1,3 +1,5 @@
+import { LogicController } from "../domain/LogicController";
+import { LevelStatus } from "../dto/LevelInfo";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class GratzScene extends BaseLogPanelScene {
@@ -19,5 +21,9 @@ export class GratzScene extends BaseLogPanelScene {
         backToMain.on('pointerdown', () => {
             this.scene.start('WelcomeScene');
         });
+
+        var curLevel = LogicController.getInstance().getCurrentLevel();
+        curLevel.status = LevelStatus.FINISHED;
+        
     }
 }
