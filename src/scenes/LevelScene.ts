@@ -25,8 +25,10 @@ export class LevelScene extends BaseLogPanelScene {
       style: { font: 'bold 20px Arial', color: '#00ff00' }
     });
     practiceTxt.on('pointerdown', () => {
-      this.showLog('[Practice]')
-      this.scene.start('FarmScene', { mode: RoundMode.PRACTICE })
+      if (this.needToLearn) {
+        this.showLog('[Practice]')
+        this.scene.start('FarmScene', { mode: RoundMode.PRACTICE })
+      }
     });
 
     var challengeTxt = this.make.text({
@@ -48,6 +50,7 @@ export class LevelScene extends BaseLogPanelScene {
       LogicController.getInstance().setCurrentLevel(data.levelType);
       var curLevel = LogicController.getInstance().getCurrentLevel();
       curLevel.status = LevelStatus.STARTED;
+      this.needToLearn = true;
 
       this.quizImpl.getList(data.levelType)
           .then((quizzes: Quiz[]) => {
@@ -65,9 +68,9 @@ export class LevelScene extends BaseLogPanelScene {
         practiceTxt.setInteractive();
 
         this.needToLearn = false;
-        var curLevel = LogicController.getInstance().getCurrentLevel();
-        curLevel.timesOfPrac ++;
-        this.showLog(JSON.stringify(curLevel));
+        LogicController.getInstance().increaseTimesOfPrac();
+        
+        // TODO, server api 
 
     } else if (data.from == 'RoundScene') {
         challengeTxt.setInteractive()
@@ -76,5 +79,7 @@ export class LevelScene extends BaseLogPanelScene {
         this.needToLearn = true;
         
     }
+
+    this.showLog(JSON.stringify(LogicController.getInstance().getCurrentLevel()));
   }
 }

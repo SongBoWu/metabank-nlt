@@ -104,7 +104,6 @@ export class RoundScene extends BaseLogPanelScene {
 
     onGameOvered(): void {
         this.showLog('game over!!');
-        LogicController.getInstance().cleanUserLevelPoints();
         this.scene.start('LevelScene', {
             from: 'RoundScene',
         });

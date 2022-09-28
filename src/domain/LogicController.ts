@@ -1,3 +1,4 @@
+import { GroupType } from "../const/GroupType";
 import { Level, LevelType } from "../dto/LevelInfo";
 import { OptionID, Quiz, QuizBuilder } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
@@ -22,7 +23,7 @@ export class LogicController {
     private combo: number = 0;
     private bonusQuiz: Quiz[];
     private bonusQuizIndex: number = 0;
-    private extraQuizFilled: number = 0;
+    private amountOfBonusQuiz: number = 0;
 
     private onFinishCallback: Function;
     private onGameOverCallback: Function;
@@ -98,7 +99,7 @@ export class LogicController {
         return mockArr;
     }
 
-    public extraQuizzes(extra: Quiz[]): void {
+    public setBonusQuizzes(extra: Quiz[]): void {
         extra.forEach(quiz => {
             this.regularQuiz.push(quiz);
         });
@@ -128,7 +129,7 @@ export class LogicController {
         this.currentQuizIndex = -1;
         
         this.bonusQuizIndex = -1;
-        this.extraQuizFilled = 0;
+        this.amountOfBonusQuiz = 0;
 
         this.remains = this.levelConfig.maxRemains;
         this.combo = 0;
@@ -138,7 +139,7 @@ export class LogicController {
     }
 
     public nextQuiz(): Quiz {
-        if (this.extraQuizFilled > 0) {
+        if (this.amountOfBonusQuiz > 0) {
             this.bonusQuizIndex ++;
         } else {
             this.currentQuizIndex ++;
@@ -147,11 +148,10 @@ export class LogicController {
     }
 
     private getCurrentQuiz(): Quiz {
-        if (this.extraQuizFilled > 0) {
+        if (this.amountOfBonusQuiz > 0) {
             return this.bonusQuiz.at(this.bonusQuizIndex);
         } else {
             let index = this.regularQuizOrder.at(this.currentQuizIndex);
-            console.log('[LC] currentQuizIndex: ' + this.currentQuizIndex + ", index: " + index);
             return this.regularQuiz.at(index);
         }
     }
@@ -165,16 +165,16 @@ export class LogicController {
             this.getCurrentLevel().points = 0;
         }
 
-        if (this.extraQuizFilled > 0) {
-            this.extraQuizFilled --;
+        if (this.amountOfBonusQuiz > 0) {
+            this.amountOfBonusQuiz --;
         }
 
         if (bingo) {
             this.combo ++;
             if (this.combo == MAX_COMBO) {
                 this.combo = 0;
-                if (this.bonusQuizIndex < MAX_BOUNS - 1) {
-                    this.extraQuizFilled = 2;
+                if (this.user.group == GroupType.EXPERIMENTAL && this.bonusQuizIndex < MAX_BOUNS - 1) {
+                    this.amountOfBonusQuiz = 2;
                 }
                 
                 // TODO, add extra quiz
@@ -196,7 +196,7 @@ export class LogicController {
         }
 
         if (this.currentQuizIndex == this.levelConfig.amountOfQuiz - 1) {
-            if (this.remains != 0 && this.extraQuizFilled == 0) {
+            if (this.remains != 0 && this.amountOfBonusQuiz == 0) {
                 this.onFinishCallback && this.onFinishCallback();
             }
         }
@@ -217,9 +217,14 @@ export class LogicController {
         return output;
       }
 
-    // TODO, this is for dev only
-    public cleanUserLevelPoints(): void {
-        this.getCurrentLevel().points = 0;
+
+    public increaseTimesOfPrac(): void {
+        this.getCurrentLevel().timesOfPrac ++;
+        if (this.getCurrentLevel().timesOfPrac == 1) {
+            this.getCurrentLevel().points += 300;
+        } else if (this.getCurrentLevel().timesOfPrac == 2) {
+            this.getCurrentLevel().points += 100;
+        }
     }
 
 }
