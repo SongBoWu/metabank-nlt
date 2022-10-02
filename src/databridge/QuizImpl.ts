@@ -54,7 +54,7 @@ export class QuizImpl {
                 })
                 resolve(ret);
             } else {
-                reject('empty result');
+                reject('[ERROR] There is no any quiz!');
             }
         });
     }
