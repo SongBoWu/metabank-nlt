@@ -7,7 +7,7 @@ import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class LevelScene extends BaseLogPanelScene {
   private quizImpl: QuizImpl;
-  private needToLearn: Boolean;
+  // private needToLearn: Boolean;
   
   constructor() {
     super('LevelScene');
@@ -16,7 +16,7 @@ export class LevelScene extends BaseLogPanelScene {
 
   override create(data: any): void {
     super.create();
-    console.log(JSON.stringify(data));
+    this.showLog('[onCreate] ' + JSON.stringify(data));
 
     var practiceTxt = this.make.text({
       x: 10,
@@ -24,8 +24,9 @@ export class LevelScene extends BaseLogPanelScene {
       text: 'Practice',
       style: { font: 'bold 20px Arial', color: '#00ff00' }
     });
+    practiceTxt.setInteractive();
     practiceTxt.on('pointerdown', () => {
-      if (this.needToLearn) {
+      if (LogicController.getInstance().isNecessaryToLearn()) {
         this.showLog('[Practice]')
         this.scene.start('FarmScene', { mode: RoundMode.PRACTICE })
       }
@@ -37,49 +38,59 @@ export class LevelScene extends BaseLogPanelScene {
       text: 'Challenge',
       style: { font: 'bold 20px Arial', color: '#00ff00', backgroundColor: '#ffffff' }
     });
+    challengeTxt.setInteractive();
     challengeTxt.on('pointerdown', () => {
-      if (!this.needToLearn) {
+      if (!LogicController.getInstance().isNecessaryToLearn()) {
         this.showLog('[Challenge]')
         this.scene.start('RoundScene')
       }
     });
 
+    var top10Txt = this.make.text({
+      x: 300,
+      y: 500,
+      text: 'Top10',
+      style: { font: 'bold 20px Arial', color: '#00ff00', backgroundColor: '#ffffff' }
+    });
+    top10Txt.setInteractive();
+    top10Txt.on('pointerdown', () => {
+        this.scene.start('LeaderboardScene', {
+          from: 'LevelScene',
+        })
+    });
+
+    var curLevel = LogicController.getInstance().getCurrentLevel();
+
     // ==== fetch quiz ====
     if (data.from == 'WelcomeScene') {
-      this.showLog('You ar in Level: ' + data.levelType);
-      LogicController.getInstance().setCurrentLevel(data.levelType);
-      var curLevel = LogicController.getInstance().getCurrentLevel();
+      this.showLog('You are in Level: ' + curLevel.type);
       curLevel.status = LevelStatus.STARTED;
-      this.needToLearn = true;
+      LogicController.getInstance().setNecessaryToLearn(true);
+      practiceTxt.disableInteractive();
+      challengeTxt.disableInteractive();
 
-      this.quizImpl.getList(data.levelType)
+      this.quizImpl.getList(curLevel.type)
           .then((quizzes: Quiz[]) => {
               LogicController.getInstance().setQuizzes(quizzes);
               // this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
-              challengeTxt.setInteractive()
               practiceTxt.setInteractive();
+              challengeTxt.setInteractive()
           })
           .catch((err: any) => {
               this.showLog('[GetQuiz] ' + JSON.stringify(err));
           }
       );
     } else if (data.from == 'FarmScene') {
-        challengeTxt.setInteractive()
-        practiceTxt.setInteractive();
-
-        this.needToLearn = false;
+        LogicController.getInstance().setNecessaryToLearn(false);
         LogicController.getInstance().increaseTimesOfPrac();
         
         // TODO, server api 
 
     } else if (data.from == 'RoundScene') {
-        challengeTxt.setInteractive()
-        practiceTxt.setInteractive();
-
-        this.needToLearn = true;
+        LogicController.getInstance().setNecessaryToLearn(true);
         
     }
 
-    this.showLog(JSON.stringify(LogicController.getInstance().getCurrentLevel()));
+    this.showLog(JSON.stringify(curLevel));
   }
 }

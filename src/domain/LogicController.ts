@@ -25,6 +25,8 @@ export class LogicController {
     private bonusQuizIndex: number = 0;
     private amountOfBonusQuiz: number = 0;
 
+    private needToLearn: Boolean;
+
     private onFinishCallback: Function;
     private onGameOverCallback: Function;
 
@@ -134,6 +136,8 @@ export class LogicController {
         this.remains = this.levelConfig.maxRemains;
         this.combo = 0;
 
+        this.needToLearn = false;
+
         this.onFinishCallback = onFinish;
         this.onGameOverCallback = onGameOver;
     }
@@ -225,6 +229,14 @@ export class LogicController {
         } else if (this.getCurrentLevel().timesOfPrac == 2) {
             this.getCurrentLevel().points += 100;
         }
+    }
+
+    public setNecessaryToLearn(toLearn: Boolean): void {
+        this.needToLearn = toLearn;
+    }
+
+    public isNecessaryToLearn(): Boolean {
+        return this.needToLearn;
     }
 
 }

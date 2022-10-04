@@ -2,7 +2,7 @@ import { DatabaseCore } from "../databridge/DatabaseCore";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
-import { Level, LevelBuilder, LevelType } from "../dto/LevelInfo";
+import { Level, LevelBuilder, LevelStatus, LevelType } from "../dto/LevelInfo";
 import { UserDataBuilder } from "../dto/UserData";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
@@ -10,6 +10,7 @@ import { BaseLogPanelScene } from "./BaseLogPanelScene";
 export class WelcomeScene extends BaseLogPanelScene {
     private firestoreUserinfo: UserInfoImpl;
     private levelInfo : LevelInfoImpl;
+    private levelMap : Map<LevelType, Level>;
     
     constructor() {
         super('WelcomeScene');
@@ -23,43 +24,88 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     override create(): void {
         super.create();
+        console.log("[Welcome] onCreate");
 
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
 
-        var startTxt = this.make.text({
+        var level1Txt = this.make.text({
             x: 10, 
             y: 500, 
-            text: 'Start', 
+            text: 'Level1', 
             style: { font: 'bold 30px Arial', color: '#00ff00' }
             });
             
-            startTxt.on('pointerdown', () => {
+        level1Txt.on('pointerdown', () => {  
+            LogicController.getInstance().setCurrentLevel(LevelType.DEPOSIT);
+            if (this.levelMap.get(LevelType.DEPOSIT).status != LevelStatus.FINISHED) {
                 this.scene.start('LevelScene',
                 {
                     from: 'WelcomeScene',
                     levelType: LevelType.DEPOSIT,
                 });
-            });
+            }
+        });
+        
+        var level2Txt = this.make.text({
+            x: 150, 
+            y: 500, 
+            text: 'Level2', 
+            style: { font: 'bold 30px Arial', color: '#00ff00' }
+        });
+
+        level2Txt.on('pointerdown', () => {
+            LogicController.getInstance().setCurrentLevel(LevelType.FOREX);
+            if (this.levelMap.get(LevelType.FOREX).status != LevelStatus.FINISHED) {
+                this.scene.start('LevelScene',
+                {
+                    from: 'WelcomeScene',
+                    levelType: LevelType.FOREX,
+                });
+            }
+        });
+
+        var level3Txt = this.make.text({
+            x: 300, 
+            y: 500, 
+            text: 'Level3', 
+            style: { font: 'bold 30px Arial', color: '#00ff00' }
+        });
+
+        level3Txt.on('pointerdown', () => {
+            LogicController.getInstance().setCurrentLevel(LevelType.LOAN);
+            if (this.levelMap.get(LevelType.LOAN).status != LevelStatus.FINISHED) {
+                this.scene.start('LevelScene',
+                {
+                    from: 'WelcomeScene',
+                    levelType: LevelType.LOAN,
+                });
+            }
+        });
 
         this.firestoreUserinfo.get(user.uid)
             .then(userData => {
                 LogicController.getInstance().setUser(userData);
-                this.showLog('Hi ' + JSON.stringify(LogicController.getInstance().getUser().nickName) + ', welcome back to MetaBank !!');
+                this.showLog(JSON.stringify(LogicController.getInstance().getUser()));
                 return this.levelInfo.getLevels(user.uid);
             })
             .then((levels: Level[]) => {
                 LogicController.getInstance().setLevels(levels);
+                this.levelMap = LogicController.getInstance().getLevels();
                 let curLevel = LogicController.getInstance().getCurrentLevel();
                 if (curLevel) {
                     this.showLog('Let\'s continue to Level: ' + curLevel.type);
                 }
                 
-                startTxt.setInteractive();
+                level1Txt.setInteractive();
+                level2Txt.setInteractive();
+                level3Txt.setInteractive();
             })
             .catch((err: string) => {
                 // TODO
                 this.showLog(err);
-                startTxt.setInteractive();
+                level1Txt.setInteractive();
+                level2Txt.setInteractive();
+                level3Txt.setInteractive();
             });  
     }
 

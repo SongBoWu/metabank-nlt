@@ -1,11 +1,18 @@
 import { TitleType, TitleTypePoint } from "../const/TitleType";
+import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
+import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
 import { LevelStatus } from "../dto/LevelInfo";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class GratzScene extends BaseLogPanelScene {
+    private userInfoApi : UserInfoImpl;
+    private levelInfoApi : LevelInfoImpl;
+
     constructor() {
         super('GratzScene');
+        this.userInfoApi = new UserInfoImpl();
+        this.levelInfoApi = new LevelInfoImpl();
     }
 
     override create(data?: any): void {
@@ -37,6 +44,21 @@ export class GratzScene extends BaseLogPanelScene {
 
 
         // TODO: API to update UserData and LevelInfo
+        this.userInfoApi.update(userInfo.id, userInfo.points, userInfo.title)
+        .then(() => {
+            this.showLog("[GratzScene] update user Info done!");
+        })
+        .catch((err: string) => {
+            this.showLog("[GratzScene] update user Info error! " + err);
+        });
+
+        this.levelInfoApi.update(curLevel)
+        .then(() => {
+            this.showLog("[GratzScene] update level Info done!");
+        })
+        .catch((err: string) => {
+            this.showLog("[GratzScene] update level Info error! " + err);
+        });
     }
 
     transformPointToTitile() : Boolean {
@@ -44,13 +66,16 @@ export class GratzScene extends BaseLogPanelScene {
         var amountOfTitleType = Object.keys(TitleType).length / 2;
 
         var nextTitle = user.title + 1;
+        if (nextTitle >= amountOfTitleType) {
+            this.showLog("already in top level!");
+            return false;
+        }
+
         var remainPoint = user.points - TitleTypePoint[nextTitle];
         this.showLog("nextTitle: " + nextTitle + ", userPoint: " + user.points + ", remainPoint: " + remainPoint);
 
         if (remainPoint >= 0) {
-            if (nextTitle <= amountOfTitleType - 1) {
-                user.title = nextTitle;
-            }
+            user.title = nextTitle;
             user.points = remainPoint;
             this.showLog(JSON.stringify(user))
             return true;

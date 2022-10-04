@@ -18,7 +18,7 @@ export class RoundScene extends BaseLogPanelScene {
         super.create();
 
         this.cleanLog();
-        console.log('on create ' + JSON.stringify(data));
+        console.log('onCreate ' + JSON.stringify(data));
 
         LogicController.getInstance().startQuiz(
             this.onFinished.bind(this),

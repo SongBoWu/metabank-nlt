@@ -2,6 +2,7 @@ import { FarmScene } from "./scenes/FarmScene"
 import { GratzScene } from "./scenes/GratzScene"
 import { HomeScene } from "./scenes/HomeScene"
 import { LandingScene } from "./scenes/LandingScene"
+import { LeaderboardScene } from "./scenes/LeaderboardScene"
 import { LevelScene } from "./scenes/LevelScene"
 import { RoundScene } from "./scenes/RoundScene"
 import { SignUpScene } from "./scenes/SignUpScene"
@@ -29,5 +30,6 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     RoundScene,
     FarmScene,
     GratzScene,
+    LeaderboardScene,
   ]
 }
