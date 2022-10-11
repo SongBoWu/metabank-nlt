@@ -4,7 +4,7 @@ import eventsCenter from "../plugins/EventsCenter";
 
 export class BaseLogPanelScene extends Phaser.Scene {
 
-    private logElement: Element;
+    // private logElement: Element;
     private logSnippet: string = '';
 
     constructor(sceneKey: string) {
@@ -18,15 +18,17 @@ export class BaseLogPanelScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.html('logPanel', 'assets/log-text-area.html');
+        // this.load.html('logPanel', 'assets/log-text-area.html');
+        this.load.image('bg', 'assets/background-geo-grey.jpg');
     }
 
     create(data?: any): void {
         window.addEventListener('online', this.onNetworkOnline.bind(this));
         window.addEventListener('offline', this.onNetworkOffline.bind(this));
         
-        var domElement = this.add.dom(400, 250).createFromCache('logPanel');
-        this.logElement = domElement.getChildByName('logPreview');
+        this.add.image(512, 324, 'bg');
+        // var domElement = this.add.dom(400, 250).createFromCache('logPanel');
+        // this.logElement = domElement.getChildByName('logPreview');
 
         eventsCenter.on('onUnAuth', this.backToHome, this)
 
@@ -48,8 +50,9 @@ export class BaseLogPanelScene extends Phaser.Scene {
     }
 
     protected showLog(snippet: string): void {
-        this.logSnippet = '[' + new Date().toLocaleString() + '] ' + snippet + '\n' + this.logSnippet;
-        this.logElement.textContent = this.logSnippet;
+        // this.logSnippet = '[' + new Date().toLocaleString() + '] ' + snippet + '\n' + this.logSnippet;
+        // this.logElement.textContent = this.logSnippet;
+        console.log(this.logSnippet);
     }
 
     protected cleanLog(): void {

@@ -5,13 +5,15 @@ import { LandingScene } from "./scenes/LandingScene"
 import { LeaderboardScene } from "./scenes/LeaderboardScene"
 import { LevelScene } from "./scenes/LevelScene"
 import { RoundScene } from "./scenes/RoundScene"
+import { SettingsScene } from "./scenes/SettingsScene"
 import { SignUpScene } from "./scenes/SignUpScene"
+import { LoadingScene} from "./scenes/LoadingScene"
 import { WelcomeScene } from "./scenes/WelcomeScene"
 
 export const GameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 1024,
+  height: 768,
   physics: {
     default: 'arcade',
     arcade: {
@@ -31,5 +33,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     FarmScene,
     GratzScene,
     LeaderboardScene,
+    LoadingScene,
+    SettingsScene,
   ]
 }

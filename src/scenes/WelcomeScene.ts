@@ -20,22 +20,29 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     override preload(): void {
         super.preload();
+        this.load.image('welcome_bg', 'assets/station_bg.png');
+        this.load.image('monkey', 'assets/monkey_1.png');
+        this.load.image('level1_icon', 'assets/piggy-bank.png');
+        this.load.image('level2_icon', 'assets/exchange.png');
+        this.load.image('level3_icon', 'assets/calculator.png');
+        this.load.image('question_icon', 'assets/faq.png')
     }
 
     override create(): void {
         super.create();
-        console.log("[Welcome] onCreate");
+
+        this.scene.launch('SettingsScene');
+
+        this.add.image(512, 384, 'welcome_bg');
+        this.add.image(512, 650, 'monkey');
 
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
 
-        var level1Txt = this.make.text({
-            x: 10, 
-            y: 500, 
-            text: 'Level1', 
-            style: { font: 'bold 30px Arial', color: '#00ff00' }
-            });
+        var level1_icon = this.add.image(200, 300, 'level1_icon');
+        var level2_icon = this.add.image(500, 250, 'level2_icon');
+        var level3_icon = this.add.image(800, 300, 'level3_icon');
             
-        level1Txt.on('pointerdown', () => {  
+        level1_icon.on('pointerdown', () => {  
             LogicController.getInstance().setCurrentLevel(LevelType.DEPOSIT);
             if (this.levelMap.get(LevelType.DEPOSIT).status != LevelStatus.FINISHED) {
                 this.scene.start('LevelScene',
@@ -45,15 +52,8 @@ export class WelcomeScene extends BaseLogPanelScene {
                 });
             }
         });
-        
-        var level2Txt = this.make.text({
-            x: 150, 
-            y: 500, 
-            text: 'Level2', 
-            style: { font: 'bold 30px Arial', color: '#00ff00' }
-        });
 
-        level2Txt.on('pointerdown', () => {
+        level2_icon.on('pointerdown', () => {
             LogicController.getInstance().setCurrentLevel(LevelType.FOREX);
             if (this.levelMap.get(LevelType.FOREX).status != LevelStatus.FINISHED) {
                 this.scene.start('LevelScene',
@@ -64,14 +64,7 @@ export class WelcomeScene extends BaseLogPanelScene {
             }
         });
 
-        var level3Txt = this.make.text({
-            x: 300, 
-            y: 500, 
-            text: 'Level3', 
-            style: { font: 'bold 30px Arial', color: '#00ff00' }
-        });
-
-        level3Txt.on('pointerdown', () => {
+        level3_icon.on('pointerdown', () => {
             LogicController.getInstance().setCurrentLevel(LevelType.LOAN);
             if (this.levelMap.get(LevelType.LOAN).status != LevelStatus.FINISHED) {
                 this.scene.start('LevelScene',
@@ -84,6 +77,7 @@ export class WelcomeScene extends BaseLogPanelScene {
 
         this.firestoreUserinfo.get(user.uid)
             .then(userData => {
+                this.scene.launch('LoadingScene');
                 LogicController.getInstance().setUser(userData);
                 this.showLog(JSON.stringify(LogicController.getInstance().getUser()));
                 return this.levelInfo.getLevels(user.uid);
@@ -96,16 +90,18 @@ export class WelcomeScene extends BaseLogPanelScene {
                     this.showLog('Let\'s continue to Level: ' + curLevel.type);
                 }
                 
-                level1Txt.setInteractive();
-                level2Txt.setInteractive();
-                level3Txt.setInteractive();
+                level1_icon.setInteractive();
+                level2_icon.setInteractive();
+                level3_icon.setInteractive();
+                this.scene.stop('LoadingScene');
             })
             .catch((err: string) => {
                 // TODO
                 this.showLog(err);
-                level1Txt.setInteractive();
-                level2Txt.setInteractive();
-                level3Txt.setInteractive();
+                level1_icon.setInteractive();
+                level2_icon.setInteractive();
+                level3_icon.setInteractive();
+                this.scene.stop('LoadingScene');
             });  
     }
 

@@ -43,7 +43,7 @@ export class GratzScene extends BaseLogPanelScene {
         } while (isLevelUp);
 
 
-        // TODO: API to update UserData and LevelInfo
+        // Update user info
         this.userInfoApi.update(userInfo.id, userInfo.points, userInfo.title)
         .then(() => {
             this.showLog("[GratzScene] update user Info done!");
@@ -52,6 +52,7 @@ export class GratzScene extends BaseLogPanelScene {
             this.showLog("[GratzScene] update user Info error! " + err);
         });
 
+        // update level info
         this.levelInfoApi.update(curLevel)
         .then(() => {
             this.showLog("[GratzScene] update level Info done!");
@@ -59,6 +60,8 @@ export class GratzScene extends BaseLogPanelScene {
         .catch((err: string) => {
             this.showLog("[GratzScene] update level Info error! " + err);
         });
+
+        // TODO: 
     }
 
     transformPointToTitile() : Boolean {
