@@ -52,6 +52,9 @@ export class WelcomeScene extends BaseLogPanelScene {
                 });
             }
         });
+        level1_icon.on('pointerover', () => {
+            // TODO
+        });
 
         level2_icon.on('pointerdown', () => {
             LogicController.getInstance().setCurrentLevel(LevelType.FOREX);

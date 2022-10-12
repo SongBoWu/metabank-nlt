@@ -14,70 +14,85 @@ export class LevelScene extends BaseLogPanelScene {
     this.quizImpl = new QuizImpl();
   }
 
+  override preload(): void {
+      super.preload();
+      this.load.image('level_title_icon', 'assets/level_title4.png');
+      this.load.image('challenge_btn', 'assets/che_btn.png');
+      this.load.image('challenge_btn_hover', 'assets/che_btn_hover.png');
+      this.load.image('practice_btn', 'assets/prac_btn.png');
+      this.load.image('practice_btn_hover', 'assets/prac_btn_hover.png');
+  }
+
   override create(data: any): void {
     super.create();
     this.showLog('[onCreate] ' + JSON.stringify(data));
 
-    var practiceTxt = this.make.text({
-      x: 10,
-      y: 500,
-      text: 'Practice',
-      style: { font: 'bold 20px Arial', color: '#00ff00' }
-    });
-    practiceTxt.setInteractive();
-    practiceTxt.on('pointerdown', () => {
+    var titleIcon = this.add.image(250, 200, 'level_title_icon');
+    titleIcon.setScale(1);
+
+
+    var practiceBtn = this.add.image(400, 650, 'practice_btn');
+    practiceBtn.setScale(1.2);
+    var practiceBtnHover = this.add.image(400, 650, 'practice_btn_hover');
+    practiceBtnHover.setScale(1.2);
+    practiceBtnHover.setVisible(false);
+    practiceBtn.setInteractive();
+    practiceBtn.on('pointerdown', () => {
       if (LogicController.getInstance().isNecessaryToLearn()) {
-        this.showLog('[Practice]')
         this.scene.start('FarmScene', { mode: RoundMode.PRACTICE })
       }
     });
+    practiceBtn.on('pointerover', () => { 
+      if (LogicController.getInstance().isNecessaryToLearn()) {
+        practiceBtnHover.setVisible(true);
+      } 
+    })
+    practiceBtn.on('pointerout', () => { practiceBtnHover.setVisible(false); })
 
-    var challengeTxt = this.make.text({
-      x: 110,
-      y: 500,
-      text: 'Challenge',
-      style: { font: 'bold 20px Arial', color: '#00ff00', backgroundColor: '#ffffff' }
-    });
-    challengeTxt.setInteractive();
-    challengeTxt.on('pointerdown', () => {
+
+    var challengeBtn = this.add.image(600, 650, 'challenge_btn');
+    challengeBtn.setScale(1.2);
+    var challengeBtnHover = this.add.image(600, 650, 'challenge_btn_hover');
+    challengeBtnHover.setScale(1.2);
+    challengeBtnHover.setVisible(false);
+    challengeBtn.setInteractive();
+    challengeBtn.on('pointerdown', () => {
       if (!LogicController.getInstance().isNecessaryToLearn()) {
-        this.showLog('[Challenge]')
         this.scene.start('RoundScene')
       }
     });
+    challengeBtn.on('pointerover', () => { 
+      if (!LogicController.getInstance().isNecessaryToLearn()) {
+        challengeBtnHover.setVisible(true); 
+      }
+    })
+    challengeBtn.on('pointerout', () => { challengeBtnHover.setVisible(false); })
 
-    var top10Txt = this.make.text({
-      x: 300,
-      y: 500,
-      text: 'Top10',
-      style: { font: 'bold 20px Arial', color: '#00ff00', backgroundColor: '#ffffff' }
-    });
-    top10Txt.setInteractive();
-    top10Txt.on('pointerdown', () => {
-        this.scene.start('LeaderboardScene', {
-          from: 'LevelScene',
-        })
-    });
 
     var curLevel = LogicController.getInstance().getCurrentLevel();
 
     // ==== fetch quiz ====
     if (data.from == 'WelcomeScene') {
       this.showLog('You are in Level: ' + curLevel.type);
+      this.scene.launch('LoadingScene');
       curLevel.status = LevelStatus.STARTED;
       LogicController.getInstance().setNecessaryToLearn(true);
-      practiceTxt.disableInteractive();
-      challengeTxt.disableInteractive();
+      
+      practiceBtn.disableInteractive();
+      challengeBtn.disableInteractive();
 
       this.quizImpl.getList(curLevel.type)
           .then((quizzes: Quiz[]) => {
               LogicController.getInstance().setQuizzes(quizzes);
+              this.scene.stop('LoadingScene');
+              practiceBtn.setInteractive();
+              challengeBtn.setInteractive();
+
               // this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
-              practiceTxt.setInteractive();
-              challengeTxt.setInteractive()
           })
           .catch((err: any) => {
               this.showLog('[GetQuiz] ' + JSON.stringify(err));
+              this.scene.stop('LoadingScene');
           }
       );
     } else if (data.from == 'FarmScene') {

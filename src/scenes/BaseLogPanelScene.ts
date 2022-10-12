@@ -26,7 +26,7 @@ export class BaseLogPanelScene extends Phaser.Scene {
         window.addEventListener('online', this.onNetworkOnline.bind(this));
         window.addEventListener('offline', this.onNetworkOffline.bind(this));
         
-        this.add.image(512, 324, 'bg');
+        this.add.image(512, 384, 'bg');
         // var domElement = this.add.dom(400, 250).createFromCache('logPanel');
         // this.logElement = domElement.getChildByName('logPreview');
 
@@ -37,16 +37,6 @@ export class BaseLogPanelScene extends Phaser.Scene {
             eventsCenter.off('onUnAuth', this.backToHome, this)
         })
 
-        var signOutTxt = this.make.text({
-            x: 650, 
-            y: 550, 
-            text: 'SignOut', 
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-          });
-          signOutTxt.setInteractive();
-          signOutTxt.on('pointerdown', ()=>{
-            DatabaseCore.getInstance().getAuthImpl().signOut();
-          });
     }
 
     protected showLog(snippet: string): void {

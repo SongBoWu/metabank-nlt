@@ -15,6 +15,8 @@ export class LeaderboardScene extends BaseLogPanelScene {
         super.create();
         this.showLog('create ' + JSON.stringify(data));
 
+        this.add.rectangle(512, 384, 1024, 768, 0x000000, 80);
+
         var backToMain = this.make.text({
             x: 10,
             y: 500,
@@ -28,12 +30,15 @@ export class LeaderboardScene extends BaseLogPanelScene {
             });
         });
 
+        this.scene.launch('LoadingScene');
         this.levelInfoApi.getLevelTop10(LogicController.getInstance().getCurrentLevel().type)
         .then((levels: Level[]) => {
             this.showLog(JSON.stringify(levels));
+            this.scene.stop('LoadingScene');
         })
         .catch(error => {
             this.showLog(error);
+            this.scene.stop('LoadingScene');
         })
     }
 }

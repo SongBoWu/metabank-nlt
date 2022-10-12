@@ -19,10 +19,12 @@ export class SignUpScene extends Phaser.Scene {
 
     preload(): void {
         this.load.html('registerInputform', 'assets/registerform.html');
+        this.load.image('meta_bg', 'assets/mb_bg.jpg');
     }
 
     create(): void {
-        var registerformElement = this.add.dom(400, 300).createFromCache('registerInputform');
+        this.add.image(512, 384, 'meta_bg');
+        var registerformElement = this.add.dom(512, 400).createFromCache('registerInputform');
         registerformElement.addListener('click');
         registerformElement.on('click', (event : any) => {
           
