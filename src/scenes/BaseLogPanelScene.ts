@@ -4,9 +4,6 @@ import eventsCenter from "../plugins/EventsCenter";
 
 export class BaseLogPanelScene extends Phaser.Scene {
 
-    // private logElement: Element;
-    private logSnippet: string = '';
-
     constructor(sceneKey: string) {
         super({
             key: sceneKey
@@ -40,13 +37,7 @@ export class BaseLogPanelScene extends Phaser.Scene {
     }
 
     protected showLog(snippet: string): void {
-        // this.logSnippet = '[' + new Date().toLocaleString() + '] ' + snippet + '\n' + this.logSnippet;
-        // this.logElement.textContent = this.logSnippet;
-        console.log(this.logSnippet);
-    }
-
-    protected cleanLog(): void {
-        this.logSnippet = '';
+        console.log(snippet);
     }
 
     backToHome(): void {
