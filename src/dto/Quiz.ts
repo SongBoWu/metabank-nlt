@@ -18,6 +18,7 @@ export class Quiz {
     description: string;
     options: Option[];
     answer: OptionID;
+    isBonus: Boolean;
 }
 
 export class QuizBuilder {
@@ -46,7 +47,8 @@ export class QuizBuilder {
                     description: 'option D'
                 }
             ],
-            answer: OptionID.A
+            answer: OptionID.A,
+            isBonus: false
         };
     }
 
@@ -70,8 +72,33 @@ export class QuizBuilder {
         return this;
     }
 
+    optionA(des: string): QuizBuilder {
+        this._quiz.options[0].description = des;
+        return this;
+    }
+
+    optionB(des: string): QuizBuilder {
+        this._quiz.options[1].description = des;
+        return this;
+    }
+
+    optionC(des: string): QuizBuilder {
+        this._quiz.options[2].description = des;
+        return this;
+    }
+
+    optionD(des: string): QuizBuilder {
+        this._quiz.options[3].description = des;
+        return this;
+    }
+
     answer(answer: OptionID): QuizBuilder {
         this._quiz.answer = answer;
+        return this;
+    }
+
+    isBonus(bonus: Boolean): QuizBuilder {
+        this._quiz.isBonus = bonus;
         return this;
     }
 

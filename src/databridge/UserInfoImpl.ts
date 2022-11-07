@@ -1,4 +1,5 @@
-import { Firestore, getFirestore, collection, getDocs, doc, setDoc, getDoc, DocumentSnapshot, SnapshotOptions, updateDoc, serverTimestamp } from "firebase/firestore";
+import { Firestore, getFirestore, collection, getDocs, doc, setDoc, getDoc, DocumentSnapshot, SnapshotOptions, updateDoc, serverTimestamp, where, query, orderBy, limit, WhereFilterOp } from "firebase/firestore";
+import { GroupType } from "../const/GroupType";
 import { TitleType } from "../const/TitleType";
 import { LevelType } from "../dto/LevelInfo";
 import { UserData, UserDataBuilder } from "../dto/UserData";
@@ -42,6 +43,15 @@ export class UserInfoImpl {
         }
     }
 
+    async getAmountOfGroupType(score: number, groupType: GroupType) : Promise<number> {
+        const SCORE_THRESHOLD = 80
+        const filter = score < SCORE_THRESHOLD ? "<=" : ">";
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docQuery = query(collectionRef, where("entranceScore", filter, SCORE_THRESHOLD), where("group", "==", groupType));
+        const docSnap = await getDocs(docQuery);
+        return docSnap.size;
+    }
+
     async update(uid: string, points: number, title: TitleType) : Promise<void> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
         const docRef = doc(collectionRef, uid);
@@ -49,6 +59,16 @@ export class UserInfoImpl {
             points: points,
             title: title,
             update_time: serverTimestamp()
+        });
+    }
+
+    async updateGroup(uid: string, score: number, groupType: GroupType) : Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docRef = doc(collectionRef, uid);
+        return await updateDoc(docRef, {
+            entranceScore: score,
+            group: groupType,
+            assign_group_time: serverTimestamp()
         });
     }
 }
@@ -67,6 +87,7 @@ const UserInfoConverter = {
             .level(data.level)
             .points(data.points)
             .title(data.title)
+            .entranceScore(data.entranceScore)
             .build();
     }
 }

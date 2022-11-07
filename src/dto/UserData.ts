@@ -9,6 +9,7 @@ export class UserData {
     group: GroupType;
     points: number;
     title: TitleType;
+    entranceScore: number;
 }
 
 
@@ -22,7 +23,8 @@ export class UserDataBuilder {
             level: LevelType.DEPOSIT,
             group: GroupType.EXPERIMENTAL,
             points: 0,
-            title: TitleType.T1
+            title: TitleType.T1,
+            entranceScore: 0,
         };
     }
 
@@ -58,6 +60,11 @@ export class UserDataBuilder {
 
     title(title: TitleType): UserDataBuilder {
         this._UserData.title = title;
+        return this;
+    }
+
+    entranceScore(score: number): UserDataBuilder {
+        this._UserData.entranceScore = score;
         return this;
     }
 
