@@ -108,7 +108,7 @@ export class HomeScene extends BaseLogPanelScene {
         //     .catch((err: any) => {
 
         //     });
-        this.quizImpl.getList(LevelType.DEPOSIT, ['0001', '0002', '0010'])
+        this.quizImpl.getList(LevelType.DEPOSIT, false, ['0001', '0002', '0010'])
         .then((quizzes: Quiz[]) => {
             this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
         })

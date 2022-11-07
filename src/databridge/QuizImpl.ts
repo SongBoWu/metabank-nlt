@@ -12,7 +12,7 @@ export class QuizImpl {
         this.firestore = getFirestore(DatabaseCore.getInstance().getApp());
     }
 
-    async add(quiz: Quiz, onSuccess : Function, onFailed : Function) : Promise<void> {
+    async add(quiz: Quiz, onSuccess?: Function, onFailed?: Function) : Promise<void> {
         try {
             const collectionRef = collection(this.firestore, COLLECTION_NAME);
             const docRef = doc(collectionRef, quiz.id);
@@ -35,13 +35,13 @@ export class QuizImpl {
         }
     }
 
-    async getList(type: LevelType, qids?: string[]) : Promise<any[]> {
+    async getList(type: LevelType, isBouns: Boolean, qids?: string[]) : Promise<any[]> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
         var docQuery;
         if (qids) {
-            docQuery = query(collectionRef, where("type", "==", type), where("id", "in", qids));
+            docQuery = query(collectionRef, where("type", "==", type), where("isBonus", "==", isBouns), where("id", "in", qids));
         } else {
-            docQuery = query(collectionRef, where("type", "==", type));
+            docQuery = query(collectionRef, where("type", "==", type), where("isBonus", "==", isBouns));
         }
         
         const docQuerySnapshot = await getDocs(docQuery);

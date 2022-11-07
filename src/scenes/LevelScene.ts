@@ -81,14 +81,16 @@ export class LevelScene extends BaseLogPanelScene {
       practiceBtn.disableInteractive();
       challengeBtn.disableInteractive();
 
-      this.quizImpl.getList(curLevel.type)
+      this.quizImpl.getList(curLevel.type, false)
           .then((quizzes: Quiz[]) => {
               LogicController.getInstance().setQuizzes(quizzes);
-              this.scene.stop('LoadingScene');
-              practiceBtn.setInteractive();
-              challengeBtn.setInteractive();
-
-              // this.showLog('[GetQuiz] ' + JSON.stringify(quizzes));
+              return this.quizImpl.getList(curLevel.type, true);
+          })
+          .then((quizzes: Quiz[]) => {
+            LogicController.getInstance().setBonusQuizzes(quizzes);
+            this.scene.stop('LoadingScene');
+            practiceBtn.setInteractive();
+            challengeBtn.setInteractive();
           })
           .catch((err: any) => {
               this.showLog('[GetQuiz] ' + JSON.stringify(err));

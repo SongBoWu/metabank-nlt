@@ -81,9 +81,9 @@ export class LogicController {
     }
 
     public setQuizzes(quizzes: Quiz[]): void {
-        // this.regularQuiz = quizzes;
-        this.regularQuiz = this.mockQuizzes();
-        this.bonusQuiz = this.mockBonusQuizzes();
+        this.regularQuiz = quizzes;
+        // this.regularQuiz = this.mockQuizzes();
+        // this.bonusQuiz = this.mockBonusQuizzes();
     }
 
     // TODO: for dev
@@ -102,9 +102,10 @@ export class LogicController {
     }
 
     public setBonusQuizzes(extra: Quiz[]): void {
-        extra.forEach(quiz => {
-            this.regularQuiz.push(quiz);
-        });
+        this.bonusQuiz = extra;
+        // extra.forEach(quiz => {
+        //     this.regularQuiz.push(quiz);
+        // });
     }
 
     // TODO: for dev
