@@ -27,8 +27,8 @@ export class LevelScene extends BaseLogPanelScene {
     super.create();
     this.showLog('[onCreate] ' + JSON.stringify(data));
 
-    var titleIcon = this.add.image(250, 200, 'level_title_icon');
-    titleIcon.setScale(1);
+    // var titleIcon = this.add.image(250, 200, 'level_title_icon');
+    // titleIcon.setScale(1);
 
 
     var practiceBtn = this.add.image(400, 650, 'practice_btn');
