@@ -77,7 +77,7 @@ export class RoundScene extends BaseLogPanelScene {
         this.showLog(this.currentQuiz.description);
 
         var descElement = this.descPanelElement.getChildByID('desc');
-        descElement.textContent = this.currentQuiz.description;
+        descElement.innerHTML = this.currentQuiz.description;
 
         for(var index = 0; index < this.optTexts.length; index++) {
             this.optTexts[index].setText(this.getOptionIDfrom(index) + '. ' + this.currentQuiz.options[index].description);
