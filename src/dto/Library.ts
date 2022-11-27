@@ -12,6 +12,7 @@ export class Library {
     phonetic: string;
     translation: string;
     wordTypes: WordType[];
+    isBonus: Boolean;
 }
 
 export class LibraryBuilder {
@@ -27,9 +28,14 @@ export class LibraryBuilder {
             wordTypes: [
                 {
                     type: '',
-                    example: 'option A'
+                    example: ''
+                },
+                {
+                    type: '',
+                    example: ''
                 }
-            ]
+            ],
+            isBonus: false
         };
     }
 
@@ -58,8 +64,29 @@ export class LibraryBuilder {
         return this;
     }
 
-    wordTypes(types: Array<WordType>): LibraryBuilder {
-        this._lib.wordTypes = types;
+    wordTypes(wordTypes: Array<WordType>): LibraryBuilder {
+        this._lib.wordTypes = wordTypes;
         return this;
+    }
+
+    wordTypes1(type: string, example: string): LibraryBuilder {
+        this._lib.wordTypes[0].type = type;
+        this._lib.wordTypes[0].example = example;
+        return this;
+    }
+
+    wordTypes2(type: string, example: string): LibraryBuilder {
+        this._lib.wordTypes[1].type = type;
+        this._lib.wordTypes[1].example = example;
+        return this;
+    }
+
+    isBonus(bonus: Boolean): LibraryBuilder {
+        this._lib.isBonus = bonus;
+        return this;
+    }
+
+    build(): Library {
+        return this._lib;
     }
 }

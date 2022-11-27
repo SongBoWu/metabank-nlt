@@ -1,5 +1,6 @@
 import { GroupType } from "../const/GroupType";
 import { Level, LevelType } from "../dto/LevelInfo";
+import { Library } from "../dto/Library";
 import { OptionID, Quiz, QuizBuilder } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
 import { DepoProperties, ForexProperties, ILevelProperties, LoanProperties } from "./ILevelProperties";
@@ -29,6 +30,9 @@ export class LogicController {
 
     private onFinishCallback: Function;
     private onGameOverCallback: Function;
+
+    // For learning
+    private library: Library[];
 
     private constructor() {
         console.log('[LogicController] constructor');
@@ -121,6 +125,14 @@ export class LogicController {
             mockArr.push(mockQuiz);
         }
         return mockArr;
+    }
+
+    public setLibrary(library: Library[]): void {
+        this.library = library;
+    }
+
+    public getLibrary(): Library[] {
+        return this.library;
     }
 
     public setRoundBehaviors(): void {

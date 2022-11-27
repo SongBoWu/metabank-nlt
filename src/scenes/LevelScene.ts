@@ -1,17 +1,23 @@
 import { RoundMode } from "../const/RoundMode";
+import { LibraryImpl } from "../databridge/LibraryImpl";
 import { QuizImpl } from "../databridge/QuizImpl";
 import { LogicController } from "../domain/LogicController";
 import { LevelStatus, LevelType } from "../dto/LevelInfo";
+import { Library } from "../dto/Library";
 import { Quiz } from "../dto/Quiz";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class LevelScene extends BaseLogPanelScene {
+
   private quizImpl: QuizImpl;
+  private libImpl: LibraryImpl;
+
   // private needToLearn: Boolean;
   
   constructor() {
     super('LevelScene');
     this.quizImpl = new QuizImpl();
+    this.libImpl = new LibraryImpl();
   }
 
   override preload(): void {
@@ -87,10 +93,14 @@ export class LevelScene extends BaseLogPanelScene {
               return this.quizImpl.getList(curLevel.type, true);
           })
           .then((quizzes: Quiz[]) => {
-            LogicController.getInstance().setBonusQuizzes(quizzes);
-            this.scene.stop('LoadingScene');
-            practiceBtn.setInteractive();
-            challengeBtn.setInteractive();
+              LogicController.getInstance().setBonusQuizzes(quizzes);
+              return this.libImpl.getList(curLevel.type);
+          })
+          .then((library: Library[]) => {
+              this.scene.stop('LoadingScene');
+              practiceBtn.setInteractive();
+              challengeBtn.setInteractive();
+              LogicController.getInstance().setLibrary(library);
           })
           .catch((err: any) => {
               this.showLog('[GetQuiz] ' + JSON.stringify(err));
