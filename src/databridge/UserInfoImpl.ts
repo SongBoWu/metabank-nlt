@@ -44,8 +44,8 @@ export class UserInfoImpl {
     }
 
     async getAmountOfGroupType(score: number, groupType: GroupType) : Promise<number> {
-        const SCORE_THRESHOLD = 80
-        const filter = score < SCORE_THRESHOLD ? "<=" : ">";
+        const SCORE_THRESHOLD = 50
+        const filter = score <= SCORE_THRESHOLD ? "<=" : ">";
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
         const docQuery = query(collectionRef, where("entranceScore", filter, SCORE_THRESHOLD), where("group", "==", groupType));
         const docSnap = await getDocs(docQuery);

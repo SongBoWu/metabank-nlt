@@ -3,10 +3,8 @@ import { Level, LevelType } from "../dto/LevelInfo";
 import { Library } from "../dto/Library";
 import { OptionID, Quiz, QuizBuilder } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
-import { DepoProperties, ForexProperties, ILevelProperties, LoanProperties } from "./ILevelProperties";
+import { DepoProperties, ForexProperties, ILevelProperties, LoanProperties, PrexamProperties } from "./ILevelProperties";
 
-const POINT_AWARD = 300;
-const POINT_PENALTY = -200;
 const MAX_COMBO = 2;
 const MAX_BOUNS = 4;
 
@@ -76,6 +74,9 @@ export class LogicController {
             case LevelType.LOAN:
                 this.levelConfig = new LoanProperties();
                 break;
+            case LevelType.PREXAM:
+                this.levelConfig = new PrexamProperties();
+                break;
         }
         
     }
@@ -113,19 +114,19 @@ export class LogicController {
     }
 
     // TODO: for dev
-    private mockBonusQuizzes(): Quiz[] {
-        var mockArr = [];
-        for(let i=0; i<MAX_BOUNS; i++) {
-            let mockQuiz = new QuizBuilder()
-                .id('' + i)
-                .type(this.user.level)
-                .description('You are now answering bouns question[' + i + ']...')
-                .answer(OptionID.A)
-                .build();
-            mockArr.push(mockQuiz);
-        }
-        return mockArr;
-    }
+    // private mockBonusQuizzes(): Quiz[] {
+    //     var mockArr = [];
+    //     for(let i=0; i<MAX_BOUNS; i++) {
+    //         let mockQuiz = new QuizBuilder()
+    //             .id('' + i)
+    //             .type(this.user.level)
+    //             .description('You are now answering bouns question[' + i + ']...')
+    //             .answer(OptionID.A)
+    //             .build();
+    //         mockArr.push(mockQuiz);
+    //     }
+    //     return mockArr;
+    // }
 
     public setLibrary(library: Library[]): void {
         this.library = library;
@@ -177,7 +178,8 @@ export class LogicController {
         var curQuiz = this.getCurrentQuiz();
         var bingo = (option == curQuiz.answer);
 
-        this.getCurrentLevel().points += bingo ? POINT_AWARD : POINT_PENALTY;
+        this.getCurrentLevel().points += bingo ? this.levelConfig.pointAward : this.levelConfig.pointPenalty;
+        console.log('[LogicControl] point: ' + this.getCurrentLevel().points);
         if (this.getCurrentLevel().points < 0) {
             this.getCurrentLevel().points = 0;
         }
@@ -188,7 +190,7 @@ export class LogicController {
 
         if (bingo) {
             this.combo ++;
-            if (this.combo == MAX_COMBO) {
+            if (this.user.level != LevelType.PREXAM && this.combo == MAX_COMBO) {
                 this.combo = 0;
                 if (this.user.group == GroupType.EXPERIMENTAL && this.bonusQuizIndex < MAX_BOUNS - 1) {
                     this.amountOfBonusQuiz = 2;

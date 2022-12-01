@@ -27,7 +27,7 @@ export class QuizBuilder {
     constructor() {
         this._quiz = {
             id: '0000',
-            type: LevelType.DEPOSIT,
+            type: null,
             description: '',
             options: [
                 {

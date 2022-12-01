@@ -22,10 +22,12 @@ export class LevelInfoImpl {
         var depLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.DEPOSIT).build();
         var forLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.FOREX).build();
         var loanLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.LOAN).build();
+        var prexamLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.PREXAM).build();
 
         batch.set(doc(collectionRef, this.getDocId(depLevel)), depLevel);
         batch.set(doc(collectionRef, this.getDocId(forLevel)), forLevel);
         batch.set(doc(collectionRef, this.getDocId(loanLevel)), loanLevel);
+        batch.set(doc(collectionRef, this.getDocId(prexamLevel)), prexamLevel);
 
         return await batch.commit();
         // return await setDoc(docRef, level);

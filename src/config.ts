@@ -9,6 +9,7 @@ import { SettingsScene } from "./scenes/SettingsScene"
 import { SignUpScene } from "./scenes/SignUpScene"
 import { LoadingScene} from "./scenes/LoadingScene"
 import { WelcomeScene } from "./scenes/WelcomeScene"
+import { EntranceExamScene } from "./scenes/EntranceExamScene"
 
 export const GameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -35,5 +36,6 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     LeaderboardScene,
     LoadingScene,
     SettingsScene,
+    EntranceExamScene,
   ]
 }

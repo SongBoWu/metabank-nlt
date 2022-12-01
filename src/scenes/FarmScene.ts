@@ -76,6 +76,19 @@ export class FarmScene extends BaseLogPanelScene {
             }
         });
 
+        var backToMain = this.make.text({
+            x: 180,
+            y: 700,
+            text: 'Back to Main',
+            style: { font: 'bold 20px Arial', color: '#00ff00' }
+        });
+        backToMain.setInteractive();
+        backToMain.on('pointerdown', () => {
+            this.scene.start('LevelScene', {
+                from: 'FarmScene'
+            });
+        });
+
         this.updateLibContent();
     }
 

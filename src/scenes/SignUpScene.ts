@@ -9,7 +9,6 @@ export class SignUpScene extends Phaser.Scene {
     private levelInfo: LevelInfoImpl;
 
     private nickname : string;
-    private score : number;
 
     constructor() {
         super('SignUpScene');
@@ -30,18 +29,15 @@ export class SignUpScene extends Phaser.Scene {
           
             if (event.target.name === 'registerButton') {
                 var nickNameElement = registerformElement.getChildByID('nickname');
-                var scoreElement = registerformElement.getChildByID('score');
                 var accountElement = registerformElement.getChildByID('account');
                 var passwordElement = registerformElement.getChildByID('password');
         
                 var accountValue = (<HTMLInputElement>accountElement).value;
                 var passwordValue = (<HTMLInputElement>passwordElement).value;
                 var nickNameValue = (<HTMLInputElement>nickNameElement).value;
-                var scoreValue = (<HTMLInputElement>scoreElement).value;
                 
-                if (nickNameValue !== '' && scoreValue !== '' && accountValue !== '' && passwordValue !== '') {
+                if (nickNameValue !== '' && accountValue !== '' && passwordValue !== '') {
                     this.nickname = nickNameValue;
-                    this.score = +scoreValue;
                     DatabaseCore.getInstance().getAuthImpl().signUp(accountValue, passwordValue, this.onRegisterSuccess.bind(this), this.onRegisterFailed.bind(this));
                 }
             } else if (event.target.name === 'backButton') {
@@ -54,7 +50,6 @@ export class SignUpScene extends Phaser.Scene {
         var userData = new UserDataBuilder()
             .id(user.uid)
             .nickName(this.nickname)
-            .groupByScore(this.score)
             .build();
         this.firestoreUserinfo.add(userData, this.onUserCreatedSuccess.bind(this), this.onUserCreatedFailed.bind(this));
     }
@@ -77,6 +72,5 @@ export class SignUpScene extends Phaser.Scene {
 
     onUserCreatedFailed(): void {
         console.log('[onUserCreatedFailed] ');
-
     }
 }

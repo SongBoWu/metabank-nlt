@@ -48,11 +48,6 @@ export class UserDataBuilder {
         return this;
     }
 
-    groupByScore(score: number): UserDataBuilder {
-        this._UserData.group = score >= 300 ? GroupType.CONTROL : GroupType.EXPERIMENTAL;
-        return this;
-    }
-
     points(points: number): UserDataBuilder {
         this._UserData.points = points;
         return this;
