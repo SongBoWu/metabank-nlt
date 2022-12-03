@@ -62,7 +62,7 @@ export class SignUpScene extends Phaser.Scene {
         console.log('[onUserCreatedSuccess] ' + JSON.stringify(user));
         this.levelInfo.add(user.id, user.nickName)
             .then(() => {
-                this.scene.start('WelcomeScene');
+                this.scene.start('PreparationScene');
             })
             .catch(() => {
                 console.log('[addLevel] error');

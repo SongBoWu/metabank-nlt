@@ -155,17 +155,17 @@ export class EntranceExamScene extends BaseLogPanelScene {
 
         var curLevel = LogicController.getInstance().getCurrentLevel();
         console.log('[getLastUserWhomAssignedGroup] curLevel: ' + JSON.stringify(curLevel));
-        var ctrlCount: number;
-        this.userInfoImpl.getAmountOfGroupType(curLevel.points, GroupType.CONTROL)
-            .then(controlSize => {
-                console.log('[getLastUserWhomAssignedGroup] control: ' + controlSize);
-                ctrlCount = controlSize;
-                return this.userInfoImpl.getAmountOfGroupType(curLevel.points, GroupType.EXPERIMENTAL);
+        var expSize: number;
+        this.userInfoImpl.getAmountOfGroupType(curLevel.points, GroupType.EXPERIMENTAL)
+            .then(eSize => {
+                console.log('[getLastUserWhomAssignedGroup] exp.size: ' + eSize);
+                expSize = eSize;
+                return this.userInfoImpl.getAmountOfGroupType(curLevel.points, GroupType.CONTROL);
             })
-            .then(experSIze => {
-                console.log('[getLastUserWhomAssignedGroup] experiment: ' + experSIze);
+            .then(cSize => {
+                console.log('[getLastUserWhomAssignedGroup] ctr.size: ' + cSize);
                 var user = LogicController.getInstance().getUser();
-                user.group = ctrlCount <= experSIze ? GroupType.CONTROL : GroupType.EXPERIMENTAL;
+                user.group = expSize <= cSize ? GroupType.EXPERIMENTAL : GroupType.CONTROL;
                 return this.userInfoImpl.updateGroup(user.id, curLevel.points, user.group);
             })
             .then(() => {

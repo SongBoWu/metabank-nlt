@@ -21,10 +21,10 @@ export class UserDataBuilder {
             id: '',
             nickName: 'Advanturer',
             level: LevelType.DEPOSIT,
-            group: GroupType.EXPERIMENTAL,
+            group: null,
             points: 0,
             title: TitleType.T1,
-            entranceScore: 0,
+            entranceScore: -1,
         };
     }
 
