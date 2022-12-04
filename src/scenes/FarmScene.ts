@@ -29,6 +29,7 @@ export class FarmScene extends BaseLogPanelScene {
         super.create();
         this.showLog('create ' + JSON.stringify(data));
 
+        this.curIndex = 0;
         this.words = LogicController.getInstance().getLibrary();
 
 
