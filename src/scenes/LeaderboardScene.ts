@@ -25,9 +25,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
         });
         backToMain.setInteractive();
         backToMain.on('pointerdown', () => {
-            this.scene.start(data.from, {
-                from: 'LeaderboardScene',
-            });
+            this.scene.stop('LeaderboardScene');
         });
 
         this.scene.launch('LoadingScene');

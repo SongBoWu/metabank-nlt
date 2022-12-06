@@ -136,10 +136,6 @@ export class LogicController {
         return this.library;
     }
 
-    public setRoundBehaviors(): void {
-
-    }
-
     public startQuiz(onFinish: Function, onGameOver: Function): void {
         this.regularQuizOrder = this.mutableRandom(this.levelConfig.amountOfQuiz);
         this.currentQuizIndex = -1;

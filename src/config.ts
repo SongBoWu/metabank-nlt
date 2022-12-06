@@ -36,10 +36,10 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     FarmScene,
     GratzScene,
     LeaderboardScene,
-    SettingsScene,
     EntranceExamScene,
     PreparationScene,
     VKSScene,
+    SettingsScene,
     LoadingScene,
   ]
 }

@@ -2,7 +2,9 @@ import { DatabaseCore } from "../databridge/DatabaseCore";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
+import { BannerConf } from "../dto/BannerConf";
 import { Level, LevelStatus, LevelType } from "../dto/LevelInfo";
+import eventsCenter from "../plugins/EventsCenter";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class PreparationScene extends BaseLogPanelScene {
@@ -26,7 +28,9 @@ export class PreparationScene extends BaseLogPanelScene {
 
     override create(data?: any): void {
         super.create();
-        
+
+        this.scene.launch('SettingsScene');
+
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
 
         this.scene.launch('LoadingScene');
@@ -43,12 +47,15 @@ export class PreparationScene extends BaseLogPanelScene {
                     this.showLog('Let\'s continue to Level: ' + curLevel.type);
                 }
                 
+                this.showBanner();
                 this.postDataFecth();
 
             })
             .catch((err: string) => {
                 // TODO
                 this.showLog(err);
+
+                this.showBanner();
                 this.postDataFecth();
             });
         
@@ -103,5 +110,12 @@ export class PreparationScene extends BaseLogPanelScene {
         this.preVKSTxt.setInteractive();
         this.postVKSTxt.setInteractive();
         this.scene.stop('LoadingScene');
+    }
+
+    private showBanner(): void {
+        var conf = new BannerConf();
+        conf.isBadge = true;
+        conf.isExit = true;
+        eventsCenter.emit('onSettingUpdated', conf);
     }
 }

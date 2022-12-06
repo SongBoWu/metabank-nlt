@@ -2,9 +2,11 @@ import { RoundMode } from "../const/RoundMode";
 import { LibraryImpl } from "../databridge/LibraryImpl";
 import { QuizImpl } from "../databridge/QuizImpl";
 import { LogicController } from "../domain/LogicController";
+import { BannerConf } from "../dto/BannerConf";
 import { LevelStatus, LevelType } from "../dto/LevelInfo";
 import { Library } from "../dto/Library";
 import { Quiz } from "../dto/Quiz";
+import eventsCenter from "../plugins/EventsCenter";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class LevelScene extends BaseLogPanelScene {
@@ -31,7 +33,8 @@ export class LevelScene extends BaseLogPanelScene {
 
   override create(data: any): void {
     super.create();
-    this.showLog('[onCreate] ' + JSON.stringify(data));
+    this.showLog('[LevelScene][onCreate] ' + JSON.stringify(data));
+    this.showBanner();
 
     // var titleIcon = this.add.image(250, 200, 'level_title_icon');
     // titleIcon.setScale(1);
@@ -98,6 +101,7 @@ export class LevelScene extends BaseLogPanelScene {
           })
           .then((library: Library[]) => {
               this.scene.stop('LoadingScene');
+              console.log('get ' + library.length + ' words');
               practiceBtn.setInteractive();
               challengeBtn.setInteractive();
               LogicController.getInstance().setLibrary(library);
@@ -120,4 +124,13 @@ export class LevelScene extends BaseLogPanelScene {
 
     this.showLog(JSON.stringify(curLevel));
   }
+
+  private showBanner(): void {
+    var conf = new BannerConf();
+    conf.isBadge = true;
+    conf.isHitoBoard = true;
+    conf.isExit = true;
+    conf.isInLevel = true;
+    eventsCenter.emit('onSettingUpdated', conf);
+}
 }

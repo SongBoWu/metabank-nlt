@@ -2,7 +2,9 @@ import { DatabaseCore } from "../databridge/DatabaseCore";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
+import { BannerConf } from "../dto/BannerConf";
 import { Level, LevelBuilder, LevelStatus, LevelType } from "../dto/LevelInfo";
+import eventsCenter from "../plugins/EventsCenter";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 // 1. Refer to "Scenes\Tutorial\Scene Controller" for scene control
@@ -29,8 +31,8 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     override create(): void {
         super.create();
-
-        this.scene.launch('SettingsScene');
+        this.showLog('[WelcomeScene][onCreate]');
+        this.showBanner();
 
         this.add.image(512, 384, 'welcome_bg');
         this.add.image(512, 650, 'monkey');
@@ -47,7 +49,8 @@ export class WelcomeScene extends BaseLogPanelScene {
         level1_icon.on('pointerdown', () => {  
             LogicController.getInstance().setCurrentLevel(LevelType.DEPOSIT);
             if (this.levelMap.get(LevelType.DEPOSIT).status != LevelStatus.FINISHED) {
-                this.scene.start('LevelScene',
+                this.scene.pause();
+                this.scene.run('LevelScene',
                 {
                     from: 'WelcomeScene',
                     levelType: LevelType.DEPOSIT,
@@ -62,7 +65,8 @@ export class WelcomeScene extends BaseLogPanelScene {
         level2_icon.on('pointerdown', () => {
             LogicController.getInstance().setCurrentLevel(LevelType.FOREX);
             if (this.levelMap.get(LevelType.FOREX).status != LevelStatus.FINISHED) {
-                this.scene.start('LevelScene',
+                this.scene.pause();
+                this.scene.run('LevelScene',
                 {
                     from: 'WelcomeScene',
                     levelType: LevelType.FOREX,
@@ -74,7 +78,8 @@ export class WelcomeScene extends BaseLogPanelScene {
         level3_icon.on('pointerdown', () => {
             LogicController.getInstance().setCurrentLevel(LevelType.LOAN);
             if (this.levelMap.get(LevelType.LOAN).status != LevelStatus.FINISHED) {
-                this.scene.start('LevelScene',
+                this.scene.pause();
+                this.scene.run('LevelScene',
                 {
                     from: 'WelcomeScene',
                     levelType: LevelType.LOAN,
@@ -82,7 +87,19 @@ export class WelcomeScene extends BaseLogPanelScene {
             }
         });
 
+        this.events.addListener('resume', this.resume.bind(this));
+
+        this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            console.log('[WelcomeScene][SHUTDOWN]');
+            this.events.removeListener('resume');
+        });
+
     }
+
+    resume(): void {
+        console.log('[WelcomeScene][resume]');
+        this.showBanner();
+    } 
 
     protected override onNetworkOnline(event: Event): void {
         // TODO
@@ -90,5 +107,13 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     protected override onNetworkOffline(event: Event): void {
         // TODO
+    }
+
+    private showBanner(): void {
+        var conf = new BannerConf();
+        conf.isBadge = true;
+        conf.isHitoBoard = true;
+        conf.isExit = true;
+        eventsCenter.emit('onSettingUpdated', conf);
     }
 }

@@ -1,8 +1,10 @@
 import { GameObjects } from "phaser";
 import { LibraryImpl } from "../databridge/LibraryImpl";
 import { LogicController } from "../domain/LogicController";
+import { BannerConf } from "../dto/BannerConf";
 import { LevelType } from "../dto/LevelInfo";
 import { Library, LibraryBuilder } from "../dto/Library";
+import eventsCenter from "../plugins/EventsCenter";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class FarmScene extends BaseLogPanelScene {
@@ -28,6 +30,7 @@ export class FarmScene extends BaseLogPanelScene {
     override create(data?: any): void {
         super.create();
         this.showLog('create ' + JSON.stringify(data));
+        this.showBanner();
 
         this.curIndex = 0;
         this.words = LogicController.getInstance().getLibrary();
@@ -110,6 +113,12 @@ export class FarmScene extends BaseLogPanelScene {
         typeElement2.innerHTML = libInstance.wordTypes[1].type;
         var exampleElement2 = this.libPanelElement.getChildByID('example2');
         exampleElement2.innerHTML = libInstance.wordTypes[1].example;
+    }
+
+    private showBanner(): void {
+        var conf = new BannerConf();
+        conf.isHitoBoard = true;
+        eventsCenter.emit('onSettingUpdated', conf);
     }
 
     private writeCollection(): void {

@@ -2,6 +2,8 @@ import { LogicController } from "../domain/LogicController";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 import { OptionID, Quiz } from "../dto/Quiz";
 import { GameObjects } from "phaser";
+import { BannerConf } from "../dto/BannerConf";
+import eventsCenter from "../plugins/EventsCenter";
 
 export class RoundScene extends BaseLogPanelScene {
 
@@ -28,6 +30,7 @@ export class RoundScene extends BaseLogPanelScene {
         super.create();
 
         console.log('onCreate ' + JSON.stringify(data));
+        this.showBanner();
 
         LogicController.getInstance().startQuiz(
             this.onFinished.bind(this),
@@ -154,5 +157,11 @@ export class RoundScene extends BaseLogPanelScene {
                 break;
         }
         return optionId;
+    }
+
+    private showBanner(): void {
+        var conf = new BannerConf();
+        conf.isHitoBoard = true;
+        eventsCenter.emit('onSettingUpdated', conf);
     }
 }
