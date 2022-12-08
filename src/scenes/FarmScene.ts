@@ -14,6 +14,12 @@ export class FarmScene extends BaseLogPanelScene {
 
     private words: Library[];
     private curIndex: number = 0;
+    private unReadWords: string[] = [];
+
+    private wordText: GameObjects.Text[] = [];
+    private preBtn: GameObjects.Text;
+    private nextBtn: GameObjects.Text;
+    private back2MainBtn: GameObjects.Text;
 
     constructor() {
         super('FarmScene');
@@ -34,71 +40,84 @@ export class FarmScene extends BaseLogPanelScene {
 
         this.curIndex = 0;
         this.words = LogicController.getInstance().getLibrary();
+        this.words.forEach((value, index, all) => {
+            this.unReadWords[index] = value.id;
+
+            var wordText = this.wordText[index];
+            wordText = this.make.text({
+                x: 800,
+                y: 80 + 50 * index,
+                text: value.word,
+                style: { font: 'bold 28px Arial', color: '#1a3d1d' }
+            });
+            wordText.on('pointerdown', () => {
+                // TODO, record then upload the trace
+                console.log('[FarmScene][word_click]: ' + index);
+                this.curIndex = index;
+                this.updateLibContent();
+                this.updateButtons();
+            });
+            wordText.setInteractive();
+        });
+        this.libPanelElement = this.add.dom(350, 125).createFromCache('lib_panel');
 
 
-        this.libPanelElement = this.add.dom(520, 125).createFromCache('lib_panel');
-
-
-        var nextBtn = this.make.text({
+        this.nextBtn = this.make.text({
             x: 120,
             y: 700,
             text: 'Next',
             style: { font: 'bold 20px Arial', color: '#00ff00' }
         });
-        nextBtn.setInteractive();
-        nextBtn.on('pointerdown', () => {
+        this.nextBtn.setInteractive();
+        this.nextBtn.on('pointerdown', () => {
             this.curIndex ++;
             this.updateLibContent();
-
-            if (this.curIndex == this.words.length - 1) {
-                preBtn.setVisible(true);
-                nextBtn.setVisible(false);
-            } else {
-                preBtn.setVisible(true);
-                nextBtn.setVisible(true);
-            }
+            this.updateButtons();
         });
 
-        var preBtn = this.make.text({
+        this.preBtn = this.make.text({
             x: 10,
             y: 700,
             text: 'Previous',
             style: { font: 'bold 20px Arial', color: '#00ff00' }
         });
-        preBtn.setVisible(false);
-        preBtn.setInteractive();
-        preBtn.on('pointerdown', () => {
+        this.preBtn.setVisible(false);
+        this.preBtn.setInteractive();
+        this.preBtn.on('pointerdown', () => {
             this.curIndex --;
             this.updateLibContent();
-
-            if (this.curIndex == 0) {
-                preBtn.setVisible(false);
-                nextBtn.setVisible(true);
-            } else {
-                preBtn.setVisible(true);
-                nextBtn.setVisible(true);
-            }
+            this.updateButtons();
         });
 
-        var backToMain = this.make.text({
+        
+        this.back2MainBtn = this.make.text({
             x: 180,
             y: 700,
             text: 'Back to Main',
             style: { font: 'bold 20px Arial', color: '#00ff00' }
         });
-        backToMain.setInteractive();
-        backToMain.on('pointerdown', () => {
+        this.back2MainBtn.setVisible(false);
+        this.back2MainBtn.setInteractive();
+        this.back2MainBtn.on('pointerdown', () => {
             this.scene.start('LevelScene', {
                 from: 'FarmScene'
             });
         });
 
         this.updateLibContent();
+        this.updateButtons();
     }
 
     private updateLibContent(): void {
         var libInstance = this.words.at(this.curIndex);
 
+        // Update unRead list
+        var readWordIndex = this.unReadWords.indexOf(libInstance.id);
+        if (readWordIndex != -1) {
+            this.unReadWords.splice(readWordIndex, 1);
+        }
+        
+        // update UI
         var worfElement = this.libPanelElement.getChildByID('word');
         worfElement.innerHTML = libInstance.word;
         var phoneticElement = this.libPanelElement.getChildByID('phonetic');
@@ -113,6 +132,12 @@ export class FarmScene extends BaseLogPanelScene {
         typeElement2.innerHTML = libInstance.wordTypes[1].type;
         var exampleElement2 = this.libPanelElement.getChildByID('example2');
         exampleElement2.innerHTML = libInstance.wordTypes[1].example;
+    }
+
+    private updateButtons(): void {
+        this.preBtn.setVisible(this.curIndex == 0 ? false : true);
+        this.nextBtn.setVisible(this.curIndex == this.words.length -1 ? false : true);
+        this.back2MainBtn.setVisible(this.unReadWords.length == 0 ? true : false);
     }
 
     private showBanner(): void {
