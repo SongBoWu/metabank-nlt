@@ -79,6 +79,8 @@ export class RoundScene extends BaseLogPanelScene {
     private setOptButtonsData(): void {
         this.showLog(this.currentQuiz.description);
 
+        var numberElement = this.descPanelElement.getChildByID('number');
+        numberElement.innerHTML = LogicController.getInstance().getCurrentQuizNumber() + '.';
         var descElement = this.descPanelElement.getChildByID('desc');
         descElement.innerHTML = this.currentQuiz.description;
 

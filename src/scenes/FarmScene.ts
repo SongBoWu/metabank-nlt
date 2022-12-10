@@ -118,6 +118,8 @@ export class FarmScene extends BaseLogPanelScene {
         }
         
         // update UI
+        var numberElement = this.libPanelElement.getChildByID('number');
+        numberElement.innerHTML = (this.curIndex + 1) + '/' + this.words.length;
         var worfElement = this.libPanelElement.getChildByID('word');
         worfElement.innerHTML = libInstance.word;
         var phoneticElement = this.libPanelElement.getChildByID('phonetic');

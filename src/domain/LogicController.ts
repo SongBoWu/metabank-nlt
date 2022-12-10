@@ -170,6 +170,10 @@ export class LogicController {
         }
     }
 
+    public getCurrentQuizNumber(): number {
+        return (this.currentQuizIndex + 1) + (this.bonusQuizIndex + 1);
+    }
+
     public verify(option: OptionID, onAward: Function, onPenalty: Function, onBonus: Function): void {
         var curQuiz = this.getCurrentQuiz();
         var bingo = (option == curQuiz.answer);
