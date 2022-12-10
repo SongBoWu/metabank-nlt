@@ -9,10 +9,17 @@ export class RoundScene extends BaseLogPanelScene {
 
     private currentQuiz: Quiz;
 
+    private totalAmount: number;
+
     private descPanelElement: GameObjects.DOMElement;
     private optBtns: GameObjects.Image[] = [];
     private optBtnHovers: GameObjects.Image[] = [];
     private optTexts: GameObjects.Text[] = [];
+
+    private awardSound: Phaser.Sound.BaseSound;
+    private wrongSound: Phaser.Sound.BaseSound;
+    private gameOverSound: Phaser.Sound.BaseSound;
+    private gameOverCamera: Phaser.Cameras.Scene2D.Camera;
 
     constructor() {
         super('RoundScene');
@@ -24,6 +31,10 @@ export class RoundScene extends BaseLogPanelScene {
         this.load.html('desc_panel', 'assets/quiz_detail.html');
         this.load.image('button_bg', 'assets/opt_btn.png'); // #dfebe0
         this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #1a3d1d
+
+        this.load.audio('awardAudio', 'assets/audios/award.wav');
+        this.load.audio('wrongAudio', 'assets/audios/wrongAnswer.mp3');
+        this.load.audio('gameOverAudio', 'assets/audios/gameOver.mp3');
     }
 
     override create(data?: any): void {
@@ -37,8 +48,14 @@ export class RoundScene extends BaseLogPanelScene {
             this.onGameOvered.bind(this));
 
         this.currentQuiz = LogicController.getInstance().nextQuiz();
+        this.totalAmount = LogicController.getInstance().getCurrentLevelProperty().amountOfQuiz;
 
-        this.descPanelElement = this.add.dom(520, 250).createFromCache('desc_panel');
+        this.descPanelElement = this.add.dom(520, 150).createFromCache('desc_panel');
+        this.awardSound = this.sound.add('awardAudio');
+        this.wrongSound = this.sound.add('wrongAudio');
+        this.gameOverSound = this.sound.add('gameOverAudio');
+
+        this.gameOverCamera = this.cameras.add(0, 0, 1024, 768);
 
         var btn_x_coord = [250, 750];
         var btn_y_coord = [550, 650];
@@ -80,7 +97,7 @@ export class RoundScene extends BaseLogPanelScene {
         this.showLog(this.currentQuiz.description);
 
         var numberElement = this.descPanelElement.getChildByID('number');
-        numberElement.innerHTML = LogicController.getInstance().getCurrentQuizNumber() + '.';
+        numberElement.innerHTML = LogicController.getInstance().getCurrentQuizNumber() + ' / ' + this.totalAmount;
         var descElement = this.descPanelElement.getChildByID('desc');
         descElement.innerHTML = this.currentQuiz.description;
 
@@ -114,15 +131,18 @@ export class RoundScene extends BaseLogPanelScene {
     onAwarded(): void {
         this.showLog('You got award!');
         this.onShowUserPoints();
+        this.awardSound.play();
     }
 
     onPunished(): void {
         this.showLog('You got wrong answer!');
         this.onShowUserPoints();
+        this.wrongSound.play();
     }
 
     onBonus(): void {
         this.showLog('You got extra 2 questions!');
+        this.totalAmount += 2;
     }
 
     onFinished(): void {
@@ -132,8 +152,13 @@ export class RoundScene extends BaseLogPanelScene {
 
     onGameOvered(): void {
         this.showLog('game over!!');
-        this.scene.start('LevelScene', {
-            from: 'RoundScene',
+        this.gameOverSound.play();
+        this.gameOverCamera.fade(1000, 0, 0, 0, true, (cam: any, progress: number) => {
+            if (progress > 0.8) {
+                this.scene.start('LevelScene', {
+                    from: 'RoundScene',
+                });
+            }
         });
     }
 

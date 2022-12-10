@@ -79,6 +79,20 @@ export class LevelScene extends BaseLogPanelScene {
 
 
     var curLevel = LogicController.getInstance().getCurrentLevel();
+    var curLevelProperty = LogicController.getInstance().getCurrentLevelProperty();
+    var chalHintTxt = this.make.text({
+        x: 110,
+        y: 200,
+        text: ''
+          + 'You can learn all vocabularies in Practice Mode. Ether scans one \n'
+          + 'by one via next/previous button, or click the desired in the right side.\n\n'
+          + 'In Challenge Mode, you have to answer ' + curLevelProperty.amountOfQuiz + " questions in " + curLevelProperty.maxRemains + ' chances. \n'
+          + 'When you get right answer, you will earn ' + curLevelProperty.pointAward + ' points.\n'
+          + 'Otherwise, you will lose ' + (-1 * curLevelProperty.pointPenalty) + ' points.\n\n'
+          + 'Everytime, It\'s only be allowed to start Challenge Mode when Practice\n'
+          + 'Mode was finished.',
+        style: { font: 'bold 25px Arial', color: '#000000' } 
+    });
 
     // ==== fetch quiz ====
     if (data.from == 'WelcomeScene') {

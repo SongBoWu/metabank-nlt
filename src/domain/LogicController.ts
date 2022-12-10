@@ -85,6 +85,10 @@ export class LogicController {
         return this.levelMap.get(this.user.level);
     }
 
+    public getCurrentLevelProperty(): ILevelProperties {
+        return this.levelConfig;
+    }
+
     public setQuizzes(quizzes: Quiz[]): void {
         this.regularQuiz = quizzes;
         // this.regularQuiz = this.mockQuizzes();
@@ -112,21 +116,6 @@ export class LogicController {
         //     this.regularQuiz.push(quiz);
         // });
     }
-
-    // TODO: for dev
-    // private mockBonusQuizzes(): Quiz[] {
-    //     var mockArr = [];
-    //     for(let i=0; i<MAX_BOUNS; i++) {
-    //         let mockQuiz = new QuizBuilder()
-    //             .id('' + i)
-    //             .type(this.user.level)
-    //             .description('You are now answering bouns question[' + i + ']...')
-    //             .answer(OptionID.A)
-    //             .build();
-    //         mockArr.push(mockQuiz);
-    //     }
-    //     return mockArr;
-    // }
 
     public setLibrary(library: Library[]): void {
         this.library = library;
