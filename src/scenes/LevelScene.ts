@@ -1,3 +1,4 @@
+import { GroupType } from "../const/GroupType";
 import { RoundMode } from "../const/RoundMode";
 import { LibraryImpl } from "../databridge/LibraryImpl";
 import { QuizImpl } from "../databridge/QuizImpl";
@@ -80,17 +81,23 @@ export class LevelScene extends BaseLogPanelScene {
 
     var curLevel = LogicController.getInstance().getCurrentLevel();
     var curLevelProperty = LogicController.getInstance().getCurrentLevelProperty();
+    var extraDesc = (LogicController.getInstance().getUser().group == GroupType.EXPERIMENTAL) ? '當您連續答對2題時會額外給予2題的獎勵機會。' : ''
     var chalHintTxt = this.make.text({
         x: 110,
         y: 200,
         text: ''
-          + 'You can learn all vocabularies in Practice Mode. Ether scans one \n'
-          + 'by one via next/previous button, or click the desired in the right side.\n\n'
-          + 'In Challenge Mode, you have to answer ' + curLevelProperty.amountOfQuiz + " questions in " + curLevelProperty.maxRemains + ' chances. \n'
-          + 'When you get right answer, you will earn ' + curLevelProperty.pointAward + ' points.\n'
-          + 'Otherwise, you will lose ' + (-1 * curLevelProperty.pointPenalty) + ' points.\n\n'
-          + 'Everytime, It\'s only be allowed to start Challenge Mode when Practice\n'
-          + 'Mode was finished.',
+          // + 'You can learn all vocabularies in Practice Mode. Ether scans one \n'
+          // + 'by one via next/previous button, or click the desired in the right side.\n\n'
+          // + 'In Challenge Mode, you have to answer ' + curLevelProperty.amountOfQuiz + " questions in " + curLevelProperty.maxRemains + ' chances. \n'
+          // + 'When you get right answer, you will earn ' + curLevelProperty.pointAward + ' points.\n'
+          // + 'Otherwise, you will lose ' + (-1 * curLevelProperty.pointPenalty) + ' points.\n\n'
+          // + 'Everytime, It\'s only be allowed to start Challenge Mode when Practice\n'
+          // + 'Mode was finished.'
+          + '您可以在練習模式下學習所有詞彙。可以透過下一個/上一個的按鈕逐\n'
+          + '個學習，或單擊右側所需額外學習的詞彙。每次皆須完成練習模式才允\n'
+          + '許啟動挑戰模式。\n\n'
+          + '在此關任務中，共有' + curLevelProperty.amountOfQuiz + '題題目。答對時獲得' + curLevelProperty.pointAward + '分，答錯時失去' + (-1 * curLevelProperty.pointPenalty) + '分。\n'
+          + extraDesc,
         style: { font: 'bold 25px Arial', color: '#000000' } 
     });
 

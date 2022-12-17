@@ -16,6 +16,8 @@ export class EntranceExamScene extends BaseLogPanelScene {
     
     private currentQuiz: Quiz;
 
+    private totalAmount: number;
+
     private descPanelElement: GameObjects.DOMElement;
     private optBtns: GameObjects.Image[] = [];
     private optBtnHovers: GameObjects.Image[] = [];
@@ -44,7 +46,7 @@ export class EntranceExamScene extends BaseLogPanelScene {
         LogicController.getInstance().setCurrentLevel(LevelType.PREXAM);
         
 
-        this.descPanelElement = this.add.dom(520, 250).createFromCache('desc_panel');
+        this.descPanelElement = this.add.dom(520, 150).createFromCache('desc_panel');
 
         var btn_x_coord = [250, 750];
         var btn_y_coord = [550, 650];
@@ -88,6 +90,7 @@ export class EntranceExamScene extends BaseLogPanelScene {
                 LogicController.getInstance().setQuizzes(quizzes);
                 LogicController.getInstance().startQuiz(this.onFinished.bind(this), this.onGameOvered.bind(this));
                 this.currentQuiz = LogicController.getInstance().nextQuiz();
+                this.totalAmount = LogicController.getInstance().getCurrentLevelProperty().amountOfQuiz;
                 this.setOptButtonsData();
                 this.scene.stop('LoadingScene');
             })
@@ -103,6 +106,8 @@ export class EntranceExamScene extends BaseLogPanelScene {
     private setOptButtonsData(): void {
         // this.showLog(this.currentQuiz.description);
 
+        var numberElement = this.descPanelElement.getChildByID('number');
+        numberElement.innerHTML = LogicController.getInstance().getCurrentQuizNumber() + ' / ' + this.totalAmount;
         var descElement = this.descPanelElement.getChildByID('desc');
         descElement.innerHTML = this.currentQuiz.description;
 

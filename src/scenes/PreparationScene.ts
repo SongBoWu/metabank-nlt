@@ -62,7 +62,7 @@ export class PreparationScene extends BaseLogPanelScene {
         this.entranceExamTxt = this.make.text({
             x: 150,
             y: 150,
-            text: '1. Entrance exam',
+            text: '1. 先備知識測驗 (本測驗為四選一之選擇題, 共15題, 每題6分, 總分90分)',
             style: { font: 'bold 20px Arial', color: '#00ff00' }
         });
         this.entranceExamTxt.removeInteractive();

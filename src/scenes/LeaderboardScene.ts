@@ -21,7 +21,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
         var backToMain = this.make.text({
             x: 100,
             y: 700,
-            text: 'Back to Level',
+            text: 'Back',
             style: { font: 'bold 20px Arial', color: '#00ff00' }
         });
         backToMain.setInteractive();
@@ -46,7 +46,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
             var recordTxt = this.make.text({
                 x: 100,
                 y: 100 + (index * 50),
-                text: (index + 1) + '. ',
+                text: (index + 1) + '. -----',
                 style: { font: 'bold 40px Arial', color: '#ffffff' }
             });
             recordTxt.setAlign('center');
