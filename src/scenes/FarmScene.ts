@@ -16,6 +16,7 @@ export class FarmScene extends BaseLogPanelScene {
     private curIndex: number = 0;
     private unReadWords: string[] = [];
 
+    private wordIcons: GameObjects.Image[] = [];
     private wordText: GameObjects.Text[] = [];
     private preBtn: GameObjects.Text;
     private nextBtn: GameObjects.Text;
@@ -30,7 +31,8 @@ export class FarmScene extends BaseLogPanelScene {
         super.preload();
 
         this.load.html('lib_panel', 'assets/library_detail.html');
-        this.load.text('library_artifact', 'assets/data/library.txt');
+        this.load.image('checkIcon', 'assets/icons/check.png');
+        //this.load.text('library_artifact', 'assets/data/library.txt');
     }
 
     override create(data?: any): void {
@@ -43,19 +45,21 @@ export class FarmScene extends BaseLogPanelScene {
         this.words.forEach((value, index, all) => {
             this.unReadWords[index] = value.id;
 
+            var y_coordinate = 80 + 50 * index;
+            this.wordIcons[index] = this.add.image(760, y_coordinate + 15, 'checkIcon');
+            this.wordIcons[index].setVisible(false);
+
             var wordText = this.wordText[index];
             wordText = this.make.text({
                 x: 800,
-                y: 80 + 50 * index,
+                y: y_coordinate,
                 text: value.word,
                 style: { font: 'bold 28px Arial', color: '#1a3d1d' }
             });
             wordText.on('pointerdown', () => {
                 // TODO, record then upload the trace
-                console.log('[FarmScene][word_click]: ' + index);
                 this.curIndex = index;
-                this.updateLibContent();
-                this.updateButtons();
+                this.updateLibContentAndUI();
             });
             wordText.setInteractive();
         });
@@ -71,8 +75,7 @@ export class FarmScene extends BaseLogPanelScene {
         this.nextBtn.setInteractive();
         this.nextBtn.on('pointerdown', () => {
             this.curIndex ++;
-            this.updateLibContent();
-            this.updateButtons();
+            this.updateLibContentAndUI();
         });
 
         this.preBtn = this.make.text({
@@ -85,8 +88,7 @@ export class FarmScene extends BaseLogPanelScene {
         this.preBtn.setInteractive();
         this.preBtn.on('pointerdown', () => {
             this.curIndex --;
-            this.updateLibContent();
-            this.updateButtons();
+            this.updateLibContentAndUI();
         });
 
         
@@ -104,11 +106,10 @@ export class FarmScene extends BaseLogPanelScene {
             });
         });
 
-        this.updateLibContent();
-        this.updateButtons();
+        this.updateLibContentAndUI();
     }
 
-    private updateLibContent(): void {
+    private updateLibContentAndUI(): void {
         var libInstance = this.words.at(this.curIndex);
 
         // Update unRead list
@@ -134,6 +135,11 @@ export class FarmScene extends BaseLogPanelScene {
         typeElement2.innerHTML = libInstance.wordTypes[1].type;
         var exampleElement2 = this.libPanelElement.getChildByID('example2');
         exampleElement2.innerHTML = libInstance.wordTypes[1].example;
+
+        this.updateButtons();
+
+        // Update checked icon
+        this.wordIcons[this.curIndex].setVisible(true);
     }
 
     private updateButtons(): void {
