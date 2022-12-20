@@ -85,6 +85,19 @@ export class LogicController {
         return this.levelMap.get(this.user.level);
     }
 
+    public getNextLevel(): Level {
+        switch(this.user.level) {
+            case LevelType.PREXAM:
+                return this.levelMap.get(LevelType.DEPOSIT);
+            case LevelType.DEPOSIT:
+                return this.levelMap.get(LevelType.FOREX);
+            case LevelType.FOREX:
+                return this.levelMap.get(LevelType.LOAN);
+            default:
+                return null;
+        }
+    }
+
     public getCurrentLevelProperty(): ILevelProperties {
         return this.levelConfig;
     }

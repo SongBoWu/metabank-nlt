@@ -1,25 +1,39 @@
-import { TitleType, TitleTypePoint } from "../const/TitleType";
+import { TitleType, TitleTypeName, TitleTypePoint } from "../const/TitleType";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
+import { BannerConf } from "../dto/BannerConf";
 import { LevelStatus } from "../dto/LevelInfo";
-import { BaseLogPanelScene } from "./BaseLogPanelScene";
+import { UserData, UserDataBuilder } from "../dto/UserData";
+import eventsCenter from "../plugins/EventsCenter";
 
-export class GratzScene extends BaseLogPanelScene {
+export class GratzScene extends Phaser.Scene {
     private userInfoApi : UserInfoImpl;
     private levelInfoApi : LevelInfoImpl;
+    
+    private fakeUser : UserData;
 
     constructor() {
         super('GratzScene');
         this.userInfoApi = new UserInfoImpl();
         this.levelInfoApi = new LevelInfoImpl();
+        this.fakeUser = new UserDataBuilder()
+            .points(1000)
+            .title(TitleType.T1)
+            .build();
     }
 
-    override create(data?: any): void {
-        super.create();
+    preload(): void {
+        this.load.image('badgeColor', 'assets/icons/badge_color_128.png');
+    }
+
+    create(data?: any): void {
+        this.showBanner();
+        this.add.rectangle(512, 384, 1024, 768, 0x000000, 30);
 
         var userInfo = LogicController.getInstance().getUser();
         var curLevel = LogicController.getInstance().getCurrentLevel();
+        var nextLevel = LogicController.getInstance().getNextLevel();
 
 
         var backToMain = this.make.text({
@@ -35,30 +49,58 @@ export class GratzScene extends BaseLogPanelScene {
 
         
         curLevel.status = LevelStatus.FINISHED;
+        if (nextLevel) {
+            nextLevel.status = LevelStatus.STARTED;
+        }
         userInfo.points += curLevel.points;
         
         var isLevelUp;
+        var badgeIndex = 0;
         do {
             isLevelUp = this.transformPointToTitile();
+            badgeIndex ++;
         } while (isLevelUp);
 
+        var xCoordStart = (1024/2) - (100/2) * badgeIndex;
+        for (var index = 0; index < badgeIndex; index ++) {
+            var x_coordinate = xCoordStart + index * 100;
+            this.add.image(x_coordinate, 400, 'badgeColor');
+        }
+
+
+        // Cong string
+        this.make.text({
+            x: 110,
+            y: 200,
+            text: 'Congratulation!! Your are premoted to ' + TitleTypeName.at(userInfo.title),
+            style: { font: 'bold 40px Arial', color: '#ffffff' } 
+        });
 
         // Update user info
         this.userInfoApi.update(userInfo.id, userInfo.points, userInfo.title)
         .then(() => {
-            this.showLog("[GratzScene] update user Info done!");
+            console.log("[GratzScene] update user Info done!");
         })
         .catch((err: string) => {
-            this.showLog("[GratzScene] update user Info error! " + err);
+            console.log("[GratzScene] update user Info error! " + err);
         });
 
-        // update level info
+        // update current level info
         this.levelInfoApi.update(curLevel)
         .then(() => {
-            this.showLog("[GratzScene] update level Info done!");
+            console.log("[GratzScene] update level Info done!");
         })
         .catch((err: string) => {
-            this.showLog("[GratzScene] update level Info error! " + err);
+            console.log("[GratzScene] update level Info error! " + err);
+        });
+
+        // update next level info
+        this.levelInfoApi.update(nextLevel)
+        .then(() => {
+            console.log("[GratzScene] update next level Info done!");
+        })
+        .catch((err: string) => {
+            console.log("[GratzScene] update next level Info error! " + err);
         });
 
         // TODO: 
@@ -70,19 +112,25 @@ export class GratzScene extends BaseLogPanelScene {
 
         var nextTitle = user.title + 1;
         if (nextTitle >= amountOfTitleType) {
-            this.showLog("already in top level!");
+            console.log("already in top level!");
             return false;
         }
 
         var remainPoint = user.points - TitleTypePoint[nextTitle];
-        this.showLog("nextTitle: " + nextTitle + ", userPoint: " + user.points + ", remainPoint: " + remainPoint);
+        console.log("nextTitle: " + nextTitle + ", userPoint: " + user.points + ", remainPoint: " + remainPoint);
 
         if (remainPoint >= 0) {
             user.title = nextTitle;
             user.points = remainPoint;
-            this.showLog(JSON.stringify(user))
+            console.log(JSON.stringify(user))
             return true;
         }
         return false;
+    }
+
+    private showBanner(): void {
+        var conf = new BannerConf();
+        conf.isName = false;
+        eventsCenter.emit('onSettingUpdated', conf);
     }
 }
