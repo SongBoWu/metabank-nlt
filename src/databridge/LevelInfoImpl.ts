@@ -19,7 +19,7 @@ export class LevelInfoImpl {
         const batch = writeBatch(this.firestore);
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
 
-        var depLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.DEPOSIT).build();
+        var depLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.DEPOSIT).status(LevelStatus.STARTED).build();
         var forLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.FOREX).build();
         var loanLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.LOAN).build();
         var prexamLevel = new LevelBuilder().uid(uid).userName(uName).type(LevelType.PREXAM).build();

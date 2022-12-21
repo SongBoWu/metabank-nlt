@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+import { GameObjects } from "phaser";
 import { DatabaseCore } from "../databridge/DatabaseCore";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
@@ -12,6 +14,10 @@ export class WelcomeScene extends BaseLogPanelScene {
     // private firestoreUserinfo: UserInfoImpl;
     // private levelInfo : LevelInfoImpl;
     private levelMap : Map<LevelType, Level>;
+
+    private levelTypes: LevelType[] = [LevelType.DEPOSIT, LevelType.FOREX, LevelType.LOAN];
+    private levelIcons: GameObjects.Image[] = [];
+    private questionIcons: GameObjects.Image[] = [];
     
     constructor() {
         super('WelcomeScene');
@@ -23,15 +29,16 @@ export class WelcomeScene extends BaseLogPanelScene {
         super.preload();
         this.load.image('welcome_bg', 'assets/station_bg.png');
         this.load.image('monkey', 'assets/monkey_1.png');
-        this.load.image('level1_icon', 'assets/piggy-bank.png');
-        this.load.image('level2_icon', 'assets/exchange.png');
-        this.load.image('level3_icon', 'assets/calculator.png');
+        this.load.image('level_icon1', 'assets/piggy-bank.png');
+        this.load.image('level_icon2', 'assets/exchange.png');
+        this.load.image('level_icon3', 'assets/calculator.png');
         this.load.image('question_icon', 'assets/faq.png')
+
+        this.load.bitmapFont('desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
     }
 
     override create(): void {
         super.create();
-        this.showLog('[WelcomeScene][onCreate]');
         this.showBanner();
 
         this.add.image(512, 384, 'welcome_bg');
@@ -39,53 +46,39 @@ export class WelcomeScene extends BaseLogPanelScene {
 
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
         this.levelMap = LogicController.getInstance().getLevels();
+        for(var index = 0; index < this.levelTypes.length; index++) {
+            var x_coord = 200 + (index * 300);
+            var y_coord = index % 2 == 0 ? 300 : 250;
+            this.levelIcons[index] = this.add.image(x_coord, y_coord, 'level_icon' + (index + 1));
+            this.questionIcons[index] = this.add.image(x_coord, y_coord, 'question_icon');
+            this.add.bitmapText(x_coord - 50, y_coord + 130, 'desyrel', 'LEVEL' + (index + 1), 32);
 
-        var level1_icon = this.add.image(200, 300, 'level1_icon');
-        var level2_icon = this.add.image(500, 250, 'level2_icon');
-        var level3_icon = this.add.image(800, 300, 'level3_icon');
-        // var question_icon = this.add.image(100, 600, 'question_icon');
-            
-        level1_icon.setInteractive();
-        level1_icon.on('pointerdown', () => {  
-            LogicController.getInstance().setCurrentLevel(LevelType.DEPOSIT);
-            if (this.levelMap.get(LevelType.DEPOSIT).status != LevelStatus.FINISHED) {
-                this.scene.pause();
-                this.scene.run('LevelScene',
-                {
-                    from: 'WelcomeScene',
-                    levelType: LevelType.DEPOSIT,
-                });
-            }
-        });
-        level1_icon.on('pointerover', () => {
-            // TODO
-        });
+            var type = this.levelTypes[index];
+            var level = this.levelMap.get(type);
+            var icon = this.levelIcons[index];
+            var questionIcon = this.questionIcons[index];
 
-        level2_icon.setInteractive();
-        level2_icon.on('pointerdown', () => {
-            LogicController.getInstance().setCurrentLevel(LevelType.FOREX);
-            if (this.levelMap.get(LevelType.FOREX).status != LevelStatus.FINISHED) {
-                this.scene.pause();
-                this.scene.run('LevelScene',
-                {
-                    from: 'WelcomeScene',
-                    levelType: LevelType.FOREX,
-                });
+            switch(level.status) {
+                case LevelStatus.LOCKED:
+                    icon.setVisible(false);
+                    icon.disableInteractive();
+                    questionIcon.setVisible(true);
+                    break;
+                case LevelStatus.STARTED:
+                    icon.setVisible(true);
+                    icon.setInteractive();
+                    icon.on('pointerdown', this.runLevelScene.bind(this, type));
+                    questionIcon.setVisible(false);
+                    break;
+                case LevelStatus.FINISHED:
+                    icon.setVisible(true);
+                    icon.setAlpha(0.5);
+                    icon.disableInteractive();
+                    questionIcon.setVisible(false);
+                    break;
             }
-        });
+        }
 
-        level3_icon.setInteractive();
-        level3_icon.on('pointerdown', () => {
-            LogicController.getInstance().setCurrentLevel(LevelType.LOAN);
-            if (this.levelMap.get(LevelType.LOAN).status != LevelStatus.FINISHED) {
-                this.scene.pause();
-                this.scene.run('LevelScene',
-                {
-                    from: 'WelcomeScene',
-                    levelType: LevelType.LOAN,
-                });
-            }
-        });
 
         this.events.addListener('resume', this.resume.bind(this));
 
@@ -94,6 +87,27 @@ export class WelcomeScene extends BaseLogPanelScene {
             this.events.removeListener('resume');
         });
 
+        // var goGratzBtn = this.make.text({
+        //     x: 120,
+        //     y: 700,
+        //     text: 'goGratzScene',
+        //     style: { font: 'bold 20px Arial', color: '#00ff00' }
+        // });
+        // goGratzBtn.on('pointerdown', () => {
+        //     this.scene.run('GratzScene');
+        // });
+        // goGratzBtn.setInteractive();
+
+    }
+
+    private runLevelScene(type: LevelType): void {
+        LogicController.getInstance().setCurrentLevel(type);
+        this.scene.pause();
+        this.scene.run('LevelScene',
+        {
+            from: 'WelcomeScene',
+            levelType: type,
+        });
     }
 
     resume(): void {
