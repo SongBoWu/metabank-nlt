@@ -39,6 +39,8 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     override create(): void {
         super.create();
+        this.scene.launch('SettingsScene');
+
         this.showBanner();
 
         this.add.image(512, 384, 'welcome_bg');
@@ -125,6 +127,7 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     private showBanner(): void {
         var conf = new BannerConf();
+        conf.isPoint = false;
         conf.isBadge = true;
         conf.isHitoBoard = true;
         conf.isExit = true;

@@ -149,9 +149,10 @@ export class LevelScene extends BaseLogPanelScene {
   private showBanner(): void {
     var conf = new BannerConf();
     conf.isBadge = true;
+    conf.isPoint = true;
     conf.isHitoBoard = true;
     conf.isExit = true;
     conf.isInLevel = true;
     eventsCenter.emit('onSettingUpdated', conf);
-}
+  }
 }

@@ -21,6 +21,13 @@ export class RoundScene extends BaseLogPanelScene {
     private gameOverSound: Phaser.Sound.BaseSound;
     private gameOverCamera: Phaser.Cameras.Scene2D.Camera;
 
+    private lifeBar: Phaser.GameObjects.Graphics;
+    private heartIcon: Phaser.GameObjects.Image;
+    private heartEmptyIcon: Phaser.GameObjects.Image;
+
+    private bonusPopTxt: GameObjects.Text;
+    private triggerPop: Boolean;
+
     constructor() {
         super('RoundScene');
     }
@@ -35,6 +42,9 @@ export class RoundScene extends BaseLogPanelScene {
         this.load.audio('awardAudio', 'assets/audios/award.wav');
         this.load.audio('wrongAudio', 'assets/audios/wrongAnswer.mp3');
         this.load.audio('gameOverAudio', 'assets/audios/gameOver.mp3');
+
+        this.load.image('heart_icon', 'assets/icons/heart_64.png');
+        this.load.image('heart_empty_icon', 'assets/icons/heart_empty_64.png');
     }
 
     override create(data?: any): void {
@@ -91,6 +101,24 @@ export class RoundScene extends BaseLogPanelScene {
         }
 
         this.setOptButtonsData();
+
+        this.heartIcon = this.add.image(50, 90, 'heart_icon');
+        this.heartEmptyIcon = this.add.image(50, 90, 'heart_empty_icon');
+        this.heartEmptyIcon.setVisible(false);
+        this.onLifeUpdate(-1);
+
+        this.bonusPopTxt = this.make.text({
+            x: 150,
+            y: 170,
+            text: '+2',
+            style: { font: 'bold 28px Arial', color: '#ff5733' }
+        })
+        this.bonusPopTxt.setVisible(false);
+    }
+
+    update(time: number, delta: number): void {
+
+
     }
 
     private setOptButtonsData(): void {
@@ -134,15 +162,33 @@ export class RoundScene extends BaseLogPanelScene {
         this.awardSound.play();
     }
 
-    onPunished(): void {
-        this.showLog('You got wrong answer!');
+    onPunished(remain: number): void {
+        this.showLog('You got wrong answer! remain: ' + remain);
         this.onShowUserPoints();
+        this.onLifeUpdate(remain);
         this.wrongSound.play();
     }
 
     onBonus(): void {
         this.showLog('You got extra 2 questions!');
         this.totalAmount += 2;
+
+        this.bonusPopTxt.setVisible(true);
+        this.tweens.add({
+            targets: this.bonusPopTxt,
+            duration: 500,
+            scaleX: 2,
+            scaleY: 2,
+            ease: 'Sine.easeInOut',
+            repeat: 0,
+            yoyo: true,
+            onComplete: this.bonusPopCallback.bind(this)
+        });
+    }
+
+    private bonusPopCallback(): void {
+        console.log('randy testttttt');
+        this.bonusPopTxt.setVisible(false);
     }
 
     onFinished(): void {
@@ -164,6 +210,22 @@ export class RoundScene extends BaseLogPanelScene {
 
     onShowUserPoints(): void {
         this.showLog('points in level: ' + LogicController.getInstance().getCurrentLevel().points);
+    }
+
+    onLifeUpdate(remain: number): void {
+        var levelProperty = LogicController.getInstance().getCurrentLevelProperty();
+        var total = 720;
+        var piece = total / levelProperty.maxRemains;
+
+        this.lifeBar = this.add.graphics();
+        this.lifeBar.fillStyle(0x2d2d2d);
+        this.lifeBar.fillRect(90, 64, total + 6, 50);
+        this.lifeBar.fillStyle(0xff5733);
+        this.lifeBar.fillRect(93, 67, remain != -1 ? piece * remain : total, 44);
+        if (remain == 0) {
+            this.heartIcon.setVisible(false);
+            this.heartEmptyIcon.setVisible(true);
+        }
     }
 
     private getOptionIDfrom(index: number): OptionID {
@@ -188,6 +250,7 @@ export class RoundScene extends BaseLogPanelScene {
 
     private showBanner(): void {
         var conf = new BannerConf();
+        conf.isPoint = true;
         conf.isHitoBoard = true;
         eventsCenter.emit('onSettingUpdated', conf);
     }

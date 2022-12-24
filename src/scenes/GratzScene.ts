@@ -58,7 +58,9 @@ export class GratzScene extends Phaser.Scene {
         var badgeIndex = 0;
         do {
             isLevelUp = this.transformPointToTitile();
-            badgeIndex ++;
+            if (isLevelUp) {
+                badgeIndex ++;
+            }
         } while (isLevelUp);
 
         var xCoordStart = (1024/2) - (100/2) * badgeIndex;
@@ -77,7 +79,7 @@ export class GratzScene extends Phaser.Scene {
         });
 
         // Update user info
-        this.userInfoApi.update(userInfo.id, userInfo.points, userInfo.title)
+        this.userInfoApi.update(userInfo.id, nextLevel.type, userInfo.points, userInfo.title)
         .then(() => {
             console.log("[GratzScene] update user Info done!");
         })
@@ -131,6 +133,7 @@ export class GratzScene extends Phaser.Scene {
     private showBanner(): void {
         var conf = new BannerConf();
         conf.isName = false;
+        conf.isPoint = false;
         eventsCenter.emit('onSettingUpdated', conf);
     }
 }

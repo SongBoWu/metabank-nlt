@@ -29,7 +29,7 @@ export class PreparationScene extends BaseLogPanelScene {
     override create(data?: any): void {
         super.create();
 
-        this.scene.launch('SettingsScene');
+        // this.scene.launch('SettingsScene');
 
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
 

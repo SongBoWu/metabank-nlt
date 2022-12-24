@@ -1,7 +1,7 @@
 import { Firestore, getFirestore, collection, getDocs, doc, setDoc, getDoc, DocumentSnapshot, SnapshotOptions, updateDoc, serverTimestamp, where, query, orderBy, limit, WhereFilterOp } from "firebase/firestore";
 import { GroupType } from "../const/GroupType";
 import { TitleType } from "../const/TitleType";
-import { LevelType } from "../dto/LevelInfo";
+import { Level, LevelType } from "../dto/LevelInfo";
 import { UserData, UserDataBuilder } from "../dto/UserData";
 import { DatabaseCore } from "./DatabaseCore";
 
@@ -52,10 +52,11 @@ export class UserInfoImpl {
         return docSnap.size;
     }
 
-    async update(uid: string, points: number, title: TitleType) : Promise<void> {
+    async update(uid: string, nextLevel: LevelType, points: number, title: TitleType) : Promise<void> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
         const docRef = doc(collectionRef, uid);
         return await updateDoc(docRef, {
+            level: nextLevel,
             points: points,
             title: title,
             update_time: serverTimestamp()

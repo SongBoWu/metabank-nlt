@@ -76,22 +76,22 @@ export class HomeScene extends BaseLogPanelScene {
     
     // -------------------------------------
   
-    var getDocTxt = this.make.text({
-      x: 0, 
-      y: 550, 
-      text: 'getUserInfo', 
-      style: { font: 'bold 30px Arial', color: '#00ff00' }
-    });
-    getDocTxt.setInteractive();
-    getDocTxt.on('pointerdown', () => {
-        this.firestoreUserinfo.update('testid_123', 100, TitleType.T2)
-            .then(() => {
-                this.showLog('[UserInfo][Update] ');
-            })
-            .catch((err: any) => {
+    // var getDocTxt = this.make.text({
+    //   x: 0, 
+    //   y: 550, 
+    //   text: 'getUserInfo', 
+    //   style: { font: 'bold 30px Arial', color: '#00ff00' }
+    // });
+    // getDocTxt.setInteractive();
+    // getDocTxt.on('pointerdown', () => {
+    //     this.firestoreUserinfo.update('testid_123', 100, TitleType.T2)
+    //         .then(() => {
+    //             this.showLog('[UserInfo][Update] ');
+    //         })
+    //         .catch((err: any) => {
 
-        });
-    });
+    //     });
+    // });
 
     var getQuizTxt = this.make.text({
       x: 200, 

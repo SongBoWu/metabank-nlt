@@ -196,10 +196,8 @@ export class LogicController {
                 this.combo = 0;
                 if (this.user.group == GroupType.EXPERIMENTAL && this.bonusQuizIndex < MAX_BOUNS - 1) {
                     this.amountOfBonusQuiz = 2;
+                    onBonus && onBonus();
                 }
-                
-                // TODO, add extra quiz
-                onBonus && onBonus();
             }
 
             onAward && onAward();
@@ -209,10 +207,9 @@ export class LogicController {
             }
 
             this.remains --;
+            onPenalty && onPenalty(this.remains);
             if (this.remains == 0) {
                 this.onGameOverCallback();
-            } else {
-                onPenalty && onPenalty(curQuiz.answer);
             }
         }
 

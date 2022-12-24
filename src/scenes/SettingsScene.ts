@@ -4,7 +4,7 @@ import { DatabaseCore } from "../databridge/DatabaseCore";
 import { QuizImpl } from "../databridge/QuizImpl";
 import { LogicController } from "../domain/LogicController";
 import { BannerConf } from "../dto/BannerConf";
-import { LevelType } from "../dto/LevelInfo";
+import { Level, LevelType } from "../dto/LevelInfo";
 import { OptionID, QuizBuilder } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
 import eventsCenter from "../plugins/EventsCenter";
@@ -12,7 +12,7 @@ import eventsCenter from "../plugins/EventsCenter";
 export class SettingsScene extends Phaser.Scene {
 
     private userDetail: UserData;
-
+    private cachePoint: number = 0;
 
     private yCoord_icon: number = 16;
     private xCoord_icon: number[] = [30, 350, 940, 1000];
@@ -23,17 +23,14 @@ export class SettingsScene extends Phaser.Scene {
 
     private userIcon: GameObjects.Image;
     private userName: GameObjects.Text;
+    private dollarIcon: GameObjects.Image;
+    private points: GameObjects.BitmapText;
     private badgeIcon: GameObjects.Image;
     private title: GameObjects.BitmapText;
     private hitoIcon: GameObjects.Image;
     private hitoHoverIcon: GameObjects.Image;
     private exitIcon: GameObjects.Image;
     private exitHoverIcon: GameObjects.Image;
-
-    
-
-    private points: GameObjects.BitmapText;
-
 
     private quizImpl: QuizImpl;
 
@@ -51,7 +48,7 @@ export class SettingsScene extends Phaser.Scene {
         this.load.image('hito_icon_hover', 'assets/leaderboard_hover.png');
         this.load.image('exit_icon', 'assets/logout.png');
         this.load.image('exit_icon_hover', 'assets/logout_hover.png');
-        // this.load.image('dollar_icon', 'assets/dollar.png');
+        this.load.image('dollar_icon', 'assets/dollar.png');
         
         this.load.text('quizTable', 'assets/data/quiz_2.txt');
     }
@@ -70,12 +67,14 @@ export class SettingsScene extends Phaser.Scene {
             style: { font: 'bold 32px Arial', color: '#f2c81f' }
         });
 
-        // var dollarIcon = this.add.image(350, 16, 'dollar_icon');
-        // this.points = this.add.bitmapText(382, -3, 'desyrel', '', 32);
+        this.dollarIcon = this.add.image(350, 16, 'dollar_icon');
+        this.dollarIcon.setVisible(false);
+        this.points = this.add.bitmapText(382, -3, 'desyrel', '', 32);
+        this.points.setVisible(false);
 
         // Badge info
-        this.badgeIcon = this.add.image(350, 16, 'badge_icon');
-        this.title = this.add.bitmapText(382, -3, 'desyrel', '', 32);
+        this.badgeIcon = this.add.image(650, 16, 'badge_icon');
+        this.title = this.add.bitmapText(682, -3, 'desyrel', '', 32);
 
         // Hito bulletin
         this.hitoIcon = this.add.image(940, 16, 'hito_icon');
@@ -116,11 +115,25 @@ export class SettingsScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number): void {
+        
         this.userDetail = LogicController.getInstance().getUser();
         if (this.userDetail) {
             this.userName.text = this.userDetail.nickName;
-            // this.points.text = this.userDetail.points.toString();
             this.title.text = TitleTypeName.at(this.userDetail.title);
+        }
+
+        var curLevel = LogicController.getInstance().getCurrentLevel();
+        // console.log('randy level: ' + curLevel.type + ", point: " + curLevel.points);
+        
+        if (curLevel != null) {
+            if (this.cachePoint < curLevel.points) {
+                this.cachePoint += 10;
+            } else if (this.cachePoint > curLevel.points) {
+                this.cachePoint -= 10;
+            } else {
+                // Do nothing
+            }
+            this.points.text = this.cachePoint.toString();
         }
         
     }
@@ -132,6 +145,10 @@ export class SettingsScene extends Phaser.Scene {
         // User icon
         this.userIcon.setVisible(conf.isName);
         this.userName.setVisible(conf.isName);
+
+        // Point
+        this.dollarIcon.setVisible(conf.isPoint)
+        this.points.setVisible(conf.isPoint);
 
         // Badge
         this.badgeIcon.setVisible(conf.isBadge);
