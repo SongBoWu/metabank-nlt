@@ -43,6 +43,25 @@ export class LibraryImpl {
             }
         });
     }
+
+    async getAllBasicWords() : Promise<any[]> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        var docQuery = query(collectionRef, where("isBonus", "==", false));
+        
+        const docQuerySnapshot = await getDocs(docQuery);
+        
+        return new Promise((resolve, reject) => {
+            if (!docQuerySnapshot.empty) {
+                var ret: Array<any> = [];
+                docQuerySnapshot.forEach(doc => {
+                    ret.push(doc.data());
+                })
+                resolve(ret);
+            } else {
+                reject('[ERROR] There is no any quiz!');
+            }
+        });
+    }
 }
 
 const LibConverter = {

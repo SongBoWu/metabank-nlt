@@ -1,23 +1,30 @@
 import { GameObjects } from "phaser";
 import { GroupType } from "../const/GroupType";
+import { HistoryImpl } from "../databridge/HistoryImpl";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { QuizImpl } from "../databridge/QuizImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
+import { HistoryType } from "../dto/historyBase";
 import { LevelStatus, LevelType } from "../dto/LevelInfo";
 import { OptionID, Quiz } from "../dto/Quiz";
+import { RoundSlice, RoundSliceBuilder, RoundSummaryBuilder } from "../dto/RoundSummary";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
-import { RoundScene } from "./RoundScene";
 
 export class EntranceExamScene extends BaseLogPanelScene {
+
+    // DB impl
     private quizImpl: QuizImpl;
     private userInfoImpl: UserInfoImpl;
     private levelInfoImpl: LevelInfoImpl;
+    private historyImpl: HistoryImpl;
     
+    // Data
     private currentQuiz: Quiz;
-
     private totalAmount: number;
+    private roundSlices: RoundSlice[] = [];
 
+    // UI components - Main
     private descPanelElement: GameObjects.DOMElement;
     private optBtns: GameObjects.Image[] = [];
     private optBtnHovers: GameObjects.Image[] = [];
@@ -28,6 +35,7 @@ export class EntranceExamScene extends BaseLogPanelScene {
         this.quizImpl = new QuizImpl();
         this.userInfoImpl = new UserInfoImpl();
         this.levelInfoImpl = new LevelInfoImpl();
+        this.historyImpl = new HistoryImpl();
     }
 
     override preload(): void {
@@ -178,6 +186,7 @@ export class EntranceExamScene extends BaseLogPanelScene {
                 return this.levelInfoImpl.update(curLevel);
             })
             .then(() => {
+                this.uploadLog();
                 this.scene.stop('LoadingScene');
                 this.scene.start('WelcomeScene');
             })
@@ -189,21 +198,49 @@ export class EntranceExamScene extends BaseLogPanelScene {
 
     onGameOvered(): void {
         this.showLog('game over!!');
-        // this.scene.start('LevelScene', {
-        //     from: 'RoundScene',
-        // });
     }
 
-    onAwarded(): void {
+    onAwarded(selection: string): void {
         this.showLog('You got award!');
+        this.addRoundSlice(selection, true);
     }
 
-    onPunished(): void {
+    onPunished(selection: string, remain: number): void {
         this.showLog('You got wrong answer!');
+        this.addRoundSlice(selection, false);
     }
 
     onBonus(): void {
         this.showLog('You got extra 2 questions!');
+    }
+
+    private addRoundSlice(selection: string, isCorrect: boolean) {
+        this.roundSlices.push(new RoundSliceBuilder()
+            .id(this.currentQuiz.id)
+            .selection(selection)
+            .isCorrect(isCorrect)
+            .build());
+    }
+
+    private uploadLog() {
+        var logSnippet = new RoundSummaryBuilder()
+            .uid(LogicController.getInstance().getUser().id)
+            .uname(LogicController.getInstance().getUser().nickName)
+            .hType(HistoryType.ENTRANCE_EXAM)
+            .level(LogicController.getInstance().getCurrentLevel().type)
+            .quiz(this.roundSlices)
+            .isPass(true)
+            .build();
+        this.historyImpl.add(logSnippet, this.onUploadLogSuccess.bind(this), this.onUploadLogFail.bind(this));
+    }
+
+    private onUploadLogSuccess(collectionId: string) {
+        console.log('[ExtranceExamScene][onUploadLogSuccess] ' + collectionId);
+    }
+
+    private onUploadLogFail(e: any) {
+        console.log('[ExtranceExamScene][onUploadLogFail] ' + JSON.stringify(e));
+
     }
 
 }

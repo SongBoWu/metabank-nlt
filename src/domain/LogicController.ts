@@ -200,14 +200,14 @@ export class LogicController {
                 }
             }
 
-            onAward && onAward();
+            onAward && onAward(option.toString());
         } else {
             if (this.combo > 0) {
                 this.combo --;
             }
 
             this.remains --;
-            onPenalty && onPenalty(this.remains);
+            onPenalty && onPenalty(option.toString(), this.remains);
             if (this.remains == 0) {
                 this.onGameOverCallback();
             }

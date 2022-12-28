@@ -1,4 +1,4 @@
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { FirebaseApp, FirebaseError, initializeApp, setLogLevel } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import eventsCenter from "../plugins/EventsCenter";
 import { AuthImpl } from "./AuthImpl";
@@ -24,6 +24,8 @@ export class DatabaseCore {
         
         this.authImpl = new AuthImpl(this.app);
         this.authImpl.onAuthChanged();
+
+        // setLogLevel('debug');
     }
 
     public static getInstance(): DatabaseCore {

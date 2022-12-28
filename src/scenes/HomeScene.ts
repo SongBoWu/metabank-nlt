@@ -179,21 +179,22 @@ export class HomeScene extends BaseLogPanelScene {
         //     .catch((err: any) => {
         //         this.showLog('[getLevels] ' + err);
         // });
-        var newRS = new RoundSummaryBuilder()
-            .uid('test_qq')
-            .quiz({
-                qid: 'loan_0003',
-                selection: OptionID.C,
-                click_time: [2, 0, 0, 2]
-            })
-            .build();
-        this.rsImpl.add(newRS)
-            .then(level => {
-                this.showLog('[addLevel] ' + JSON.stringify(level))
-            })
-            .catch(err => {
-                this.showLog('[addLevel] ' + err)
-            });
+        // var newRS = new RoundSummaryBuilder()
+        //     .uid('test_qq')
+        //     .quiz({
+        //         id: 'loan_0003',
+        //         selection: OptionID.C,
+        //         answer: 'test',
+        //         isCorrect: false
+        //     })
+        //     .build();
+        // this.rsImpl.add(newRS)
+        //     .then(level => {
+        //         this.showLog('[addLevel] ' + JSON.stringify(level))
+        //     })
+        //     .catch(err => {
+        //         this.showLog('[addLevel] ' + err)
+        //     });
     });
 
     

@@ -1,22 +1,59 @@
 import { Timestamp } from "firebase/firestore";
 import { RoundMode } from "../const/RoundMode";
+import { HistoryBase, HistoryType } from "./historyBase";
 import { LevelType } from "./LevelInfo";
 import { OptionID } from "./Quiz";
 
-export class RoundSummary {
-    uid: string;
-    date_time: Timestamp;
-    quizzes: QuizSlice[];
-    mode: RoundMode;
-    level: LevelType;
-}
 
-export class QuizSlice {
+export class RoundSlice {
     qid: string;
-    selection: OptionID;
-    click_time: number[];
+    answer: string;
+    selection: string;
+    isCorrect: boolean;
 }
 
+export class RoundSummary extends HistoryBase {
+    level: LevelType;
+    quizzes: RoundSlice[];
+    isPass: boolean;
+}
+
+export class RoundSliceBuilder {
+    private readonly _rslice: RoundSlice;
+
+    constructor() {
+        this._rslice = {
+            qid: '',
+            answer: '',
+            selection: '',
+            isCorrect: false
+        }
+    }
+
+    id(id: string): RoundSliceBuilder {
+        this._rslice.qid = id;
+        return this;
+    }
+
+    answer(answer: string): RoundSliceBuilder {
+        this._rslice.answer = answer;
+        return this;
+    }
+
+    selection(selection: string): RoundSliceBuilder {
+        this._rslice.selection = selection;
+        return this;
+    }
+
+    isCorrect(isCorrect: boolean): RoundSliceBuilder {
+        this._rslice.isCorrect = isCorrect;
+        return this;
+    }
+
+    build(): RoundSlice {
+        return this._rslice;
+    }
+}
 
 export class RoundSummaryBuilder {
     private readonly _rs: RoundSummary;
@@ -24,10 +61,12 @@ export class RoundSummaryBuilder {
     constructor() {
         this._rs = {
             uid: '',
+            uname: '',
             date_time: Timestamp.fromDate(new Date()),
+            hType: HistoryType.ROUND,
             level: LevelType.DEPOSIT,
-            mode: RoundMode.PRACTICE,
             quizzes: [],
+            isPass: false
         };
     }
 
@@ -36,18 +75,33 @@ export class RoundSummaryBuilder {
         return this;
     }
 
+    uname(name: string): RoundSummaryBuilder {
+        this._rs.uname = name;
+        return this;
+    }
+
+    hType(type: HistoryType): RoundSummaryBuilder {
+        this._rs.hType = type;
+        return this;
+    }
+
     level(level: LevelType): RoundSummaryBuilder {
         this._rs.level = level;
         return this;
     }
 
-    mode(mode: RoundMode): RoundSummaryBuilder {
-        this._rs.mode = mode;
+    addQuiz(quiz: RoundSlice): RoundSummaryBuilder {
+        this._rs.quizzes.push(quiz);
         return this;
     }
 
-    quiz(quiz: QuizSlice): RoundSummaryBuilder {
-        this._rs.quizzes.push(quiz);
+    quiz(quiz: RoundSlice[]): RoundSummaryBuilder {
+        this._rs.quizzes = quiz;
+        return this;
+    }
+
+    isPass(pass: boolean): RoundSummaryBuilder {
+        this._rs.isPass = pass;
         return this;
     }
 

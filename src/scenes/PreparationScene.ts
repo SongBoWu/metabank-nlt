@@ -4,13 +4,16 @@ import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
 import { BannerConf } from "../dto/BannerConf";
 import { Level, LevelStatus, LevelType } from "../dto/LevelInfo";
+import { VKSType } from "../dto/VKSHistory";
 import eventsCenter from "../plugins/EventsCenter";
-import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
-export class PreparationScene extends BaseLogPanelScene {
+export class PreparationScene extends Phaser.Scene {
+
+    // DB impl
     private firestoreUserinfo: UserInfoImpl;
     private levelInfoImpl : LevelInfoImpl;
 
+    // UI components
     private entranceExamTxt: Phaser.GameObjects.Text;
     private preVKSTxt: Phaser.GameObjects.Text;
     private postVKSTxt: Phaser.GameObjects.Text;
@@ -21,14 +24,13 @@ export class PreparationScene extends BaseLogPanelScene {
         this.levelInfoImpl = new LevelInfoImpl();
     }
 
-    override preload(): void {
-        super.preload();
+    preload(): void {
         this.load.image('welcome_bg', 'assets/station_bg.png');
     }
 
-    override create(data?: any): void {
-        super.create();
+    create(data?: any): void {
 
+        this.add.image(512, 384, 'welcome_bg');
         // this.scene.launch('SettingsScene');
 
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
@@ -44,7 +46,7 @@ export class PreparationScene extends BaseLogPanelScene {
                 LogicController.getInstance().setLevels(levels);
                 let curLevel = LogicController.getInstance().getCurrentLevel();
                 if (curLevel) {
-                    this.showLog('Let\'s continue to Level: ' + curLevel.type);
+                    console.log('Let\'s continue to Level: ' + curLevel.type);
                 }
                 
                 this.showBanner();
@@ -53,7 +55,7 @@ export class PreparationScene extends BaseLogPanelScene {
             })
             .catch((err: string) => {
                 // TODO
-                this.showLog(err);
+                console.log(err);
 
                 this.showBanner();
                 this.postDataFecth();
@@ -78,10 +80,12 @@ export class PreparationScene extends BaseLogPanelScene {
             text: '2. Pre-VKS exam',
             style: { font: 'bold 20px Arial', color: '#00ff00' }
         });
-        this.preVKSTxt.setVisible(false);
+        this.preVKSTxt.setVisible(true);
         this.preVKSTxt.removeInteractive();
         this.preVKSTxt.on('pointerdown', () => {
-            
+            this.scene.start('VKSScene', {
+                type: VKSType.PRE
+            });
         });
 
 
@@ -91,10 +95,12 @@ export class PreparationScene extends BaseLogPanelScene {
             text: '3. Post-VKS exam',
             style: { font: 'bold 20px Arial', color: '#00ff00' }
         });
-        this.postVKSTxt.setVisible(false);
+        this.postVKSTxt.setVisible(true);
         this.postVKSTxt.removeInteractive();
         this.postVKSTxt.on('pointerdown', () => {
-            
+            this.scene.start('VKSScene', {
+                type: VKSType.POST
+            });
         });
     }
 

@@ -72,6 +72,22 @@ export class UserInfoImpl {
             assign_group_time: serverTimestamp()
         });
     }
+
+    async updatePreVKSstatus(uid: string) : Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docRef = doc(collectionRef, uid);
+        return await updateDoc(docRef, {
+            isPreVKSDone: true,
+        });
+    }
+
+    async updatePostVKSstatus(uid: string) : Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docRef = doc(collectionRef, uid);
+        return await updateDoc(docRef, {
+            isPostVKSDone: true,
+        });
+    }
 }
 
 

@@ -1,21 +1,30 @@
 import { GameObjects } from "phaser";
+import { HistoryImpl } from "../databridge/HistoryImpl";
 import { LibraryImpl } from "../databridge/LibraryImpl";
 import { LogicController } from "../domain/LogicController";
 import { BannerConf } from "../dto/BannerConf";
 import { LevelType } from "../dto/LevelInfo";
 import { Library, LibraryBuilder } from "../dto/Library";
+import { ParcSliceBuilder, PracHistoryBuilder, PracSlice } from "../dto/PracHistory";
 import eventsCenter from "../plugins/EventsCenter";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class FarmScene extends BaseLogPanelScene {
 
-    private libPanelElement: GameObjects.DOMElement;
+    // DB impl
     private libImpl: LibraryImpl;
+    private historyImpl: HistoryImpl;
 
+    // Data
     private words: Library[];
     private curIndex: number = 0;
     private unReadWords: string[] = [];
+    
+    // Log
+    private slices: PracSlice[] = [];
 
+    // UI components
+    private libPanelElement: GameObjects.DOMElement;
     private wordIcons: GameObjects.Image[] = [];
     private wordText: GameObjects.Text[] = [];
     private preBtn: GameObjects.Text;
@@ -25,6 +34,7 @@ export class FarmScene extends BaseLogPanelScene {
     constructor() {
         super('FarmScene');
         this.libImpl = new LibraryImpl();
+        this.historyImpl = new HistoryImpl();
     }
 
     override preload(): void {
@@ -57,11 +67,16 @@ export class FarmScene extends BaseLogPanelScene {
                 style: { font: 'bold 28px Arial', color: '#1a3d1d' }
             });
             wordText.on('pointerdown', () => {
-                // TODO, record then upload the trace
                 this.curIndex = index;
                 this.updateLibContentAndUI();
             });
             wordText.setInteractive();
+
+            // init logSnippet
+            this.slices[index] = new ParcSliceBuilder()
+                .id(value.id)
+                .word(value.word)
+                .build();
         });
         this.libPanelElement = this.add.dom(350, 125).createFromCache('lib_panel');
 
@@ -101,6 +116,16 @@ export class FarmScene extends BaseLogPanelScene {
         this.back2MainBtn.setVisible(false);
         this.back2MainBtn.setInteractive();
         this.back2MainBtn.on('pointerdown', () => {
+
+            var log = new PracHistoryBuilder()
+                .uid(LogicController.getInstance().getUser().id)
+                .uname(LogicController.getInstance().getUser().nickName)
+                .level(LogicController.getInstance().getCurrentLevel().type)
+                .result(this.slices)
+                .build();
+
+            this.historyImpl.add(log, this.onUploadLogSuccess.bind(this), this.onUploadLogFail.bind(this));
+
             this.scene.start('LevelScene', {
                 from: 'FarmScene'
             });
@@ -140,6 +165,9 @@ export class FarmScene extends BaseLogPanelScene {
 
         // Update checked icon
         this.wordIcons[this.curIndex].setVisible(true);
+
+        // update log snippet
+        this.slices[this.curIndex].click_time ++;
     }
 
     private updateButtons(): void {
@@ -152,6 +180,15 @@ export class FarmScene extends BaseLogPanelScene {
         var conf = new BannerConf();
         conf.isHitoBoard = true;
         eventsCenter.emit('onSettingUpdated', conf);
+    }
+
+    private onUploadLogSuccess(collectionId: string) {
+        console.log('[FarmScene][onUploadLogSuccess] ' + collectionId);
+    }
+
+    private onUploadLogFail(e: any) {
+        console.log('[FarmScene][onUploadLogFail] ' + JSON.stringify(e));
+
     }
 
     private writeCollection(): void {

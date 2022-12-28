@@ -10,6 +10,8 @@ export class UserData {
     points: number;
     title: TitleType;
     entranceScore: number;
+    isPreVKSDone: boolean;
+    isPostVKSDone: boolean;
 }
 
 
@@ -25,6 +27,8 @@ export class UserDataBuilder {
             points: 0,
             title: TitleType.T1,
             entranceScore: -1,
+            isPreVKSDone: false,
+            isPostVKSDone: false
         };
     }
 

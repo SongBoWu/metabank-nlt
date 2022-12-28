@@ -4,32 +4,42 @@ import { OptionID, Quiz } from "../dto/Quiz";
 import { GameObjects } from "phaser";
 import { BannerConf } from "../dto/BannerConf";
 import eventsCenter from "../plugins/EventsCenter";
+import { HistoryImpl } from "../databridge/HistoryImpl";
+import { RoundSlice, RoundSliceBuilder, RoundSummaryBuilder } from "../dto/RoundSummary";
 
 export class RoundScene extends BaseLogPanelScene {
 
+    // DB impl
+    private historyImpl: HistoryImpl;
+
+    // Data
     private currentQuiz: Quiz;
-
     private totalAmount: number;
+    private roundSlices: RoundSlice[] = [];
 
+    // UI components - Main
     private descPanelElement: GameObjects.DOMElement;
     private optBtns: GameObjects.Image[] = [];
     private optBtnHovers: GameObjects.Image[] = [];
     private optTexts: GameObjects.Text[] = [];
 
+    // Audio components
     private awardSound: Phaser.Sound.BaseSound;
     private wrongSound: Phaser.Sound.BaseSound;
     private gameOverSound: Phaser.Sound.BaseSound;
     private gameOverCamera: Phaser.Cameras.Scene2D.Camera;
 
+    // UI components - Life
     private lifeBar: Phaser.GameObjects.Graphics;
     private heartIcon: Phaser.GameObjects.Image;
     private heartEmptyIcon: Phaser.GameObjects.Image;
 
+    // UI components - Bonus
     private bonusPopTxt: GameObjects.Text;
-    private triggerPop: Boolean;
 
     constructor() {
         super('RoundScene');
+        this.historyImpl = new HistoryImpl();
     }
 
     override preload(): void {
@@ -116,11 +126,6 @@ export class RoundScene extends BaseLogPanelScene {
         this.bonusPopTxt.setVisible(false);
     }
 
-    update(time: number, delta: number): void {
-
-
-    }
-
     private setOptButtonsData(): void {
         this.showLog(this.currentQuiz.description);
 
@@ -134,42 +139,46 @@ export class RoundScene extends BaseLogPanelScene {
         }
     }
 
-    onOptionClickListener(oid: number): void {
+    private onOptionClickListener(oid: number): void {
         var clickOpt = this.getOptionIDfrom(oid);
         this.showLog('You clicked option ' + clickOpt);
         LogicController.getInstance().verify(clickOpt, this.onAwarded.bind(this), this.onPunished.bind(this), this.onBonus.bind(this));
+        
+        // Move to next quiz
         this.currentQuiz = LogicController.getInstance().nextQuiz();
         this.setOptButtonsData();
     }
 
-    onOptionBtnHoverIn(index: number): void {
+    private onOptionBtnHoverIn(index: number): void {
         this.optBtnHovers.at(index).setVisible(true);
         this.optTexts[index].setColor('#dfebe0');
     }
 
-    onOptionBtnHoverOut(index: number): void {
+    private onOptionBtnHoverOut(index: number): void {
         this.optBtnHovers[index].setVisible(false);
         this.optTexts[index].setColor('#1a3d1d');
     }
 
-    onVerified(): void {
+    private onVerified(): void {
         this.showLog('verify');
     }
 
-    onAwarded(): void {
+    private onAwarded(selection: string): void {
         this.showLog('You got award!');
         this.onShowUserPoints();
         this.awardSound.play();
+        this.addRoundSlice(selection, true);
     }
 
-    onPunished(remain: number): void {
+    private onPunished(selection: string, remain: number): void {
         this.showLog('You got wrong answer! remain: ' + remain);
         this.onShowUserPoints();
         this.onLifeUpdate(remain);
         this.wrongSound.play();
+        this.addRoundSlice(selection, false);
     }
 
-    onBonus(): void {
+    private onBonus(): void {
         this.showLog('You got extra 2 questions!');
         this.totalAmount += 2;
 
@@ -187,17 +196,18 @@ export class RoundScene extends BaseLogPanelScene {
     }
 
     private bonusPopCallback(): void {
-        console.log('randy testttttt');
         this.bonusPopTxt.setVisible(false);
     }
 
-    onFinished(): void {
+    private onFinished(): void {
         this.showLog('round finished!');
+        this.uploadLog(true);
         this.scene.start('GratzScene');
     }
 
-    onGameOvered(): void {
+    private onGameOvered(): void {
         this.showLog('game over!!');
+        this.uploadLog(false);
         this.gameOverSound.play();
         this.gameOverCamera.fade(1000, 0, 0, 0, true, (cam: any, progress: number) => {
             if (progress > 0.8) {
@@ -208,11 +218,11 @@ export class RoundScene extends BaseLogPanelScene {
         });
     }
 
-    onShowUserPoints(): void {
+    private onShowUserPoints(): void {
         this.showLog('points in level: ' + LogicController.getInstance().getCurrentLevel().points);
     }
 
-    onLifeUpdate(remain: number): void {
+    private onLifeUpdate(remain: number): void {
         var levelProperty = LogicController.getInstance().getCurrentLevelProperty();
         var total = 720;
         var piece = total / levelProperty.maxRemains;
@@ -253,5 +263,33 @@ export class RoundScene extends BaseLogPanelScene {
         conf.isPoint = true;
         conf.isHitoBoard = true;
         eventsCenter.emit('onSettingUpdated', conf);
+    }
+
+    private addRoundSlice(selection: string, isCorrect: boolean) {
+        this.roundSlices.push(new RoundSliceBuilder()
+            .id(this.currentQuiz.id)
+            .selection(selection)
+            .isCorrect(isCorrect)
+            .build());
+    }
+
+    private uploadLog(pass: boolean) {
+        var logSnippet = new RoundSummaryBuilder()
+            .uid(LogicController.getInstance().getUser().id)
+            .uname(LogicController.getInstance().getUser().nickName)
+            .level(LogicController.getInstance().getCurrentLevel().type)
+            .quiz(this.roundSlices)
+            .isPass(pass)
+            .build();
+        this.historyImpl.add(logSnippet, this.onUploadLogSuccess.bind(this), this.onUploadLogFail.bind(this));
+    }
+
+    private onUploadLogSuccess(collectionId: string) {
+        console.log('[FarmScene][onUploadLogSuccess] ' + collectionId);
+    }
+
+    private onUploadLogFail(e: any) {
+        console.log('[FarmScene][onUploadLogFail] ' + JSON.stringify(e));
+
     }
 }
