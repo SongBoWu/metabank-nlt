@@ -88,6 +88,22 @@ export class UserInfoImpl {
             isPostVKSDone: true,
         });
     }
+
+    async updatePreExternalLink(uid: string) : Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docRef = doc(collectionRef, uid);
+        return await updateDoc(docRef, {
+            isPreExternalLink: true,
+        });
+    }
+
+    async updatePostExternalLink(uid: string) : Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docRef = doc(collectionRef, uid);
+        return await updateDoc(docRef, {
+            isPostExternalLink: true,
+        });
+    }
 }
 
 
@@ -105,6 +121,10 @@ const UserInfoConverter = {
             .points(data.points)
             .title(data.title)
             .entranceScore(data.entranceScore)
+            .preExternalLink(data.isPreExternalLink)
+            .postExternalLink(data.isPostExternalLink)
+            .preVKSdone(data.isPreVKSDone)
+            .postVKSdone(data.isPostVKSDone)
             .build();
     }
 }

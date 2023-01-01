@@ -1,3 +1,6 @@
+import { Timestamp } from "firebase/firestore";
+import { GameObjects } from "phaser";
+import { GroupType } from "../const/GroupType";
 import { DatabaseCore } from "../databridge/DatabaseCore";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
@@ -10,22 +13,39 @@ import eventsCenter from "../plugins/EventsCenter";
 export class PreparationScene extends Phaser.Scene {
 
     // DB impl
-    private firestoreUserinfo: UserInfoImpl;
+    private userInfoImpl: UserInfoImpl;
     private levelInfoImpl : LevelInfoImpl;
 
+    // Data
+    private findUnFinished: boolean;
+
     // UI components
-    private entranceExamTxt: Phaser.GameObjects.Text;
-    private preVKSTxt: Phaser.GameObjects.Text;
-    private postVKSTxt: Phaser.GameObjects.Text;
+    // private entranceExamTxt: Phaser.GameObjects.Text;
+    // private preVKSTxt: Phaser.GameObjects.Text;
+    // private postVKSTxt: Phaser.GameObjects.Text;
+
+    private entranceIcon: GameObjects.Image;
+    private vksIcon: GameObjects.Image;
+    private externalLinkIcon: GameObjects.Image;
+    private mainGameIcon: GameObjects.Image;
+    private arrowIcons: GameObjects.Image[] = []; // 5
+    private arrowDoneIcons: GameObjects.Image[] = []; // 5
+    private arrowObjects: Arrow[] = [];
     
     constructor() {
         super('PreparationScene');
-        this.firestoreUserinfo = new UserInfoImpl();
+        this.userInfoImpl = new UserInfoImpl();
         this.levelInfoImpl = new LevelInfoImpl();
     }
 
     preload(): void {
         this.load.image('welcome_bg', 'assets/station_bg.png');
+        this.load.image('entrance_icon', 'assets/icons/exam_done_256.png');
+        this.load.image('vks_icon', 'assets/icons/surveyor_256.png');
+        this.load.image('link_icon', 'assets/icons/extra_link_256.png');
+        this.load.image('game_icon', 'assets/icons/game_256.png');
+        this.load.image('arrow_icon', 'assets/icons/arrow_128.png');
+        this.load.image('arrow_done_icon', 'assets/icons/arrow-done_128.png');
     }
 
     create(data?: any): void {
@@ -36,13 +56,14 @@ export class PreparationScene extends Phaser.Scene {
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
 
         this.scene.launch('LoadingScene');
-        this.firestoreUserinfo.get(user.uid)
+        this.userInfoImpl.get(user.uid)
             .then(userData => {
-                console.log(JSON.stringify(userData));
+                console.log('[Preparation][getUser] ' + JSON.stringify(userData));
                 LogicController.getInstance().setUser(userData);
                 return this.levelInfoImpl.getLevels(user.uid);
             })
             .then((levels: Level[]) => {
+                console.log('[Preparation][getLevels]');
                 LogicController.getInstance().setLevels(levels);
                 let curLevel = LogicController.getInstance().getCurrentLevel();
                 if (curLevel) {
@@ -61,61 +82,215 @@ export class PreparationScene extends Phaser.Scene {
                 this.postDataFecth();
             });
         
-        this.entranceExamTxt = this.make.text({
-            x: 150,
-            y: 150,
-            text: '1. 先備知識測驗 (本測驗為四選一之選擇題, 共15題, 每題6分, 總分90分)',
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-        });
-        this.entranceExamTxt.removeInteractive();
-        this.entranceExamTxt.on('pointerdown', () => {
+
+        this.entranceIcon = this.add.image(250, 200, 'entrance_icon');
+        this.entranceIcon.setScale(0.8, 0.8);
+        this.entranceIcon.removeInteractive();
+        this.entranceIcon.on('pointerdown', () => {
             LogicController.getInstance().setCurrentLevel(LevelType.PREXAM);
             this.scene.start('EntranceExamScene');
         });
 
+        this.externalLinkIcon = this.add.image(750, 200, 'link_icon');
+        this.externalLinkIcon.setScale(0.8, 0.8);
+        this.externalLinkIcon.removeInteractive();
+        this.externalLinkIcon.on('pointerdown', () => {
+            console.log('[Preparation] external link clicked!');
+            var userData = LogicController.getInstance().getUser();
+            var url;
+            if (!userData.isPreExternalLink) {
+                url = 'https://docs.google.com/forms/d/1DYtb7_d93OcVZX1I_FJjwFmyvbC_twnMWVH-0wjyDuc/edit';
+                userData.isPreExternalLink = true;
+                this.userInfoImpl.updatePreExternalLink(userData.id);
+            } else {
+                url = userData.group == GroupType.EXPERIMENTAL 
+                    ? 'https://docs.google.com/forms/d/1ugVnUqt87K_q49nWjWHV3hKxxiTLBbAY9x6BLD606gQ/edit?usp=forms_home'
+                    : 'https://docs.google.com/forms/d/15T3o-r97biYT20oz81ehjWe6evjJ2_2IdlqiadUiDC4/edit?usp=forms_home';
 
-        this.preVKSTxt = this.make.text({
-            x: 150,
-            y: 300,
-            text: '2. Pre-VKS exam',
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-        });
-        this.preVKSTxt.setVisible(true);
-        this.preVKSTxt.removeInteractive();
-        this.preVKSTxt.on('pointerdown', () => {
+                userData.isPostExternalLink = true;
+                this.userInfoImpl.updatePostExternalLink(userData.id);
+            }
+            var s = window.open(url, '_blank');
+            this.postDataFecth();
+
+        })
+
+        this.vksIcon = this.add.image(750, 600, 'vks_icon');
+        this.vksIcon.setScale(0.8, 0.8);
+        this.vksIcon.removeInteractive();
+        this.vksIcon.on('pointerdown', () => {
+            console.log('[Preparation] vks clicked! ');
             this.scene.start('VKSScene', {
-                type: VKSType.PRE
+                type: LogicController.getInstance().getUser().isPreVKSDone ? VKSType.POST : VKSType.PRE
             });
-        });
+        })
+
+        this.mainGameIcon = this.add.image(250, 600, 'game_icon');
+        this.mainGameIcon.setScale(0.8, 0.8);
+        this.mainGameIcon.removeInteractive();
+        this.mainGameIcon.on('pointerdown', () => {
+            this.scene.start('WelcomeScene');
+        })
 
 
-        this.postVKSTxt = this.make.text({
-            x: 150,
-            y: 450,
-            text: '3. Post-VKS exam',
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-        });
-        this.postVKSTxt.setVisible(true);
-        this.postVKSTxt.removeInteractive();
-        this.postVKSTxt.on('pointerdown', () => {
-            this.scene.start('VKSScene', {
-                type: VKSType.POST
-            });
-        });
+        this.createArrows();
+
     }
 
     private postDataFecth(): void {
-        if (LogicController.getInstance().getUser().entranceScore >= 0) {
-            this.scene.start('WelcomeScene');
+
+        this.autoRedirectToMain();
+        var userData = LogicController.getInstance().getUser();
+
+        
+        
+        this.vksIcon.setInteractive();
+        this.scene.stop('LoadingScene');
+
+        // Start arrow
+        this.arrowIcons.at(0).setVisible(false);
+        this.arrowDoneIcons.at(0).setVisible(true);
+
+        // Exam -> link
+        if (userData.entranceScore != -1) {
+            this.arrowIcons.at(1).setVisible(false);
+            this.arrowDoneIcons.at(1).setVisible(true);
+
+            this.entranceIcon.removeInteractive();
+            this.externalLinkIcon.setInteractive();
+        } else {
+            this.entranceIcon.setInteractive();
+            this.externalLinkIcon.removeInteractive();
         }
 
-        // if (LogicController.getInstance().getUser().entranceScore < 0) {
-            this.entranceExamTxt.setInteractive();
-        // }
+        // Link -> survey
+        if (userData.entranceScore != -1) {
+            if (userData.isPreExternalLink) {
+                this.arrowIcons.at(2).setVisible(false);
+                this.arrowDoneIcons.at(2).setVisible(true);
+    
+                this.externalLinkIcon.removeInteractive();
+                this.vksIcon.setInteractive();
+            } else {
+                this.externalLinkIcon.setInteractive();
+                this.vksIcon.removeInteractive();
+            }
+        }
         
-        this.preVKSTxt.setInteractive();
-        this.postVKSTxt.setInteractive();
-        this.scene.stop('LoadingScene');
+
+
+        // survey -> game
+        if (userData.entranceScore != -1 && userData.isPreExternalLink) {
+            if (userData.isPreVKSDone) {
+                this.arrowIcons.at(3).setVisible(false);
+                this.arrowDoneIcons.at(3).setVisible(true);
+    
+                this.vksIcon.removeInteractive();
+                this.mainGameIcon.setInteractive();
+            } else {
+                this.vksIcon.setInteractive();
+                this.mainGameIcon.removeInteractive();
+            }
+        }
+    
+
+        // Game -> survey
+        if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone) {
+            if (!this.findUnFinished) {
+                this.arrowIcons.at(4).setVisible(false);
+                this.arrowDoneIcons.at(4).setVisible(true);
+    
+                this.mainGameIcon.removeInteractive();
+                this.vksIcon.setInteractive();
+            } else {
+                this.mainGameIcon.setInteractive();
+            }
+        }
+        
+
+
+        // survey -> link
+        if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone && !this.findUnFinished) {
+            if (userData.isPostVKSDone) {
+                this.arrowIcons.at(5).setVisible(false);
+                this.arrowDoneIcons.at(5).setVisible(true);
+    
+                this.vksIcon.removeInteractive();
+                this.externalLinkIcon.setInteractive();
+            } else {
+                this.vksIcon.setInteractive();
+                this.externalLinkIcon.removeInteractive();
+            }
+        }
+
+        if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone && !this.findUnFinished
+            && userData.isPostVKSDone) {
+            if (userData.isPostExternalLink) {
+                this.externalLinkIcon.removeInteractive();
+            }
+        }
+        
+        
+    }
+
+    private autoRedirectToMain() {
+        var user = LogicController.getInstance().getUser();
+        var levels = LogicController.getInstance().getLevels();
+        this.findUnFinished = false;
+        if (levels.get(LevelType.PREXAM).status == LevelStatus.FINISHED && user.isPreVKSDone) {
+            for (let level of levels.values()) {
+                if (!this.findUnFinished && level.status != LevelStatus.FINISHED) {
+                    this.scene.start('WelcomeScene');
+                    this.findUnFinished = true;
+                }
+            }
+        }
+    }
+
+    private createArrows() {
+        var arrowStart = new Arrow(100, 100);
+        var arrowExamToLink = new Arrow(500, 200);
+        arrowExamToLink.setRotation(0.5);
+
+        var arrowLinkToSurvey = new Arrow(800, 400);
+        // arrowLinkToSurvey.setFlip(false, true);
+        arrowLinkToSurvey.setRotation(2);
+        
+        var arrowSurveyToLink = new Arrow(700, 400);
+        // arrowSurveyToLink.setFlip(true, false);
+        arrowSurveyToLink.setRotation(-1);
+
+        var arrowSurveyToGame = new Arrow(500, 650);
+        arrowSurveyToGame.setRotation(4);
+        var arrowGameToSurvey = new Arrow(500, 550);
+        arrowGameToSurvey.setRotation(1);
+        
+
+        this.arrowObjects.push(arrowStart);
+        this.arrowObjects.push(arrowExamToLink);
+        this.arrowObjects.push(arrowLinkToSurvey);
+        this.arrowObjects.push(arrowSurveyToGame);
+        this.arrowObjects.push(arrowGameToSurvey);
+        this.arrowObjects.push(arrowSurveyToLink);
+
+
+        for (var index = 0; index < this.arrowObjects.length; index++) {
+            var arrowObj = this.arrowObjects.at(index);
+            var arrowIcon = this.add.image(arrowObj.getX(), arrowObj.getY(), 'arrow_icon');
+            arrowIcon.setFlip(arrowObj.getFlipX(), arrowObj.getFlipY());
+            arrowIcon.setScale(arrowObj.getScaleX(), arrowObj.getScaleY());
+            arrowIcon.setRotation(arrowObj.getRotation());
+
+            var arrowDoneIcon = this.add.image(arrowObj.getX(), arrowObj.getY(), 'arrow_done_icon');
+            arrowDoneIcon.setFlip(arrowObj.getFlipX(), arrowObj.getFlipY());
+            arrowDoneIcon.setScale(arrowObj.getScaleX(), arrowObj.getScaleY());
+            arrowDoneIcon.setRotation(arrowObj.getRotation());
+            arrowDoneIcon.setVisible(false);
+
+
+            this.arrowIcons[index] = arrowIcon;
+            this.arrowDoneIcons[index] = arrowDoneIcon;
+        }
     }
 
     private showBanner(): void {
@@ -123,5 +298,62 @@ export class PreparationScene extends Phaser.Scene {
         conf.isBadge = true;
         conf.isExit = true;
         eventsCenter.emit('onSettingUpdated', conf);
+    }
+}
+
+class Arrow {
+    private coordX: number;
+    private coordY: number;
+    private scaleX: number = 1;
+    private scaleY: number = 1;
+    private flipX: boolean = false;
+    private flipY: boolean = false;
+    private rotation: number = 1;
+
+    constructor(coordX: number, coordY: number) {
+        this.coordX = coordX;
+        this.coordY = coordY;
+    }
+
+    public getX(): number {
+        return this.coordX;
+    }
+
+    public getY(): number {
+        return this.coordY;
+    }
+
+    public setScale(x: number, y: number): void {
+        this.scaleX = x;
+        this.scaleY = y;
+    }
+
+    public getScaleX(): number {
+        return this.scaleX;
+    }
+
+    public getScaleY(): number {
+        return this.scaleY;
+    }
+
+    public setFlip(x: boolean, y: boolean): void {
+        this.flipX = x;
+        this.flipY = y;
+    }
+
+    public getFlipX(): boolean {
+        return this.flipX;
+    }
+
+    public getFlipY(): boolean {
+        return this.flipY;
+    }
+
+    public setRotation(radius: number): void {
+        this.rotation = radius;
+    }
+
+    public getRotation(): number {
+        return this.rotation;
     }
 }

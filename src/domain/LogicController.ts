@@ -82,7 +82,7 @@ export class LogicController {
     }
 
     public getCurrentLevel(): Level {
-        return this.levelMap.get(this.user.level);
+        return this.user ? this.levelMap.get(this.user.level) : null;
     }
 
     public getNextLevel(): Level {

@@ -73,7 +73,7 @@ export class EntranceExamScene extends BaseLogPanelScene {
                     x: text_x_coord[x_cor],
                     y: text_y_coord[y_cor],
                     text: this.getOptionIDfrom(index) + '. ',
-                    style: { font: 'bold 28px Arial', color: '#1a3d1d' }
+                    style: { font: 'bold 28px verdana', color: '#1a3d1d' }
                 });
 
                 
@@ -188,7 +188,7 @@ export class EntranceExamScene extends BaseLogPanelScene {
             .then(() => {
                 this.uploadLog();
                 this.scene.stop('LoadingScene');
-                this.scene.start('WelcomeScene');
+                this.scene.start('PreparationScene');
             })
             .catch((err: string) => {
                 console.log('[getLastUserWhomAssignedGroup] ' + err);

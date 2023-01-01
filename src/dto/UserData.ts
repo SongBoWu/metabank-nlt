@@ -10,6 +10,8 @@ export class UserData {
     points: number;
     title: TitleType;
     entranceScore: number;
+    isPreExternalLink: boolean;
+    isPostExternalLink: boolean;
     isPreVKSDone: boolean;
     isPostVKSDone: boolean;
 }
@@ -27,6 +29,8 @@ export class UserDataBuilder {
             points: 0,
             title: TitleType.T1,
             entranceScore: -1,
+            isPreExternalLink: false,
+            isPostExternalLink: false,
             isPreVKSDone: false,
             isPostVKSDone: false
         };
@@ -64,6 +68,26 @@ export class UserDataBuilder {
 
     entranceScore(score: number): UserDataBuilder {
         this._UserData.entranceScore = score;
+        return this;
+    }
+
+    preExternalLink(done: boolean): UserDataBuilder {
+        this._UserData.isPreExternalLink = done;
+        return this;
+    }
+
+    postExternalLink(done: boolean): UserDataBuilder {
+        this._UserData.isPostExternalLink = done;
+        return this;
+    }
+
+    preVKSdone(done: boolean): UserDataBuilder {
+        this._UserData.isPreVKSDone = done;
+        return this;
+    }
+
+    postVKSdone(done: boolean): UserDataBuilder {
+        this._UserData.isPostVKSDone = done;
         return this;
     }
 

@@ -95,7 +95,7 @@ export class SettingsScene extends Phaser.Scene {
         this.exitHoverIcon.setVisible(false);
         this.exitIcon.setInteractive();
         this.exitIcon.on('pointerdown', () => {
-            if (this.banner_item_status.isInLevel) {
+            if (this.banner_item_status && this.banner_item_status.isInLevel) {
                 this.scene.stop('LevelScene');
                 this.scene.resume('WelcomeScene');
             } else {

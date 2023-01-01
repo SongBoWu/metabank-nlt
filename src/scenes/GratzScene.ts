@@ -79,7 +79,8 @@ export class GratzScene extends Phaser.Scene {
         });
 
         // Update user info
-        this.userInfoApi.update(userInfo.id, nextLevel.type, userInfo.points, userInfo.title)
+        var updateType = nextLevel ? nextLevel.type : curLevel.type;
+        this.userInfoApi.update(userInfo.id, updateType, userInfo.points, userInfo.title)
         .then(() => {
             console.log("[GratzScene] update user Info done!");
         })

@@ -57,6 +57,7 @@ export class VKSScene extends BaseLogPanelScene {
     override create(data?: any): void {
         super.create();
         this.vType = data.type;
+        console.log('[VKSScene] type: ' + this.vType);
 
         this.scene.launch('LoadingScene');
 
@@ -67,14 +68,14 @@ export class VKSScene extends BaseLogPanelScene {
             x: base_x,
             y: base_y,
             text: '',
-            style: { font: '20px verdana', color: '#000000' }
+            style: { font: '25px verdana', color: '#000000' }
         });
 
         this.wordTxt = this.make.text({
             x: base_x,
             y: base_y + 50,
             text: '',
-            style: { font: '60px verdana', color: '#000000' }
+            style: { font: 'bold 60px verdana', color: '#000000' }
         });
 
         var iconX = base_x;

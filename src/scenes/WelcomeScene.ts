@@ -26,8 +26,8 @@ export class WelcomeScene extends BaseLogPanelScene {
     }
 
     override preload(): void {
-        super.preload();
-        this.load.image('welcome_bg', 'assets/station_bg.png');
+        // super.preload();
+        // this.load.image('welcome_bg', 'assets/station_bg.png');
         this.load.image('monkey', 'assets/monkey_1.png');
         this.load.image('level_icon1', 'assets/piggy-bank.png');
         this.load.image('level_icon2', 'assets/exchange.png');
@@ -40,13 +40,11 @@ export class WelcomeScene extends BaseLogPanelScene {
     override create(): void {
         super.create();
         this.scene.launch('SettingsScene');
-
-        this.showBanner();
+        
 
         this.add.image(512, 384, 'welcome_bg');
         this.add.image(512, 650, 'monkey');
 
-        var user = DatabaseCore.getInstance().getAuthImpl().getUser();
         this.levelMap = LogicController.getInstance().getLevels();
         for(var index = 0; index < this.levelTypes.length; index++) {
             var x_coord = 200 + (index * 300);
