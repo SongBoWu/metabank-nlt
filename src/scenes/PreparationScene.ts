@@ -145,12 +145,10 @@ export class PreparationScene extends Phaser.Scene {
         this.scene.stop('LoadingScene');
 
         // Start arrow
-        this.arrowIcons.at(0).setVisible(false);
         this.arrowDoneIcons.at(0).setVisible(true);
 
         // Exam -> link
         if (userData.entranceScore != -1) {
-            this.arrowIcons.at(1).setVisible(false);
             this.arrowDoneIcons.at(1).setVisible(true);
 
             this.entranceIcon.removeInteractive();
@@ -163,7 +161,6 @@ export class PreparationScene extends Phaser.Scene {
         // Link -> survey
         if (userData.entranceScore != -1) {
             if (userData.isPreExternalLink) {
-                this.arrowIcons.at(2).setVisible(false);
                 this.arrowDoneIcons.at(2).setVisible(true);
     
                 this.externalLinkIcon.removeInteractive();
@@ -179,7 +176,6 @@ export class PreparationScene extends Phaser.Scene {
         // survey -> game
         if (userData.entranceScore != -1 && userData.isPreExternalLink) {
             if (userData.isPreVKSDone) {
-                this.arrowIcons.at(3).setVisible(false);
                 this.arrowDoneIcons.at(3).setVisible(true);
     
                 this.vksIcon.removeInteractive();
@@ -195,7 +191,6 @@ export class PreparationScene extends Phaser.Scene {
         if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone) {
             this.autoRedirectToMain();
             if (!this.findUnFinished) {
-                this.arrowIcons.at(4).setVisible(false);
                 this.arrowDoneIcons.at(4).setVisible(true);
     
                 this.mainGameIcon.removeInteractive();
@@ -210,7 +205,6 @@ export class PreparationScene extends Phaser.Scene {
         // survey -> link
         if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone && !this.findUnFinished) {
             if (userData.isPostVKSDone) {
-                this.arrowIcons.at(5).setVisible(false);
                 this.arrowDoneIcons.at(5).setVisible(true);
     
                 this.vksIcon.removeInteractive();
@@ -238,8 +232,8 @@ export class PreparationScene extends Phaser.Scene {
         if (levels.get(LevelType.PREXAM).status == LevelStatus.FINISHED && user.isPreVKSDone) {
             for (let level of levels.values()) {
                 if (!this.findUnFinished && level.status != LevelStatus.FINISHED) {
-                    // this.scene.start('WelcomeScene');
-                    // this.findUnFinished = true;
+                    this.scene.start('WelcomeScene');
+                    this.findUnFinished = true;
                 }
             }
         }
@@ -251,11 +245,9 @@ export class PreparationScene extends Phaser.Scene {
         arrowExamToLink.setRotation(0.5);
 
         var arrowLinkToSurvey = new Arrow(800, 400);
-        // arrowLinkToSurvey.setFlip(false, true);
         arrowLinkToSurvey.setRotation(2);
         
         var arrowSurveyToLink = new Arrow(700, 400);
-        // arrowSurveyToLink.setFlip(true, false);
         arrowSurveyToLink.setRotation(-1);
 
         var arrowSurveyToGame = new Arrow(500, 650);
@@ -274,10 +266,6 @@ export class PreparationScene extends Phaser.Scene {
 
         for (var index = 0; index < this.arrowObjects.length; index++) {
             var arrowObj = this.arrowObjects.at(index);
-            var arrowIcon = this.add.image(arrowObj.getX(), arrowObj.getY(), 'arrow_icon');
-            arrowIcon.setFlip(arrowObj.getFlipX(), arrowObj.getFlipY());
-            arrowIcon.setScale(arrowObj.getScaleX(), arrowObj.getScaleY());
-            arrowIcon.setRotation(arrowObj.getRotation());
 
             var arrowDoneIcon = this.add.image(arrowObj.getX(), arrowObj.getY(), 'arrow_done_icon');
             arrowDoneIcon.setFlip(arrowObj.getFlipX(), arrowObj.getFlipY());
@@ -285,6 +273,10 @@ export class PreparationScene extends Phaser.Scene {
             arrowDoneIcon.setRotation(arrowObj.getRotation());
             arrowDoneIcon.setVisible(false);
 
+            var arrowIcon = this.add.image(arrowObj.getX(), arrowObj.getY(), 'arrow_icon');
+            arrowIcon.setFlip(arrowObj.getFlipX(), arrowObj.getFlipY());
+            arrowIcon.setScale(arrowObj.getScaleX(), arrowObj.getScaleY());
+            arrowIcon.setRotation(arrowObj.getRotation());
 
             this.arrowIcons[index] = arrowIcon;
             this.arrowDoneIcons[index] = arrowDoneIcon;
