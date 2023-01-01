@@ -139,10 +139,7 @@ export class PreparationScene extends Phaser.Scene {
 
     private postDataFecth(): void {
 
-        this.autoRedirectToMain();
         var userData = LogicController.getInstance().getUser();
-
-        
         
         this.vksIcon.setInteractive();
         this.scene.stop('LoadingScene');
@@ -196,6 +193,7 @@ export class PreparationScene extends Phaser.Scene {
 
         // Game -> survey
         if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone) {
+            this.autoRedirectToMain();
             if (!this.findUnFinished) {
                 this.arrowIcons.at(4).setVisible(false);
                 this.arrowDoneIcons.at(4).setVisible(true);
@@ -240,8 +238,8 @@ export class PreparationScene extends Phaser.Scene {
         if (levels.get(LevelType.PREXAM).status == LevelStatus.FINISHED && user.isPreVKSDone) {
             for (let level of levels.values()) {
                 if (!this.findUnFinished && level.status != LevelStatus.FINISHED) {
-                    this.scene.start('WelcomeScene');
-                    this.findUnFinished = true;
+                    // this.scene.start('WelcomeScene');
+                    // this.findUnFinished = true;
                 }
             }
         }
