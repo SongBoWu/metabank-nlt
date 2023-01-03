@@ -52,7 +52,9 @@ export class GratzScene extends Phaser.Scene {
         if (nextLevel) {
             nextLevel.status = LevelStatus.STARTED;
         }
+
         userInfo.points += curLevel.points;
+        userInfo.totalPoints += curLevel.points;
         
         var isLevelUp;
         var badgeIndex = 0;
@@ -80,7 +82,7 @@ export class GratzScene extends Phaser.Scene {
 
         // Update user info
         var updateType = nextLevel ? nextLevel.type : curLevel.type;
-        this.userInfoApi.update(userInfo.id, updateType, userInfo.points, userInfo.title)
+        this.userInfoApi.updateLevelPointTitle(userInfo.id, updateType, userInfo.points, userInfo.totalPoints, userInfo.title)
         .then(() => {
             console.log("[GratzScene] update user Info done!");
         })

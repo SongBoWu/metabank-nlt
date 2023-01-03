@@ -1,4 +1,4 @@
-import { GameObjects } from "phaser";
+import { Game, GameObjects } from "phaser";
 import { HistoryImpl } from "../databridge/HistoryImpl";
 import { LibraryImpl } from "../databridge/LibraryImpl";
 import { LogicController } from "../domain/LogicController";
@@ -27,9 +27,9 @@ export class FarmScene extends BaseLogPanelScene {
     private libPanelElement: GameObjects.DOMElement;
     private wordIcons: GameObjects.Image[] = [];
     private wordText: GameObjects.Text[] = [];
-    private preBtn: GameObjects.Text;
-    private nextBtn: GameObjects.Text;
-    private back2MainBtn: GameObjects.Text;
+    private preBtn: GameObjects.Image;
+    private nextBtn: GameObjects.Image;
+    private mainBtn: GameObjects.Image;
 
     constructor() {
         super('FarmScene');
@@ -42,6 +42,8 @@ export class FarmScene extends BaseLogPanelScene {
 
         this.load.html('lib_panel', 'assets/library_detail.html');
         this.load.image('checkIcon', 'assets/icons/check.png');
+        this.load.image('nextBtnIcon', 'assets/icons/next_64.png');
+        this.load.image('homeIcon', 'assets/icons/home_64.png');
         //this.load.text('library_artifact', 'assets/data/library.txt');
     }
 
@@ -80,25 +82,16 @@ export class FarmScene extends BaseLogPanelScene {
         });
         this.libPanelElement = this.add.dom(350, 125).createFromCache('lib_panel');
 
-
-        this.nextBtn = this.make.text({
-            x: 120,
-            y: 700,
-            text: 'Next',
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-        });
+        var btn_coord_y = 650;
+        this.nextBtn = this.add.image(600, btn_coord_y, 'nextBtnIcon');
         this.nextBtn.setInteractive();
         this.nextBtn.on('pointerdown', () => {
             this.curIndex ++;
             this.updateLibContentAndUI();
         });
 
-        this.preBtn = this.make.text({
-            x: 10,
-            y: 700,
-            text: 'Previous',
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-        });
+        this.preBtn = this.add.image(100, btn_coord_y, 'nextBtnIcon');
+        this.preBtn.setFlipX(true);
         this.preBtn.setVisible(false);
         this.preBtn.setInteractive();
         this.preBtn.on('pointerdown', () => {
@@ -107,15 +100,10 @@ export class FarmScene extends BaseLogPanelScene {
         });
 
         
-        this.back2MainBtn = this.make.text({
-            x: 180,
-            y: 700,
-            text: 'Back to Main',
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-        });
-        this.back2MainBtn.setVisible(false);
-        this.back2MainBtn.setInteractive();
-        this.back2MainBtn.on('pointerdown', () => {
+        this.mainBtn = this.add.image(350, btn_coord_y, 'homeIcon');
+        this.mainBtn.setVisible(false);
+        this.mainBtn.setInteractive();
+        this.mainBtn.on('pointerdown', () => {
 
             var log = new PracHistoryBuilder()
                 .uid(LogicController.getInstance().getUser().id)
@@ -173,7 +161,7 @@ export class FarmScene extends BaseLogPanelScene {
     private updateButtons(): void {
         this.preBtn.setVisible(this.curIndex == 0 ? false : true);
         this.nextBtn.setVisible(this.curIndex == this.words.length -1 ? false : true);
-        this.back2MainBtn.setVisible(this.unReadWords.length == 0 ? true : false);
+        this.mainBtn.setVisible(this.unReadWords.length == 0 ? true : false);
     }
 
     private showBanner(): void {

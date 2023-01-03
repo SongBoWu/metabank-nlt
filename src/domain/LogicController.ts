@@ -238,10 +238,8 @@ export class LogicController {
 
     public increaseTimesOfPrac(): void {
         this.getCurrentLevel().timesOfPrac ++;
-        if (this.getCurrentLevel().timesOfPrac == 1) {
-            this.getCurrentLevel().points += 300;
-        } else if (this.getCurrentLevel().timesOfPrac == 2) {
-            this.getCurrentLevel().points += 100;
+        if (this.getCurrentLevel().timesOfPrac > 0) {
+            this.getCurrentLevel().points += this.getCurrentLevel().timesOfPrac == 1 ? 300 : 100;
         }
     }
 

@@ -1,22 +1,37 @@
+import { GameObjects } from "phaser";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
+import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
 import { Level, LevelType } from "../dto/LevelInfo";
+import { UserData } from "../dto/UserData";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class LeaderboardScene extends BaseLogPanelScene {
-    private levelInfoApi: LevelInfoImpl;
+
+    // DB impl
+    private userInfoApi: UserInfoImpl;
+
+    // Data
+    private currentPage: number;
+    private sizePerPage: number = 10;
+
+    // UI components
     private recordTxtArray: Phaser.GameObjects.Text[] = [];
+    private nextBtn: GameObjects.Image;
+    private preBtn: GameObjects.Image;
+    private mainBtn: GameObjects.Image;
 
     constructor() {
         super('LeaderboardScene');
-        this.levelInfoApi = new LevelInfoImpl();
+
+        this.userInfoApi = new UserInfoImpl();
     }
 
     override create(data?: any): void {
         super.create();
         this.showLog('create ' + JSON.stringify(data));
 
-        this.add.rectangle(512, 384, 1024, 768, 0x000000, 80);
+        this.add.rectangle(512, 384, 1024, 768, 0x000000);
 
         var backToMain = this.make.text({
             x: 100,
@@ -30,9 +45,10 @@ export class LeaderboardScene extends BaseLogPanelScene {
         });
 
         this.scene.launch('LoadingScene');
-        this.levelInfoApi.getLevelTop10(LogicController.getInstance().getCurrentLevel().type)
-        .then((levels: Level[]) => {
-            this.updateRank(levels);
+        this.userInfoApi.getAllOrderByPoint()
+
+        .then((users: UserData[]) => {
+            this.updateRank(users);
             this.scene.stop('LoadingScene');
         })
         .catch(error => {
@@ -41,7 +57,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
         })
     }
 
-    private updateRank(levels: Level[]): void {
+    private updateRank(users: UserData[]): void {
         for(var index = 0; index < 10; index ++) {
             var recordTxt = this.make.text({
                 x: 100,
@@ -53,13 +69,13 @@ export class LeaderboardScene extends BaseLogPanelScene {
             this.recordTxtArray[index] = recordTxt;
         }
 
-        for (var index = 0; index < levels.length; index ++) {
-            var level = levels[index];
-            this.recordTxtArray[index].setText((index + 1) + '. ' + level.userName);
+        for (var index = 0; index < users.length; index ++) {
+            var user = users[index];
+            this.recordTxtArray[index].setText((index + 1) + '. ' + user.nickName);
             this.make.text({
                 x: 300,
                 y: 100 + (index * 50),
-                text: level.points + '',
+                text: user.totalPoints + '',
                 style: { font: 'bold 40px Arial', color: '#ffffff' }
             });
         }

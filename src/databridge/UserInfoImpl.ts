@@ -52,14 +52,24 @@ export class UserInfoImpl {
         return docSnap.size;
     }
 
-    async update(uid: string, nextLevel: LevelType, points: number, title: TitleType) : Promise<void> {
+    async updateLevelPointTitle(uid: string, nextLevel: LevelType, points: number, totalPoints: number, title: TitleType) : Promise<void> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
         const docRef = doc(collectionRef, uid);
         return await updateDoc(docRef, {
             level: nextLevel,
             points: points,
+            totalPoints: totalPoints,
             title: title,
             update_time: serverTimestamp()
+        });
+    }
+
+    async updateTotalPoints(uid: string, points: number) : Promise<void> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docRef = doc(collectionRef, uid);
+        return await updateDoc(docRef, {
+            totalPoints: points,
+            assign_group_time: serverTimestamp()
         });
     }
 
@@ -102,6 +112,23 @@ export class UserInfoImpl {
         const docRef = doc(collectionRef, uid);
         return await updateDoc(docRef, {
             isPostExternalLink: true,
+        });
+    }
+
+    async getAllOrderByPoint() : Promise<any[]> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docQuery = query(collectionRef, orderBy("totalPoints", "desc"));
+        const docSnap = await getDocs(docQuery);
+        return new Promise((resolve, reject) => {
+            if (!docSnap.empty) {
+                var ret: Array<any> = [];
+                docSnap.forEach(doc => {
+                    ret.push(doc.data());
+                })
+                resolve(ret);
+            } else {
+                reject('No any user!');
+            }
         });
     }
 }

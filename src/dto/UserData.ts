@@ -8,6 +8,7 @@ export class UserData {
     level: LevelType;
     group: GroupType;
     points: number;
+    totalPoints: number;
     title: TitleType;
     entranceScore: number;
     isPreExternalLink: boolean;
@@ -27,6 +28,7 @@ export class UserDataBuilder {
             level: LevelType.DEPOSIT,
             group: null,
             points: 0,
+            totalPoints: 0,
             title: TitleType.T1,
             entranceScore: -1,
             isPreExternalLink: false,
@@ -58,6 +60,11 @@ export class UserDataBuilder {
 
     points(points: number): UserDataBuilder {
         this._UserData.points = points;
+        return this;
+    }
+
+    totalPoints(points: number): UserDataBuilder {
+        this._UserData.totalPoints = points;
         return this;
     }
 

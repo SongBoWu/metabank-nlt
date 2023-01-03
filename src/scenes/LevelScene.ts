@@ -1,5 +1,6 @@
 import { GroupType } from "../const/GroupType";
 import { RoundMode } from "../const/RoundMode";
+import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { LibraryImpl } from "../databridge/LibraryImpl";
 import { QuizImpl } from "../databridge/QuizImpl";
 import { LogicController } from "../domain/LogicController";
@@ -12,8 +13,10 @@ import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 export class LevelScene extends BaseLogPanelScene {
 
+  // DB impl
   private quizImpl: QuizImpl;
   private libImpl: LibraryImpl;
+  private levelApi: LevelInfoImpl;
 
   // private needToLearn: Boolean;
   
@@ -21,6 +24,7 @@ export class LevelScene extends BaseLogPanelScene {
     super('LevelScene');
     this.quizImpl = new QuizImpl();
     this.libImpl = new LibraryImpl();
+    this.levelApi = new LevelInfoImpl();
   }
 
   override preload(): void {
@@ -136,7 +140,7 @@ export class LevelScene extends BaseLogPanelScene {
         LogicController.getInstance().setNecessaryToLearn(false);
         LogicController.getInstance().increaseTimesOfPrac();
         
-        // TODO, server api 
+        this.levelApi.update(LogicController.getInstance().getCurrentLevel());
 
     } else if (data.from == 'RoundScene') {
         LogicController.getInstance().setNecessaryToLearn(true);
