@@ -137,6 +137,7 @@ export class GratzScene extends Phaser.Scene {
         var conf = new BannerConf();
         conf.isName = false;
         conf.isPoint = false;
+        conf.curScene = 'GratzScene';
         eventsCenter.emit('onSettingUpdated', conf);
     }
 }

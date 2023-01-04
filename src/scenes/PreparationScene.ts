@@ -51,7 +51,7 @@ export class PreparationScene extends Phaser.Scene {
     create(data?: any): void {
 
         this.add.image(512, 384, 'welcome_bg');
-        // this.scene.launch('SettingsScene');
+        this.scene.launch('SettingsScene');
 
         var user = DatabaseCore.getInstance().getAuthImpl().getUser();
 
@@ -232,7 +232,7 @@ export class PreparationScene extends Phaser.Scene {
         if (levels.get(LevelType.PREXAM).status == LevelStatus.FINISHED && user.isPreVKSDone) {
             for (let level of levels.values()) {
                 if (!this.findUnFinished && level.status != LevelStatus.FINISHED) {
-                    this.scene.start('WelcomeScene');
+                    // this.scene.start('WelcomeScene');
                     this.findUnFinished = true;
                 }
             }
@@ -285,8 +285,10 @@ export class PreparationScene extends Phaser.Scene {
 
     private showBanner(): void {
         var conf = new BannerConf();
-        conf.isBadge = true;
-        conf.isExit = true;
+        conf.isBadge = false;
+        conf.isHitoBoard = false;
+        conf.isExit = false;
+        conf.curScene = 'PreparationScene';
         eventsCenter.emit('onSettingUpdated', conf);
     }
 }

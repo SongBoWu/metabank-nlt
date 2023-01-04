@@ -1,8 +1,5 @@
 import { GameObjects } from "phaser";
-import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
-import { LogicController } from "../domain/LogicController";
-import { Level, LevelType } from "../dto/LevelInfo";
 import { UserData } from "../dto/UserData";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
@@ -42,6 +39,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
         backToMain.setInteractive();
         backToMain.on('pointerdown', () => {
             this.scene.stop('LeaderboardScene');
+            this.scene.resume(data.from);
         });
 
         this.scene.launch('LoadingScene');

@@ -148,7 +148,26 @@ export class LevelScene extends BaseLogPanelScene {
     }
 
     this.showLog(JSON.stringify(curLevel));
+
+    this.events.addListener('resume', this.resume.bind(this));
+    this.events.addListener('pause', this.pause.bind(this));
+
+    // clean up when Scene is shutdown
+    this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.events.removeListener('resume');
+      this.events.removeListener('pause');
+    })
   }
+
+  resume(): void {
+      console.log('[LevelScene][resume]');
+
+  } 
+
+  private pause(): void {
+      console.log('[LevelScene][pause]');
+  }
+  
 
   private showBanner(): void {
     var conf = new BannerConf();
@@ -157,6 +176,7 @@ export class LevelScene extends BaseLogPanelScene {
     conf.isHitoBoard = true;
     conf.isExit = true;
     conf.isInLevel = true;
+    conf.curScene = 'LevelScene';
     eventsCenter.emit('onSettingUpdated', conf);
   }
 }

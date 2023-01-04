@@ -19,7 +19,7 @@ export class SettingsScene extends Phaser.Scene {
     private yCoord_txt: number = -3;
     private xCoord_txt: number[] = [0, 382, 0, 0];
 
-    private banner_item_status: BannerConf;
+    private bannerConfig: BannerConf;
 
     private userIcon: GameObjects.Image;
     private userName: GameObjects.Text;
@@ -54,7 +54,7 @@ export class SettingsScene extends Phaser.Scene {
     }
 
     create(): void {
-        
+        console.log('[SettingsScene] onCreate');
 
         this.add.rectangle(512, 20, 1024, 40, 0xffffff);
 
@@ -82,8 +82,9 @@ export class SettingsScene extends Phaser.Scene {
         this.hitoHoverIcon.setVisible(false);
         this.hitoIcon.setInteractive();
         this.hitoIcon.on('pointerdown', () => {
+            this.scene.pause(this.bannerConfig.curScene);
             this.scene.run('LeaderboardScene', {
-                from: 'LevelScene',
+                from: this.bannerConfig.curScene,
             })
         });
         this.hitoIcon.on('pointerover', () => { this.hitoHoverIcon.setVisible(true); });
@@ -95,7 +96,7 @@ export class SettingsScene extends Phaser.Scene {
         this.exitHoverIcon.setVisible(false);
         this.exitIcon.setInteractive();
         this.exitIcon.on('pointerdown', () => {
-            if (this.banner_item_status && this.banner_item_status.isInLevel) {
+            if (this.bannerConfig && this.bannerConfig.isInLevel) {
                 this.scene.stop('LevelScene');
                 this.scene.resume('WelcomeScene');
             } else {
@@ -139,8 +140,8 @@ export class SettingsScene extends Phaser.Scene {
     }
 
     private updateIcon(conf: BannerConf): void {
-        // console.log('[Banner] receive: ' + JSON.stringify(conf));
-        this.banner_item_status = conf;
+        console.log('[SettingsScene] receive: ' + JSON.stringify(conf));
+        this.bannerConfig = conf;
 
         // User icon
         this.userIcon.setVisible(conf.isName);

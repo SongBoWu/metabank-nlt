@@ -262,6 +262,7 @@ export class RoundScene extends BaseLogPanelScene {
         var conf = new BannerConf();
         conf.isPoint = true;
         conf.isHitoBoard = true;
+        conf.curScene = 'RoundScene';
         eventsCenter.emit('onSettingUpdated', conf);
     }
 
