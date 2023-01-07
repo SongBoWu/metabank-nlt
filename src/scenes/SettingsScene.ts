@@ -26,7 +26,7 @@ export class SettingsScene extends Phaser.Scene {
     private dollarIcon: GameObjects.Image;
     private points: GameObjects.BitmapText;
     private badgeIcon: GameObjects.Image;
-    private title: GameObjects.BitmapText;
+    private title: GameObjects.Text;
     private hitoIcon: GameObjects.Image;
     private hitoHoverIcon: GameObjects.Image;
     private exitIcon: GameObjects.Image;
@@ -64,7 +64,7 @@ export class SettingsScene extends Phaser.Scene {
             x: 62,
             y: 0,
             text: '',
-            style: { font: 'bold 32px Arial', color: '#f2c81f' }
+            style: { font: 'bold 32px Arial', color: '#000000' }
         });
 
         this.dollarIcon = this.add.image(350, 16, 'dollar_icon');
@@ -74,7 +74,12 @@ export class SettingsScene extends Phaser.Scene {
 
         // Badge info
         this.badgeIcon = this.add.image(650, 16, 'badge_icon');
-        this.title = this.add.bitmapText(682, -3, 'desyrel', '', 32);
+        this.title = this.make.text({
+            x: 680,
+            y: 0,
+            text: '',
+            style: { font: 'bold 32px Arial', color: '#000000' }
+        });
 
         // Hito bulletin
         this.hitoIcon = this.add.image(940, 16, 'hito_icon');
