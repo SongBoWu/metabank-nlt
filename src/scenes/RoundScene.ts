@@ -48,6 +48,7 @@ export class RoundScene extends BaseLogPanelScene {
         this.load.html('desc_panel', 'assets/quiz_detail.html');
         this.load.image('button_bg', 'assets/opt_btn.png'); // #dfebe0
         this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #1a3d1d
+        this.load.image('nextIcon', 'assets/icons/next_64.png');
 
         this.load.audio('awardAudio', 'assets/audios/award.wav');
         this.load.audio('wrongAudio', 'assets/audios/wrongAnswer.mp3');
@@ -78,10 +79,10 @@ export class RoundScene extends BaseLogPanelScene {
         this.gameOverCamera = this.cameras.add(0, 0, 1024, 768);
 
         var btn_x_coord = [250, 750];
-        var btn_y_coord = [550, 650];
+        var btn_y_coord = [500, 600];
 
         var text_x_coord = [65, 565];
-        var text_y_coord = [535, 635];
+        var text_y_coord = [485, 585];
 
         for(var x_cor = 0; x_cor < btn_x_coord.length; x_cor ++) {
             for (var y_cor = 0; y_cor < btn_y_coord.length; y_cor ++) {
@@ -100,8 +101,6 @@ export class RoundScene extends BaseLogPanelScene {
                 
                 var btn = this.optBtns.at(index);
                 var btn_hover = this.optBtnHovers.at(index);
-
-                btn.setInteractive();
                 btn_hover.setVisible(false);
 
                 btn.on('pointerdown', this.onOptionClickListener.bind(this, index) );
@@ -111,6 +110,10 @@ export class RoundScene extends BaseLogPanelScene {
         }
 
         this.setOptButtonsData();
+
+        var nextBtn = this.add.image(100, 700, 'nextIcon');
+        nextBtn.setInteractive();
+        nextBtn.on('pointerdown', this.OnNextBtnClickListener.bind(this));
 
         this.heartIcon = this.add.image(50, 90, 'heart_icon');
         this.heartEmptyIcon = this.add.image(50, 90, 'heart_empty_icon');
@@ -136,6 +139,7 @@ export class RoundScene extends BaseLogPanelScene {
 
         for(var index = 0; index < this.optTexts.length; index++) {
             this.optTexts[index].setText(this.getOptionIDfrom(index) + '. ' + this.currentQuiz.options[index].description);
+            this.optBtns.at(index).setInteractive();
         }
     }
 
@@ -143,10 +147,11 @@ export class RoundScene extends BaseLogPanelScene {
         var clickOpt = this.getOptionIDfrom(oid);
         this.showLog('You clicked option ' + clickOpt);
         LogicController.getInstance().verify(clickOpt, this.onAwarded.bind(this), this.onPunished.bind(this), this.onBonus.bind(this));
+
+        for(var index = 0; index < this.optBtns.length; index++) {
+            this.optBtns.at(index).disableInteractive();
+        }
         
-        // Move to next quiz
-        this.currentQuiz = LogicController.getInstance().nextQuiz();
-        this.setOptButtonsData();
     }
 
     private onOptionBtnHoverIn(index: number): void {
@@ -157,6 +162,12 @@ export class RoundScene extends BaseLogPanelScene {
     private onOptionBtnHoverOut(index: number): void {
         this.optBtnHovers[index].setVisible(false);
         this.optTexts[index].setColor('#1a3d1d');
+    }
+
+    private OnNextBtnClickListener(): void {
+        // Move to next quiz
+        this.currentQuiz = LogicController.getInstance().nextQuiz();
+        this.setOptButtonsData();
     }
 
     private onVerified(): void {
