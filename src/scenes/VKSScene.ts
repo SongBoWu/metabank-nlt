@@ -51,6 +51,7 @@ export class VKSScene extends BaseLogPanelScene {
 
         this.load.image('radioIcon', 'assets/icons/radio_32.png');
         this.load.image('radioCheckedIcon', 'assets/icons/radio_checked_32.png');
+        this.load.image('nextIcon', 'assets/icons/next_64.png');
         this.load.html('vks_panel', 'assets/htmls/vks.html');
     }
 
@@ -142,12 +143,7 @@ export class VKSScene extends BaseLogPanelScene {
             this.showLog('[VKSScene][AllBasicWords] ' + JSON.stringify(err));
         });
 
-        var nextBtn = this.make.text({
-            x: 100,
-            y: txtY + 60 * 6.5,
-            text: 'Next......',
-            style: { font: '30px verdana', color: '#000000' }
-        });
+        var nextBtn = this.add.image(100, txtY + 60 * 6.5, 'nextIcon');
         nextBtn.setInteractive();
         nextBtn.on('pointerdown', this.onNextBtnClicked.bind(this));
     }
