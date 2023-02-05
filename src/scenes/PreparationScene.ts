@@ -86,6 +86,7 @@ export class PreparationScene extends Phaser.Scene {
         this.entranceIcon = this.add.image(250, 200, 'entrance_icon');
         this.entranceIcon.setScale(0.8, 0.8);
         this.entranceIcon.removeInteractive();
+        this.entranceIcon.setAlpha(0.5);
         this.entranceIcon.on('pointerdown', () => {
             LogicController.getInstance().setCurrentLevel(LevelType.PREXAM);
             this.scene.start('EntranceExamScene');
@@ -94,6 +95,7 @@ export class PreparationScene extends Phaser.Scene {
         this.externalLinkIcon = this.add.image(750, 200, 'link_icon');
         this.externalLinkIcon.setScale(0.8, 0.8);
         this.externalLinkIcon.removeInteractive();
+        this.externalLinkIcon.setAlpha(0.5);
         this.externalLinkIcon.on('pointerdown', () => {
             console.log('[Preparation] external link clicked!');
             var userData = LogicController.getInstance().getUser();
@@ -118,6 +120,7 @@ export class PreparationScene extends Phaser.Scene {
         this.vksIcon = this.add.image(750, 600, 'vks_icon');
         this.vksIcon.setScale(0.8, 0.8);
         this.vksIcon.removeInteractive();
+        this.vksIcon.setAlpha(0.5);
         this.vksIcon.on('pointerdown', () => {
             console.log('[Preparation] vks clicked! ');
             this.scene.start('VKSScene', {
@@ -128,6 +131,7 @@ export class PreparationScene extends Phaser.Scene {
         this.mainGameIcon = this.add.image(250, 600, 'game_icon');
         this.mainGameIcon.setScale(0.8, 0.8);
         this.mainGameIcon.removeInteractive();
+        this.mainGameIcon.setAlpha(0.5);
         this.mainGameIcon.on('pointerdown', () => {
             this.scene.start('WelcomeScene');
         })
@@ -145,29 +149,38 @@ export class PreparationScene extends Phaser.Scene {
         this.scene.stop('LoadingScene');
 
         // Start arrow
-        this.arrowDoneIcons.at(0).setVisible(true);
+        // this.arrowIcons.at(0).setVisible(false);
+        // this.arrowDoneIcons.at(0).setVisible(true);
 
         // Exam -> link
         if (userData.entranceScore != -1) {
-            this.arrowDoneIcons.at(1).setVisible(true);
+            this.arrowDoneIcons.at(0).setVisible(true);
 
             this.entranceIcon.removeInteractive();
+            this.entranceIcon.setAlpha(0.5);
             this.externalLinkIcon.setInteractive();
+            this.externalLinkIcon.setAlpha(1);
         } else {
             this.entranceIcon.setInteractive();
+            this.entranceIcon.setAlpha(1);
             this.externalLinkIcon.removeInteractive();
+            this.externalLinkIcon.setAlpha(0.5);
         }
 
         // Link -> survey
         if (userData.entranceScore != -1) {
             if (userData.isPreExternalLink) {
-                this.arrowDoneIcons.at(2).setVisible(true);
+                this.arrowDoneIcons.at(1).setVisible(true);
     
                 this.externalLinkIcon.removeInteractive();
+                this.externalLinkIcon.setAlpha(0.5);
                 this.vksIcon.setInteractive();
+                this.vksIcon.setAlpha(1);
             } else {
                 this.externalLinkIcon.setInteractive();
+                this.externalLinkIcon.setAlpha(1);
                 this.vksIcon.removeInteractive();
+                this.vksIcon.setAlpha(0.5);
             }
         }
         
@@ -176,13 +189,17 @@ export class PreparationScene extends Phaser.Scene {
         // survey -> game
         if (userData.entranceScore != -1 && userData.isPreExternalLink) {
             if (userData.isPreVKSDone) {
-                this.arrowDoneIcons.at(3).setVisible(true);
+                this.arrowDoneIcons.at(2).setVisible(true);
     
                 this.vksIcon.removeInteractive();
+                this.vksIcon.setAlpha(0.5);
                 this.mainGameIcon.setInteractive();
+                this.mainGameIcon.setAlpha(1);
             } else {
                 this.vksIcon.setInteractive();
+                this.vksIcon.setAlpha(1);
                 this.mainGameIcon.removeInteractive();
+                this.mainGameIcon.setAlpha(0.5);
             }
         }
     
@@ -191,12 +208,15 @@ export class PreparationScene extends Phaser.Scene {
         if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone) {
             this.autoRedirectToMain();
             if (!this.findUnFinished) {
-                this.arrowDoneIcons.at(4).setVisible(true);
+                this.arrowDoneIcons.at(3).setVisible(true);
     
                 this.mainGameIcon.removeInteractive();
+                this.mainGameIcon.setAlpha(0.5);
                 this.vksIcon.setInteractive();
+                this.vksIcon.setAlpha(1);
             } else {
                 this.mainGameIcon.setInteractive();
+                this.mainGameIcon.setAlpha(1);
             }
         }
         
@@ -205,13 +225,17 @@ export class PreparationScene extends Phaser.Scene {
         // survey -> link
         if (userData.entranceScore != -1 && userData.isPreExternalLink && userData.isPreVKSDone && !this.findUnFinished) {
             if (userData.isPostVKSDone) {
-                this.arrowDoneIcons.at(5).setVisible(true);
+                this.arrowDoneIcons.at(4).setVisible(true);
     
                 this.vksIcon.removeInteractive();
+                this.vksIcon.setAlpha(0.5);
                 this.externalLinkIcon.setInteractive();
+                this.externalLinkIcon.setAlpha(1);
             } else {
                 this.vksIcon.setInteractive();
+                this.vksIcon.setAlpha(1);
                 this.externalLinkIcon.removeInteractive();
+                this.externalLinkIcon.setAlpha(0.5);
             }
         }
 
@@ -219,6 +243,7 @@ export class PreparationScene extends Phaser.Scene {
             && userData.isPostVKSDone) {
             if (userData.isPostExternalLink) {
                 this.externalLinkIcon.removeInteractive();
+                this.externalLinkIcon.setAlpha(0.5);
             }
         }
         
@@ -256,7 +281,7 @@ export class PreparationScene extends Phaser.Scene {
         arrowGameToSurvey.setRotation(1);
         
 
-        this.arrowObjects.push(arrowStart);
+        // this.arrowObjects.push(arrowStart);
         this.arrowObjects.push(arrowExamToLink);
         this.arrowObjects.push(arrowLinkToSurvey);
         this.arrowObjects.push(arrowSurveyToGame);
@@ -281,6 +306,9 @@ export class PreparationScene extends Phaser.Scene {
             this.arrowIcons[index] = arrowIcon;
             this.arrowDoneIcons[index] = arrowDoneIcon;
         }
+
+        // this.arrowIcons.at(0).setVisible(false);
+        // this.arrowDoneIcons.at(0).setVisible(false);
     }
 
     private showBanner(): void {
