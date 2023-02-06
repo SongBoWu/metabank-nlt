@@ -10,6 +10,7 @@ export enum OptionID {
 export class Option {
     id: OptionID;
     description: string;
+    isAnswer: Boolean;
 }
 
 export class Quiz {
@@ -32,19 +33,23 @@ export class QuizBuilder {
             options: [
                 {
                     id: OptionID.A,
-                    description: 'option A'
+                    description: 'option A',
+                    isAnswer: false
                 },
                 {
                     id: OptionID.B,
-                    description: 'option B'
+                    description: 'option B',
+                    isAnswer: false
                 },
                 {
                     id: OptionID.C,
-                    description: 'option C'
+                    description: 'option C',
+                    isAnswer: false
                 },
                 {
                     id: OptionID.D,
-                    description: 'option D'
+                    description: 'option D',
+                    isAnswer: false
                 }
             ],
             answer: OptionID.A,

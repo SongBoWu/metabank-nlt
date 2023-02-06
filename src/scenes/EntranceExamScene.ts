@@ -121,13 +121,13 @@ export class EntranceExamScene extends BaseLogPanelScene {
 
         for(var index = 0; index < this.optTexts.length; index++) {
             this.optTexts[index].setText(this.getOptionIDfrom(index) + '. ' + this.currentQuiz.options[index].description);
+            this.optTexts[index].setData('optionData', this.currentQuiz.options[index]);
         }
     }
 
     protected onOptionClickListener(oid: number): void {
-        var clickOpt = this.getOptionIDfrom(oid);
-        this.showLog('You clicked option ' + clickOpt);
-        LogicController.getInstance().verify(clickOpt, this.onAwarded.bind(this), this.onPunished.bind(this), this.onBonus.bind(this));
+        var selectedOption = this.optTexts.at(oid).getData('optionData');
+        LogicController.getInstance().verify(selectedOption, this.onAwarded.bind(this), this.onPunished.bind(this), this.onBonus.bind(this));
         this.currentQuiz = LogicController.getInstance().nextQuiz();
         this.setOptButtonsData();
     }

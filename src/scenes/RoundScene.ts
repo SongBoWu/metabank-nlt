@@ -22,6 +22,7 @@ export class RoundScene extends BaseLogPanelScene {
     private optBtns: GameObjects.Image[] = [];
     private optBtnHovers: GameObjects.Image[] = [];
     private optTexts: GameObjects.Text[] = [];
+    private nextBtn: GameObjects.Image;
 
     // Audio components
     private awardSound: Phaser.Sound.BaseSound;
@@ -109,11 +110,11 @@ export class RoundScene extends BaseLogPanelScene {
             }
         }
 
-        this.setOptButtonsData();
+        this.nextBtn = this.add.image(100, 700, 'nextIcon');
+        this.nextBtn.disableInteractive();
+        this.nextBtn.on('pointerdown', this.OnNextBtnClickListener.bind(this));
 
-        var nextBtn = this.add.image(100, 700, 'nextIcon');
-        nextBtn.setInteractive();
-        nextBtn.on('pointerdown', this.OnNextBtnClickListener.bind(this));
+        this.setOptButtonsData();
 
         this.heartIcon = this.add.image(50, 90, 'heart_icon');
         this.heartEmptyIcon = this.add.image(50, 90, 'heart_empty_icon');
@@ -139,19 +140,20 @@ export class RoundScene extends BaseLogPanelScene {
 
         for(var index = 0; index < this.optTexts.length; index++) {
             this.optTexts[index].setText(this.getOptionIDfrom(index) + '. ' + this.currentQuiz.options[index].description);
+            this.optTexts[index].setData('optionData', this.currentQuiz.options.at(index));
             this.optBtns.at(index).setInteractive();
         }
+        this.nextBtn.disableInteractive();
     }
 
     private onOptionClickListener(oid: number): void {
-        var clickOpt = this.getOptionIDfrom(oid);
-        this.showLog('You clicked option ' + clickOpt);
-        LogicController.getInstance().verify(clickOpt, this.onAwarded.bind(this), this.onPunished.bind(this), this.onBonus.bind(this));
+        var selectedOption = this.optTexts.at(oid).getData('optionData');
+        LogicController.getInstance().verify(selectedOption, this.onAwarded.bind(this), this.onPunished.bind(this), this.onBonus.bind(this));
 
         for(var index = 0; index < this.optBtns.length; index++) {
             this.optBtns.at(index).disableInteractive();
         }
-        
+        this.nextBtn.setInteractive();
     }
 
     private onOptionBtnHoverIn(index: number): void {

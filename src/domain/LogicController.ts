@@ -1,7 +1,7 @@
 import { GroupType } from "../const/GroupType";
 import { Level, LevelType } from "../dto/LevelInfo";
 import { Library } from "../dto/Library";
-import { OptionID, Quiz, QuizBuilder } from "../dto/Quiz";
+import { Option, OptionID, Quiz, QuizBuilder } from "../dto/Quiz";
 import { UserData } from "../dto/UserData";
 import { DepoProperties, ForexProperties, ILevelProperties, LoanProperties, PrexamProperties } from "./ILevelProperties";
 
@@ -164,21 +164,27 @@ export class LogicController {
     }
 
     private getCurrentQuiz(): Quiz {
-        if (this.amountOfBonusQuiz > 0) {
-            return this.bonusQuiz.at(this.bonusQuizIndex);
-        } else {
-            let index = this.regularQuizOrder.at(this.currentQuizIndex);
-            return this.regularQuiz.at(index);
-        }
+        var curQuiz = this.amountOfBonusQuiz > 0
+            ? this.bonusQuiz.at(this.bonusQuizIndex)
+            : this.regularQuiz.at(this.regularQuizOrder.at(this.currentQuizIndex));
+
+        let optionRandom = this.mutableRandom(4);
+        let newOptions : Option[] = [
+            curQuiz.options.at(optionRandom.at(0)),
+            curQuiz.options.at(optionRandom.at(1)),
+            curQuiz.options.at(optionRandom.at(2)),
+            curQuiz.options.at(optionRandom.at(3)),
+        ]
+        curQuiz.options = newOptions;
+        return curQuiz;
     }
 
     public getCurrentQuizNumber(): number {
         return (this.currentQuizIndex + 1) + (this.bonusQuizIndex + 1);
     }
 
-    public verify(option: OptionID, onAward: Function, onPenalty: Function, onBonus: Function): void {
-        var curQuiz = this.getCurrentQuiz();
-        var bingo = (option == curQuiz.answer);
+    public verify(option: Option, onAward: Function, onPenalty: Function, onBonus: Function): void {
+        var bingo = option.isAnswer;
 
         this.getCurrentLevel().points += bingo ? this.levelConfig.pointAward : this.levelConfig.pointPenalty;
         console.log('[LogicControl] point: ' + this.getCurrentLevel().points);
@@ -200,14 +206,14 @@ export class LogicController {
                 }
             }
 
-            onAward && onAward(option.toString());
+            onAward && onAward(option.description);
         } else {
             if (this.combo > 0) {
                 this.combo --;
             }
 
             this.remains --;
-            onPenalty && onPenalty(option.toString(), this.remains);
+            onPenalty && onPenalty(option.description, this.remains);
             if (this.remains == 0) {
                 this.onGameOverCallback();
             }

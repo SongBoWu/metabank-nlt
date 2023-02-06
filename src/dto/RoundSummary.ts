@@ -7,7 +7,6 @@ import { OptionID } from "./Quiz";
 
 export class RoundSlice {
     qid: string;
-    answer: string;
     selection: string;
     isCorrect: boolean;
 }
@@ -24,7 +23,6 @@ export class RoundSliceBuilder {
     constructor() {
         this._rslice = {
             qid: '',
-            answer: '',
             selection: '',
             isCorrect: false
         }
@@ -32,11 +30,6 @@ export class RoundSliceBuilder {
 
     id(id: string): RoundSliceBuilder {
         this._rslice.qid = id;
-        return this;
-    }
-
-    answer(answer: string): RoundSliceBuilder {
-        this._rslice.answer = answer;
         return this;
     }
 
