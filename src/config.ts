@@ -23,6 +23,12 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 }
     }
   },
+  scale: {
+    parent: 'game',
+    mode: Phaser.Scale.FIT,
+    width: 1024,
+    height: 768
+  },
   parent: 'game',
   dom: {
     createContainer: true
