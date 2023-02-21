@@ -5,5 +5,7 @@ export class BannerConf {
     public isHitoBoard: boolean = false;
     public isExit: boolean = false;
     public isInLevel: boolean = false;
+    public isInLeaderboard: boolean = false;
+    public isInHistory: boolean = false;
     public curScene: string;
 }

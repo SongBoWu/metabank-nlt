@@ -81,6 +81,7 @@ export class FarmScene extends BaseLogPanelScene {
                 .build();
         });
         this.libPanelElement = this.add.dom(350, 125).createFromCache('lib_panel');
+        this.libPanelElement.setVisible(true);
 
         var btn_coord_y = 650;
         this.nextBtn = this.add.image(600, btn_coord_y, 'nextBtnIcon');
@@ -120,6 +121,24 @@ export class FarmScene extends BaseLogPanelScene {
         });
 
         this.updateLibContentAndUI();
+
+        this.events.addListener('resume', this.resume.bind(this));
+        this.events.addListener('pause', this.pause.bind(this));
+        this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.events.removeListener('resume');
+            this.events.removeListener('pause');
+        });
+    }
+
+    resume(): void {
+        console.log('[RoundScene][resume]');
+        this.showBanner();
+        this.libPanelElement.setVisible(true);
+    } 
+  
+    private pause(): void {
+        console.log('[RoundScene][pause]');
+        this.libPanelElement.setVisible(false);
     }
 
     private updateLibContentAndUI(): void {
@@ -179,6 +198,7 @@ export class FarmScene extends BaseLogPanelScene {
         console.log('[FarmScene][onUploadLogFail] ' + JSON.stringify(e));
 
     }
+
 
     private writeCollection(): void {
         var lib_arti = this.cache.text.get('library_artifact');

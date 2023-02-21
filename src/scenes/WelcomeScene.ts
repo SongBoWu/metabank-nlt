@@ -81,10 +81,11 @@ export class WelcomeScene extends BaseLogPanelScene {
 
 
         this.events.addListener('resume', this.resume.bind(this));
-
+        this.events.addListener('pause', this.pause.bind(this));
         this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
             console.log('[WelcomeScene][SHUTDOWN]');
             this.events.removeListener('resume');
+            this.events.removeListener('pause');
         });
 
         // var goGratzBtn = this.make.text({
@@ -100,6 +101,15 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     }
 
+    resume(): void {
+        console.log('[WelcomeScene][resume]');
+        this.showBanner();
+    } 
+
+    private pause(): void {
+        console.log('[WelcomeScene][pause]');
+    }
+
     private runLevelScene(type: LevelType): void {
         LogicController.getInstance().setCurrentLevel(type);
         this.scene.pause();
@@ -109,11 +119,6 @@ export class WelcomeScene extends BaseLogPanelScene {
             levelType: type,
         });
     }
-
-    resume(): void {
-        console.log('[WelcomeScene][resume]');
-        this.showBanner();
-    } 
 
     protected override onNetworkOnline(event: Event): void {
         // TODO

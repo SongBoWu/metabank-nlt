@@ -48,9 +48,9 @@ export class SettingsScene extends Phaser.Scene {
         this.load.image('hito_icon_hover', 'assets/leaderboard_hover.png');
         this.load.image('exit_icon', 'assets/logout.png');
         this.load.image('exit_icon_hover', 'assets/logout_hover.png');
-        this.load.image('dollar_icon', 'assets/dollar.png');
+        this.load.image('dollar_icon', 'assets/icons/scoreboard.png');
         
-        this.load.text('quizTable', 'assets/data/quiz_2.txt');
+        //this.load.text('quizTable', 'assets/data/quiz_2.txt');
     }
 
     create(): void {
@@ -88,6 +88,7 @@ export class SettingsScene extends Phaser.Scene {
         this.hitoIcon.setInteractive();
         this.hitoIcon.on('pointerdown', () => {
             this.scene.pause(this.bannerConfig.curScene);
+            // eventsCenter.emit('onHTMLHided', true);
             this.scene.run('LeaderboardScene', {
                 from: this.bannerConfig.curScene,
             })
@@ -104,8 +105,14 @@ export class SettingsScene extends Phaser.Scene {
             if (this.bannerConfig && this.bannerConfig.isInLevel) {
                 this.scene.stop('LevelScene');
                 this.scene.resume('WelcomeScene');
+            } else if (this.bannerConfig && this.bannerConfig.isInLeaderboard) {
+                // TODO
+                this.scene.stop('LeaderboardScene');
+                this.scene.resume(this.bannerConfig.curScene);
+                // eventsCenter.emit('onHTMLHided', false);
             } else {
-                DatabaseCore.getInstance().getAuthImpl().signOut();
+                // TODO
+                // DatabaseCore.getInstance().getAuthImpl().signOut();
             }
         });
         this.exitIcon.on('pointerover', () => { this.exitHoverIcon.setVisible(true); });

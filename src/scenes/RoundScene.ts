@@ -128,7 +128,26 @@ export class RoundScene extends BaseLogPanelScene {
             style: { font: 'bold 28px Arial', color: '#ff5733' }
         })
         this.bonusPopTxt.setVisible(false);
+
+        this.events.addListener('resume', this.resume.bind(this));
+        this.events.addListener('pause', this.pause.bind(this));
+        this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.events.removeListener('resume');
+            this.events.removeListener('pause');
+        });
     }
+
+    resume(): void {
+        console.log('[RoundScene][resume]');
+        this.showBanner();
+        this.descPanelElement.setVisible(true);
+    } 
+  
+    private pause(): void {
+        console.log('[RoundScene][pause]');
+        this.descPanelElement.setVisible(false);
+    }
+    
 
     private setOptButtonsData(): void {
         this.showLog(this.currentQuiz.description);
@@ -251,6 +270,10 @@ export class RoundScene extends BaseLogPanelScene {
         }
     }
 
+    private onHTMLHided(isHide: boolean) {
+        this.descPanelElement.setVisible(!isHide);
+    }
+
     private getOptionIDfrom(index: number): OptionID {
         var optionId;
         switch(index) {
@@ -299,11 +322,11 @@ export class RoundScene extends BaseLogPanelScene {
     }
 
     private onUploadLogSuccess(collectionId: string) {
-        console.log('[FarmScene][onUploadLogSuccess] ' + collectionId);
+        console.log('[RoundScene][onUploadLogSuccess] ' + collectionId);
     }
 
     private onUploadLogFail(e: any) {
-        console.log('[FarmScene][onUploadLogFail] ' + JSON.stringify(e));
+        console.log('[RoundScene][onUploadLogFail] ' + JSON.stringify(e));
 
     }
 }

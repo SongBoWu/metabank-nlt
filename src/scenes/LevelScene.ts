@@ -161,7 +161,7 @@ export class LevelScene extends BaseLogPanelScene {
 
   resume(): void {
       console.log('[LevelScene][resume]');
-
+      this.showBanner();
   } 
 
   private pause(): void {
