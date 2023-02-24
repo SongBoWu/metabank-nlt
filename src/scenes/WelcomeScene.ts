@@ -133,7 +133,7 @@ export class WelcomeScene extends BaseLogPanelScene {
         conf.isPoint = false;
         conf.isBadge = true;
         conf.isHitoBoard = true;
-        conf.isExit = true;
+        conf.isExit = false;
         conf.curScene = 'WelcomeScene';
         eventsCenter.emit('onSettingUpdated', conf);
     }

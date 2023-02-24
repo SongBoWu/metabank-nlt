@@ -34,6 +34,8 @@ export class LevelScene extends BaseLogPanelScene {
       this.load.image('challenge_btn_hover', 'assets/che_btn_hover.png');
       this.load.image('practice_btn', 'assets/prac_btn.png');
       this.load.image('practice_btn_hover', 'assets/prac_btn_hover.png');
+      this.load.image('button_bg', 'assets/opt_btn.png'); // #dfebe0
+      this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #1a3d1d
   }
 
   override create(data: any): void {
@@ -62,6 +64,10 @@ export class LevelScene extends BaseLogPanelScene {
       } 
     })
     practiceBtn.on('pointerout', () => { practiceBtnHover.setVisible(false); })
+
+    // practiceBtn.on('pointerdown', this.onOptionClickListener.bind(this, 'practice') );
+    // practiceBtn.on('pointerover', this.onOptionBtnHoverIn.bind(this, 'practice') );
+    // practiceBtn.on('pointerout', this.onOptionBtnHoverOut.bind(this, 'practice') );
 
 
     var challengeBtn = this.add.image(600, 650, 'challenge_btn');
@@ -168,6 +174,17 @@ export class LevelScene extends BaseLogPanelScene {
       console.log('[LevelScene][pause]');
   }
   
+  private onOptionClickListener(type: string): void {
+
+}
+
+private onOptionBtnHoverIn(type: string): void {
+
+}
+
+private onOptionBtnHoverOut(type: string): void {
+
+}
 
   private showBanner(): void {
     var conf = new BannerConf();

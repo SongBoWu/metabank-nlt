@@ -133,7 +133,7 @@ export class PreparationScene extends Phaser.Scene {
         this.mainGameIcon.removeInteractive();
         this.mainGameIcon.setAlpha(0.5);
         this.mainGameIcon.on('pointerdown', () => {
-            this.scene.start('WelcomeScene');
+            this.scene.start('GuideScene');
         })
 
 

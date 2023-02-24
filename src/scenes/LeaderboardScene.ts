@@ -116,7 +116,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
         
         this.make.text({x: baseCoordX,                          y: baseCoordY, text: 'Rank', style: { font: 'bold 32px Arial', color: '#ffffff' }});
         this.make.text({x: baseCoordX + distanceInRow,          y: baseCoordY, text: 'Name', style: { font: 'bold 32px Arial', color: '#ffffff' }});
-        this.make.text({x: baseCoordX + (distanceInRow * 4),    y: baseCoordY, text: 'Points', style: { font: 'bold 32px Arial', color: '#ffffff' }});
+        this.make.text({x: baseCoordX + (distanceInRow * 4),    y: baseCoordY, text: 'Score', style: { font: 'bold 32px Arial', color: '#ffffff' }});
         this.make.text({x: baseCoordX + (distanceInRow * 6),    y: baseCoordY, text: 'Title', style: { font: 'bold 32px Arial', color: '#ffffff' }});
         
         for(var index = 0; index < 10; index ++) {
