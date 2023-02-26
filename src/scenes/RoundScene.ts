@@ -50,9 +50,9 @@ export class RoundScene extends BaseLogPanelScene {
 
         this.load.html('desc_panel', 'assets/quiz_detail.html');
         this.load.image('button_bg', 'assets/opt_btn.png'); // #131393
-        this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #
-        this.load.image('button_wrong_icon', 'assets/opt_btn_wrong.png');
-        this.load.image('button_correct_icon', 'assets/opt_btn_correct.png');
+        this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #?
+        this.load.image('button_wrong_icon', 'assets/opt_btn_wrong.png'); // #?
+        this.load.image('button_correct_icon', 'assets/opt_btn_correct.png'); // #1a3d1d
         this.load.image('nextIcon', 'assets/icons/next_64.png');
 
         this.load.audio('awardAudio', 'assets/audios/award.wav');
@@ -122,6 +122,7 @@ export class RoundScene extends BaseLogPanelScene {
 
         this.nextBtn = this.add.image(100, 700, 'nextIcon');
         this.nextBtn.disableInteractive();
+        this.nextBtn.setVisible(false);
         this.nextBtn.on('pointerdown', this.OnNextBtnClickListener.bind(this));
 
         this.setOptButtonsData();
@@ -175,6 +176,7 @@ export class RoundScene extends BaseLogPanelScene {
             this.optBtnsCorrect.at(index).setVisible(false);
         }
         this.nextBtn.disableInteractive();
+        this.nextBtn.setVisible(false);
     }
 
     private onOptionClickListener(oid: number): void {
@@ -189,6 +191,7 @@ export class RoundScene extends BaseLogPanelScene {
         this.optBtnsWrong[oid].setVisible(selectedOption.isAnswer ? false : true);
 
         this.nextBtn.setInteractive();
+        this.nextBtn.setVisible(true);
     }
 
     private onOptionBtnHoverIn(index: number): void {
@@ -241,6 +244,8 @@ export class RoundScene extends BaseLogPanelScene {
             yoyo: true,
             onComplete: this.bonusPopCallback.bind(this)
         });
+
+        this.descPanelElement.getChildByID('number').innerHTML = LogicController.getInstance().getCurrentQuizNumber() + ' / ' + this.totalAmount;
     }
 
     private bonusPopCallback(): void {
