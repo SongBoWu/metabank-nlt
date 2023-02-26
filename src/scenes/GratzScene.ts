@@ -1,3 +1,4 @@
+import { GameObjects } from "phaser";
 import { TitleType, TitleTypeName, TitleTypePoint } from "../const/TitleType";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
@@ -8,10 +9,16 @@ import { UserData, UserDataBuilder } from "../dto/UserData";
 import eventsCenter from "../plugins/EventsCenter";
 
 export class GratzScene extends Phaser.Scene {
+
+    // DB impl
     private userInfoApi : UserInfoImpl;
     private levelInfoApi : LevelInfoImpl;
     
+    // Data
     private fakeUser : UserData;
+
+    // UI component
+    private nextBtn: GameObjects.Image;
 
     constructor() {
         super('GratzScene');
@@ -25,6 +32,7 @@ export class GratzScene extends Phaser.Scene {
 
     preload(): void {
         this.load.image('badgeColor', 'assets/icons/badge_color_128.png');
+        this.load.image('nextHoverBtnIcon', 'assets/icons/next_hover_64.png');
     }
 
     create(data?: any): void {
@@ -36,17 +44,11 @@ export class GratzScene extends Phaser.Scene {
         var nextLevel = LogicController.getInstance().getNextLevel();
 
 
-        var backToMain = this.make.text({
-            x: 10,
-            y: 500,
-            text: 'Back to Main',
-            style: { font: 'bold 20px Arial', color: '#00ff00' }
-        });
-        backToMain.setInteractive();
-        backToMain.on('pointerdown', () => {
+        this.nextBtn = this.add.image(100, 700, 'nextHoverBtnIcon');
+        this.nextBtn.setInteractive();
+        this.nextBtn.on('pointerdown', () => {
             this.scene.start('WelcomeScene');
         });
-
         
         curLevel.status = LevelStatus.FINISHED;
         if (nextLevel) {
