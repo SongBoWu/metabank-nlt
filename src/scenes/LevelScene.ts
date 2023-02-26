@@ -1,3 +1,4 @@
+import { GameObjects } from "phaser";
 import { GroupType } from "../const/GroupType";
 import { RoundMode } from "../const/RoundMode";
 import { LevelInfoImpl } from "../databridge/LevelInfoImpl";
@@ -18,7 +19,10 @@ export class LevelScene extends BaseLogPanelScene {
   private libImpl: LibraryImpl;
   private levelApi: LevelInfoImpl;
 
-  // private needToLearn: Boolean;
+  // UI components
+  private btns: GameObjects.Image[] = [];
+  private btnHovers: GameObjects.Image[] = [];
+  private btnTxts: GameObjects.Text[] = [];
   
   constructor() {
     super('LevelScene');
@@ -30,12 +34,8 @@ export class LevelScene extends BaseLogPanelScene {
   override preload(): void {
       super.preload();
       this.load.image('level_title_icon', 'assets/level_title4.png');
-      this.load.image('challenge_btn', 'assets/che_btn.png');
-      this.load.image('challenge_btn_hover', 'assets/che_btn_hover.png');
-      this.load.image('practice_btn', 'assets/prac_btn.png');
-      this.load.image('practice_btn_hover', 'assets/prac_btn_hover.png');
-      this.load.image('button_bg', 'assets/opt_btn.png'); // #dfebe0
-      this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #1a3d1d
+      this.load.image('level_button_icon', 'assets/level_btn.png'); // #fcfac0
+      this.load.image('level_button_hover_icon', 'assets/level_btn_hover.png'); // #ada20c
   }
 
   override create(data: any): void {
@@ -43,16 +43,13 @@ export class LevelScene extends BaseLogPanelScene {
     this.showLog('[LevelScene][onCreate] ' + JSON.stringify(data));
     this.showBanner();
 
-    // var titleIcon = this.add.image(250, 200, 'level_title_icon');
-    // titleIcon.setScale(1);
-
-
-    var practiceBtn = this.add.image(400, 650, 'practice_btn');
-    practiceBtn.setScale(1.2);
-    var practiceBtnHover = this.add.image(400, 650, 'practice_btn_hover');
-    practiceBtnHover.setScale(1.2);
-    practiceBtnHover.setVisible(false);
+    var practiceBtn = this.add.image(400, 650, 'level_button_icon');
+    var practiceBtnHover = this.add.image(400, 650, 'level_button_hover_icon');
+    var practiceTxt = this.make.text({x: 360, y: 635, text: '學習區', style: { font: '28px Arial', color: '#ada20c' }});
     practiceBtn.setInteractive();
+    practiceBtn.setScale(1.2, 1);
+    practiceBtnHover.setVisible(false);
+    practiceBtnHover.setScale(1.2, 1);
     practiceBtn.on('pointerdown', () => {
       if (LogicController.getInstance().isNecessaryToLearn()) {
         this.scene.start('FarmScene', { mode: RoundMode.PRACTICE })
@@ -61,21 +58,22 @@ export class LevelScene extends BaseLogPanelScene {
     practiceBtn.on('pointerover', () => { 
       if (LogicController.getInstance().isNecessaryToLearn()) {
         practiceBtnHover.setVisible(true);
+        practiceTxt.setColor('#fcfac0');
       } 
-    })
-    practiceBtn.on('pointerout', () => { practiceBtnHover.setVisible(false); })
+    });
+    practiceBtn.on('pointerout', () => { 
+      practiceBtnHover.setVisible(false); 
+      practiceTxt.setColor('#ada20c');
+    });
 
-    // practiceBtn.on('pointerdown', this.onOptionClickListener.bind(this, 'practice') );
-    // practiceBtn.on('pointerover', this.onOptionBtnHoverIn.bind(this, 'practice') );
-    // practiceBtn.on('pointerout', this.onOptionBtnHoverOut.bind(this, 'practice') );
 
-
-    var challengeBtn = this.add.image(600, 650, 'challenge_btn');
-    challengeBtn.setScale(1.2);
-    var challengeBtnHover = this.add.image(600, 650, 'challenge_btn_hover');
-    challengeBtnHover.setScale(1.2);
-    challengeBtnHover.setVisible(false);
+    var challengeBtn = this.add.image(600, 650, 'level_button_icon');
+    var challengeBtnHover = this.add.image(600, 650, 'level_button_hover_icon');
+    var challengeTxt = this.make.text({x: 560, y: 635, text: '挑戰區', style: { font: '28px Arial', color: '#ada20c' }});
     challengeBtn.setInteractive();
+    challengeBtn.setScale(1.2, 1);
+    challengeBtnHover.setVisible(false);
+    challengeBtnHover.setScale(1.2, 1);
     challengeBtn.on('pointerdown', () => {
       if (!LogicController.getInstance().isNecessaryToLearn()) {
         this.scene.start('RoundScene')
@@ -83,10 +81,14 @@ export class LevelScene extends BaseLogPanelScene {
     });
     challengeBtn.on('pointerover', () => { 
       if (!LogicController.getInstance().isNecessaryToLearn()) {
-        challengeBtnHover.setVisible(true); 
+        challengeBtnHover.setVisible(true);
+        challengeTxt.setColor('#fcfac0');
       }
     })
-    challengeBtn.on('pointerout', () => { challengeBtnHover.setVisible(false); })
+    challengeBtn.on('pointerout', () => { 
+      challengeBtnHover.setVisible(false);
+      challengeTxt.setColor('#ada20c');
+    })
 
 
     var curLevel = LogicController.getInstance().getCurrentLevel();
@@ -173,18 +175,6 @@ export class LevelScene extends BaseLogPanelScene {
   private pause(): void {
       console.log('[LevelScene][pause]');
   }
-  
-  private onOptionClickListener(type: string): void {
-
-}
-
-private onOptionBtnHoverIn(type: string): void {
-
-}
-
-private onOptionBtnHoverOut(type: string): void {
-
-}
 
   private showBanner(): void {
     var conf = new BannerConf();

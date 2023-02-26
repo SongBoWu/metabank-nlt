@@ -21,6 +21,8 @@ export class RoundScene extends BaseLogPanelScene {
     private descPanelElement: GameObjects.DOMElement;
     private optBtns: GameObjects.Image[] = [];
     private optBtnHovers: GameObjects.Image[] = [];
+    private optBtnsWrong: GameObjects.Image[] = [];
+    private optBtnsCorrect: GameObjects.Image[] = [];
     private optTexts: GameObjects.Text[] = [];
     private nextBtn: GameObjects.Image;
 
@@ -47,8 +49,10 @@ export class RoundScene extends BaseLogPanelScene {
         super.preload();
 
         this.load.html('desc_panel', 'assets/quiz_detail.html');
-        this.load.image('button_bg', 'assets/opt_btn.png'); // #dfebe0
-        this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #1a3d1d
+        this.load.image('button_bg', 'assets/opt_btn.png'); // #131393
+        this.load.image('button_hover_bg', 'assets/opt_btn_hover.png'); // #
+        this.load.image('button_wrong_icon', 'assets/opt_btn_wrong.png');
+        this.load.image('button_correct_icon', 'assets/opt_btn_correct.png');
         this.load.image('nextIcon', 'assets/icons/next_64.png');
 
         this.load.audio('awardAudio', 'assets/audios/award.wav');
@@ -92,17 +96,23 @@ export class RoundScene extends BaseLogPanelScene {
 
                 this.optBtns[index] = this.add.image(btn_x_coord.at(x_cor), btn_y_coord.at(y_cor), 'button_bg');
                 this.optBtnHovers[index] = this.add.image(btn_x_coord.at(x_cor), btn_y_coord.at(y_cor), 'button_hover_bg');
+                this.optBtnsWrong[index] = this.add.image(btn_x_coord.at(x_cor), btn_y_coord.at(y_cor), 'button_wrong_icon');
+                this.optBtnsCorrect[index] = this.add.image(btn_x_coord.at(x_cor), btn_y_coord.at(y_cor), 'button_correct_icon');
                 this.optTexts[index] = this.make.text({
                     x: text_x_coord[x_cor],
                     y: text_y_coord[y_cor],
                     text: this.getOptionIDfrom(index) + '. ',
-                    style: { font: 'bold 28px Arial', color: '#1a3d1d' }
+                    style: { font: 'bold 28px Arial', color: '#ffffff' }
                 });
 
                 
                 var btn = this.optBtns.at(index);
                 var btn_hover = this.optBtnHovers.at(index);
+                var btn_wrong = this.optBtnsWrong.at(index);
+                var btn_correct = this.optBtnsCorrect.at(index);
                 btn_hover.setVisible(false);
+                btn_wrong.setVisible(false);
+                btn_correct.setVisible(false);
 
                 btn.on('pointerdown', this.onOptionClickListener.bind(this, index) );
                 btn.on('pointerover', this.onOptionBtnHoverIn.bind(this, index) );
@@ -161,6 +171,8 @@ export class RoundScene extends BaseLogPanelScene {
             this.optTexts[index].setText(this.getOptionIDfrom(index) + '. ' + this.currentQuiz.options[index].description);
             this.optTexts[index].setData('optionData', this.currentQuiz.options.at(index));
             this.optBtns.at(index).setInteractive();
+            this.optBtnsWrong.at(index).setVisible(false);
+            this.optBtnsCorrect.at(index).setVisible(false);
         }
         this.nextBtn.disableInteractive();
     }
@@ -172,17 +184,21 @@ export class RoundScene extends BaseLogPanelScene {
         for(var index = 0; index < this.optBtns.length; index++) {
             this.optBtns.at(index).disableInteractive();
         }
+
+        this.optBtnsCorrect[oid].setVisible(selectedOption.isAnswer ? true : false);
+        this.optBtnsWrong[oid].setVisible(selectedOption.isAnswer ? false : true);
+
         this.nextBtn.setInteractive();
     }
 
     private onOptionBtnHoverIn(index: number): void {
         this.optBtnHovers.at(index).setVisible(true);
-        this.optTexts[index].setColor('#dfebe0');
+        this.optTexts[index].setColor('#131393');
     }
 
     private onOptionBtnHoverOut(index: number): void {
         this.optBtnHovers[index].setVisible(false);
-        this.optTexts[index].setColor('#1a3d1d');
+        this.optTexts[index].setColor('#ffffff');
     }
 
     private OnNextBtnClickListener(): void {
