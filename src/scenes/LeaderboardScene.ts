@@ -79,11 +79,15 @@ export class LeaderboardScene extends BaseLogPanelScene {
 
         var tempRank = 0;
         var tempPoint = 0;
+        var duplicatedUser = 1;
         users.forEach((value, index, array) => {
             
             if (value.totalPoints != tempPoint) {
-                tempRank ++;
+                tempRank = tempRank + duplicatedUser;
                 tempPoint = value.totalPoints;
+                duplicatedUser = 1;
+            } else {
+                duplicatedUser ++;
             }
             var hitoUser = new HitoUserInformation();
             hitoUser.rank = tempRank;
