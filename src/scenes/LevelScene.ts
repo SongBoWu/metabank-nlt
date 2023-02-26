@@ -180,6 +180,7 @@ export class LevelScene extends BaseLogPanelScene {
     var conf = new BannerConf();
     conf.isBadge = true;
     conf.isPoint = true;
+    conf.hasFootprint = true;
     conf.isHitoBoard = true;
     conf.isExit = true;
     conf.isInLevel = true;

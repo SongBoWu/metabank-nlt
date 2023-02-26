@@ -1,4 +1,5 @@
-import { addDoc, collection, doc, Firestore, getFirestore, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, Firestore, getDocs, getFirestore, orderBy, query, setDoc, where } from "firebase/firestore";
+import { HistoryType } from "../dto/historyBase";
 import { PracHistory } from "../dto/PracHistory";
 import { DatabaseCore } from "./DatabaseCore";
 
@@ -27,5 +28,22 @@ export class HistoryImpl {
             console.log('[HistoryImpl] ' + JSON.stringify(e));
             onFailed && onFailed(e);
         }
+    }
+
+    async getRoundHistory(userId: String): Promise<any[]> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docQuery = query(collectionRef, where("uid", "==", userId), where("hType", "==", HistoryType.ROUND), orderBy("date_time", "desc"));
+        const docSnap = await getDocs(docQuery);
+        return new Promise((resolve, reject) => {
+            if (!docSnap.empty) {
+                var ret: Array<any> = [];
+                docSnap.forEach(doc => {
+                    ret.push(doc.data());
+                })
+                resolve(ret);
+            } else {
+                reject('No any user!');
+            }
+        });
     }
 }

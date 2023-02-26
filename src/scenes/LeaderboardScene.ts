@@ -27,7 +27,6 @@ export class LeaderboardScene extends BaseLogPanelScene {
     private titleTxtArray: Phaser.GameObjects.Text[] = [];
     private nextBtn: GameObjects.Image;
     private preBtn: GameObjects.Image;
-    private mainBtn: GameObjects.Image;
     private highLightBackground: GameObjects.Image;
 
     constructor() {
@@ -118,21 +117,21 @@ export class LeaderboardScene extends BaseLogPanelScene {
         var distanceInColumn = 50;
         var distanceInRow = 100;
         
-        this.make.text({x: baseCoordX,                          y: baseCoordY, text: 'Rank', style: { font: 'bold 32px Arial', color: '#ffffff' }});
-        this.make.text({x: baseCoordX + distanceInRow,          y: baseCoordY, text: 'Name', style: { font: 'bold 32px Arial', color: '#ffffff' }});
-        this.make.text({x: baseCoordX + (distanceInRow * 4),    y: baseCoordY, text: 'Score', style: { font: 'bold 32px Arial', color: '#ffffff' }});
-        this.make.text({x: baseCoordX + (distanceInRow * 6),    y: baseCoordY, text: 'Title', style: { font: 'bold 32px Arial', color: '#ffffff' }});
+        this.make.text({x: baseCoordX,                          y: baseCoordY, text: '排名', style: { font: 'bold 32px Arial', color: '#91f7e4' }});
+        this.make.text({x: baseCoordX + distanceInRow,          y: baseCoordY, text: '暱稱', style: { font: 'bold 32px Arial', color: '#91f7e4' }});
+        this.make.text({x: baseCoordX + (distanceInRow * 4),    y: baseCoordY, text: '分數', style: { font: 'bold 32px Arial', color: '#91f7e4' }});
+        this.make.text({x: baseCoordX + (distanceInRow * 6),    y: baseCoordY, text: '頭銜', style: { font: 'bold 32px Arial', color: '#91f7e4' }});
         
         for(var index = 0; index < 10; index ++) {
-            this.rankTxtArray[index] = this.make.text({x: baseCoordX,                           y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 32px Arial', color: '#ffffff' }});
-            this.nameTxtArray[index] = this.make.text({x: baseCoordX + distanceInRow,           y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 32px Arial', color: '#ffffff' }});
-            this.pointTxtArray[index] = this.make.text({x: baseCoordX + (distanceInRow * 4),    y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 32px Arial', color: '#ffffff' }});
-            this.titleTxtArray[index] = this.make.text({x: baseCoordX + (distanceInRow * 6),    y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 32px Arial', color: '#ffffff' }});
+            this.rankTxtArray[index] = this.make.text({x: baseCoordX,                           y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 28px Arial', color: '#ffffff' }});
+            this.nameTxtArray[index] = this.make.text({x: baseCoordX + distanceInRow,           y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 28px Arial', color: '#ffffff' }});
+            this.pointTxtArray[index] = this.make.text({x: baseCoordX + (distanceInRow * 4),    y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 28px Arial', color: '#ffffff' }});
+            this.titleTxtArray[index] = this.make.text({x: baseCoordX + (distanceInRow * 6),    y: baseCoordY + ((index + 1) * distanceInColumn), text: '', style: { font: 'bold 28px Arial', color: '#ffffff' }});
         }
         
 
 
-        this.preBtn = this.add.image(100, 700, 'nextHoverBtnIcon');
+        this.preBtn = this.add.image(400, 700, 'nextHoverBtnIcon');
         this.preBtn.setFlipX(true);
         this.preBtn.disableInteractive();
         this.preBtn.setDepth(3);

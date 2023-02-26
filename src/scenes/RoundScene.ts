@@ -75,6 +75,7 @@ export class RoundScene extends BaseLogPanelScene {
 
         this.currentQuiz = LogicController.getInstance().nextQuiz();
         this.totalAmount = LogicController.getInstance().getCurrentLevelProperty().amountOfQuiz;
+        this.roundSlices = [];
 
         this.descPanelElement = this.add.dom(520, 150).createFromCache('desc_panel');
         this.awardSound = this.sound.add('awardAudio');
@@ -207,6 +208,7 @@ export class RoundScene extends BaseLogPanelScene {
     private OnNextBtnClickListener(): void {
         // Move to next quiz
         this.currentQuiz = LogicController.getInstance().nextQuiz();
+        console.log('[RoundScene][OnNextBtnClickListener] currentQuiz: ' + JSON.stringify(this.currentQuiz.id));
         this.setOptButtonsData();
     }
 
@@ -318,12 +320,14 @@ export class RoundScene extends BaseLogPanelScene {
     private showBanner(): void {
         var conf = new BannerConf();
         conf.isPoint = true;
+        conf.hasFootprint = true;
         conf.isHitoBoard = true;
         conf.curScene = 'RoundScene';
         eventsCenter.emit('onSettingUpdated', conf);
     }
 
     private addRoundSlice(selection: string, isCorrect: boolean) {
+        console.log('[RoundScene][addRoundSlice] current: ' + this.currentQuiz.id);
         this.roundSlices.push(new RoundSliceBuilder()
             .id(this.currentQuiz.id)
             .selection(selection)

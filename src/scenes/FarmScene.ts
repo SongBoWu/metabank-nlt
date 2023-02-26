@@ -185,6 +185,7 @@ export class FarmScene extends BaseLogPanelScene {
 
     private showBanner(): void {
         var conf = new BannerConf();
+        conf.hasFootprint = true;
         conf.isHitoBoard = true;
         conf.curScene = 'FarmScene';
         eventsCenter.emit('onSettingUpdated', conf);

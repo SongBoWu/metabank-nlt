@@ -13,6 +13,7 @@ import { EntranceExamScene } from "./scenes/EntranceExamScene"
 import { PreparationScene } from "./scenes/PreparationScene"
 import { VKSScene } from "./scenes/vksScene"
 import { GuideScene } from "./scenes/GuideScene"
+import { FootprintScene } from "./scenes/FootprintScene"
 
 export const GameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -45,6 +46,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     FarmScene,
     GratzScene,
     LeaderboardScene,
+    FootprintScene,
     EntranceExamScene,
     PreparationScene,
     VKSScene,

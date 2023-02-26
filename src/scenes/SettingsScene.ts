@@ -1,4 +1,4 @@
-import { GameObjects } from "phaser";
+import { Game, GameObjects } from "phaser";
 import { TitleTypeName } from "../const/TitleType";
 import { DatabaseCore } from "../databridge/DatabaseCore";
 import { QuizImpl } from "../databridge/QuizImpl";
@@ -27,6 +27,8 @@ export class SettingsScene extends Phaser.Scene {
     private points: GameObjects.BitmapText;
     private badgeIcon: GameObjects.Image;
     private title: GameObjects.Text;
+    private footprintIcon: GameObjects.Image;
+    private footprintHoverIcon: GameObjects.Image;
     private hitoIcon: GameObjects.Image;
     private hitoHoverIcon: GameObjects.Image;
     private exitIcon: GameObjects.Image;
@@ -44,10 +46,12 @@ export class SettingsScene extends Phaser.Scene {
 
         this.load.image('badge_icon', 'assets/badge.png');
         this.load.image('user_icon', 'assets/user.png');
+        this.load.image('footprint_icon', 'assets/footprint.png');
+        this.load.image('footprint_hover_icon', 'assets/footprint_hover.png');
         this.load.image('hito_icon', 'assets/leaderboard.png');
-        this.load.image('hito_icon_hover', 'assets/leaderboard_hover.png');
+        this.load.image('hito_hover_icon', 'assets/leaderboard_hover.png');
         this.load.image('exit_icon', 'assets/logout.png');
-        this.load.image('exit_icon_hover', 'assets/logout_hover.png');
+        this.load.image('exit_hover_icon', 'assets/logout_hover.png');
         this.load.image('dollar_icon', 'assets/icons/scoreboard.png');
         
         //this.load.text('quizTable', 'assets/data/quiz_2.txt');
@@ -81,14 +85,28 @@ export class SettingsScene extends Phaser.Scene {
             style: { font: 'bold 32px Arial', color: '#000000' }
         });
 
+        // footprint 
+        this.footprintIcon = this.add.image(880, 16, 'footprint_icon');
+        this.footprintHoverIcon = this.add.image(880, 16, 'footprint_hover_icon');
+        this.footprintHoverIcon.setVisible(false);
+        this.footprintIcon.setInteractive();
+        this.footprintIcon.on('pointerdown', () => {
+            this.scene.pause(this.bannerConfig.curScene);
+            this.scene.run('FootprintScene', {
+                from: this.bannerConfig.curScene,
+            })
+        });
+        this.footprintIcon.on('pointerover', () => { this.footprintHoverIcon.setVisible(true); });
+        this.footprintIcon.on('pointerout', () => { this.footprintHoverIcon.setVisible(false); });
+
+
         // Hito bulletin
         this.hitoIcon = this.add.image(940, 16, 'hito_icon');
-        this.hitoHoverIcon = this.add.image(940, 16, 'hito_icon_hover');
+        this.hitoHoverIcon = this.add.image(940, 16, 'hito_hover_icon');
         this.hitoHoverIcon.setVisible(false);
         this.hitoIcon.setInteractive();
         this.hitoIcon.on('pointerdown', () => {
             this.scene.pause(this.bannerConfig.curScene);
-            // eventsCenter.emit('onHTMLHided', true);
             this.scene.run('LeaderboardScene', {
                 from: this.bannerConfig.curScene,
             })
@@ -98,7 +116,7 @@ export class SettingsScene extends Phaser.Scene {
 
         // Exit
         this.exitIcon = this.add.image(1000, 16, 'exit_icon');
-        this.exitHoverIcon = this.add.image(1000, 16, 'exit_icon_hover');
+        this.exitHoverIcon = this.add.image(1000, 16, 'exit_hover_icon');
         this.exitHoverIcon.setVisible(false);
         this.exitIcon.setInteractive();
         this.exitIcon.on('pointerdown', () => {
@@ -106,13 +124,13 @@ export class SettingsScene extends Phaser.Scene {
                 this.scene.stop('LevelScene');
                 this.scene.resume('WelcomeScene');
             } else if (this.bannerConfig && this.bannerConfig.isInLeaderboard) {
-                // TODO
                 this.scene.stop('LeaderboardScene');
                 this.scene.resume(this.bannerConfig.curScene);
-                // eventsCenter.emit('onHTMLHided', false);
+            } else if (this.bannerConfig && this.bannerConfig.isInFootprint) {
+                this.scene.stop('FootprintScene');
+                this.scene.resume(this.bannerConfig.curScene);
             } else {
-                // TODO
-                // DatabaseCore.getInstance().getAuthImpl().signOut();
+                this.scene.start('PreparationScene');
             }
         });
         this.exitIcon.on('pointerover', () => { this.exitHoverIcon.setVisible(true); });
@@ -166,6 +184,11 @@ export class SettingsScene extends Phaser.Scene {
         // Badge
         this.badgeIcon.setVisible(conf.isBadge);
         this.title.setVisible(conf.isBadge);
+
+        // Foorprint
+        this.footprintIcon.setVisible(conf.hasFootprint);
+        this.footprintIcon.setPosition((!conf.isExit && conf.hasFootprint) ? 940 : 880, 16)
+        this.footprintHoverIcon.setPosition((!conf.isExit && conf.hasFootprint) ? 940 : 880, 16)
 
         // hito
         this.hitoIcon.setVisible(conf.isHitoBoard);

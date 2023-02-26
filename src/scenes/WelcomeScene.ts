@@ -11,11 +11,13 @@ import { BaseLogPanelScene } from "./BaseLogPanelScene";
 
 // 1. Refer to "Scenes\Tutorial\Scene Controller" for scene control
 export class WelcomeScene extends BaseLogPanelScene {
-    // private firestoreUserinfo: UserInfoImpl;
-    // private levelInfo : LevelInfoImpl;
+    
+    // Data
     private levelMap : Map<LevelType, Level>;
-
     private levelTypes: LevelType[] = [LevelType.DEPOSIT, LevelType.FOREX, LevelType.LOAN];
+    private showExitIcon: boolean = true;
+
+    // UI components
     private levelIcons: GameObjects.Image[] = [];
     private questionIcons: GameObjects.Image[] = [];
     
@@ -63,12 +65,14 @@ export class WelcomeScene extends BaseLogPanelScene {
                     icon.setVisible(false);
                     icon.disableInteractive();
                     questionIcon.setVisible(true);
+                    this.showExitIcon = false;
                     break;
                 case LevelStatus.STARTED:
                     icon.setVisible(true);
                     icon.setInteractive();
                     icon.on('pointerdown', this.runLevelScene.bind(this, type));
                     questionIcon.setVisible(false);
+                    this.showExitIcon = false;
                     break;
                 case LevelStatus.FINISHED:
                     icon.setVisible(true);
@@ -99,6 +103,7 @@ export class WelcomeScene extends BaseLogPanelScene {
         // });
         // goGratzBtn.setInteractive();
 
+        this.showBanner();
     }
 
     resume(): void {
@@ -132,8 +137,9 @@ export class WelcomeScene extends BaseLogPanelScene {
         var conf = new BannerConf();
         conf.isPoint = false;
         conf.isBadge = true;
+        conf.hasFootprint = true;
         conf.isHitoBoard = true;
-        conf.isExit = false;
+        conf.isExit = this.showExitIcon;
         conf.curScene = 'WelcomeScene';
         eventsCenter.emit('onSettingUpdated', conf);
     }

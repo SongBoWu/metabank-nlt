@@ -73,7 +73,7 @@ export class EntranceExamScene extends BaseLogPanelScene {
                     x: text_x_coord[x_cor],
                     y: text_y_coord[y_cor],
                     text: this.getOptionIDfrom(index) + '. ',
-                    style: { font: 'bold 28px verdana', color: '#1a3d1d' }
+                    style: { font: 'bold 28px verdana', color: '#ffffff' }
                 });
 
                 
@@ -134,12 +134,12 @@ export class EntranceExamScene extends BaseLogPanelScene {
 
     onOptionBtnHoverIn(index: number): void {
         this.optBtnHovers.at(index).setVisible(true);
-        this.optTexts[index].setColor('#dfebe0');
+        this.optTexts[index].setColor('#131393');
     }
 
     onOptionBtnHoverOut(index: number): void {
         this.optBtnHovers[index].setVisible(false);
-        this.optTexts[index].setColor('#1a3d1d');
+        this.optTexts[index].setColor('#ffffff');
     }
     
     private getOptionIDfrom(index: number): OptionID {
