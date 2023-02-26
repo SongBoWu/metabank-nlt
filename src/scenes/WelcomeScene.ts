@@ -41,7 +41,6 @@ export class WelcomeScene extends BaseLogPanelScene {
 
     override create(): void {
         super.create();
-        // this.scene.launch('SettingsScene');
         this.showBanner();
 
         this.add.image(512, 384, 'welcome_bg');
@@ -87,7 +86,6 @@ export class WelcomeScene extends BaseLogPanelScene {
         this.events.addListener('resume', this.resume.bind(this));
         this.events.addListener('pause', this.pause.bind(this));
         this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
-            console.log('[WelcomeScene][SHUTDOWN]');
             this.events.removeListener('resume');
             this.events.removeListener('pause');
         });

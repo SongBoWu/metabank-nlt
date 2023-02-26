@@ -42,7 +42,7 @@ export class HistoryImpl {
                 })
                 resolve(ret);
             } else {
-                reject('No any user!');
+                reject('No any history record!');
             }
         });
     }

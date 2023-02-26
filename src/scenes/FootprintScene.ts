@@ -60,7 +60,7 @@ export class FootprintScene extends BaseLogPanelScene {
         this.user = LogicController.getInstance().getUser();
         this.historyImpl.getRoundHistory(this.user.id)
             .then((roundRecords: RoundSummary[]) => {
-                this.prepareHitoUserList(roundRecords);
+                this.prepareHistoryList(roundRecords);
                 this.scene.stop('LoadingScene');
 
                 this.preBtn.setInteractive();
@@ -70,13 +70,14 @@ export class FootprintScene extends BaseLogPanelScene {
             .catch(error => {
                 this.showLog(error);
                 this.scene.stop('LoadingScene');
+                this.updateList(1);
             })
 
 
         this.prepareUI();
     }
 
-    private prepareHitoUserList(roundSummaries: RoundSummary[]): void {
+    private prepareHistoryList(roundSummaries: RoundSummary[]): void {
         var total = roundSummaries.length;
         // var currentUserIndex = 0;
 
@@ -89,6 +90,7 @@ export class FootprintScene extends BaseLogPanelScene {
             history.type = value.level;
             history.correctList = value.quizzes.filter( quiz => quiz.isCorrect );
             history.wrongList = value.quizzes.filter( quiz => !quiz.isCorrect );
+            history.bonus = value.bonusTimes;
             this.historyList.push(history);
         })
 
@@ -147,6 +149,8 @@ export class FootprintScene extends BaseLogPanelScene {
     }
 
     private updateList(page: number): void {
+        var hasBounsColumn = this.user.group == GroupType.EXPERIMENTAL;
+
         this.currentPage = page;
         var startIndex = (this.currentPage - 1) * FootprintScene.PAGE_SIZE;
         var endIndex = Math.min(startIndex + (FootprintScene.PAGE_SIZE - 1), this.totalRecords - 1);
@@ -154,18 +158,17 @@ export class FootprintScene extends BaseLogPanelScene {
 
         // this.highLightBackground.setVisible(false);
         for (var index = 0; index < FootprintScene.PAGE_SIZE; index++) {
-            var hitoUuserIndex = startIndex + index;
-            var hitoUser = hitoUuserIndex > endIndex ? null : this.historyList[hitoUuserIndex];
+            var historyIndex = startIndex + index;
+            var history = historyIndex > endIndex ? null : this.historyList[historyIndex];
             
-            this.rankTxtArray.at(index).setText(hitoUser != null ? hitoUser.rank.toString() : "");
-            this.typeTxtArray.at(index).setText(hitoUser != null ? this.mappingLevel(hitoUser.type) : "");
-            this.correctTxtArray.at(index).setText(hitoUser != null ? hitoUser.correctList.length.toString() : "");
-            this.inCorrectTxtArray.at(index).setText(hitoUser != null ? hitoUser.wrongList.length.toString() : "");
+            this.rankTxtArray.at(index).setText(history != null ? history.rank.toString() : "");
+            this.typeTxtArray.at(index).setText(history != null ? this.mappingLevel(history.type) : "");
+            this.correctTxtArray.at(index).setText(history != null ? history.correctList.length.toString() : "");
+            this.inCorrectTxtArray.at(index).setText(history != null ? history.wrongList.length.toString() : "");
 
-            // if (hitoUser && hitoUser.isCurrentUser) {
-            //     this.highLightBackground.setY(115 + ((index + 1) * 50));
-            //     this.highLightBackground.setVisible(true);
-            // }
+            if (hasBounsColumn) {
+                this.bounsTxtArray.at(index).setText((history && history.bonus) ? history.bonus.toString() : "");
+            }
         }
 
         this.preBtn.setVisible(this.currentPage > 1);
@@ -197,5 +200,5 @@ class HistoryInformation {
     public type: LevelType;
     public correctList: RoundSlice[] = [];
     public wrongList: RoundSlice[] = [];
-    public bouns: number;
+    public bonus: number;
 }

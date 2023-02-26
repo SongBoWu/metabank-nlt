@@ -15,6 +15,7 @@ export class RoundScene extends BaseLogPanelScene {
     // Data
     private currentQuiz: Quiz;
     private totalAmount: number;
+    private bonusTimes: number;
     private roundSlices: RoundSlice[] = [];
 
     // UI components - Main
@@ -75,6 +76,7 @@ export class RoundScene extends BaseLogPanelScene {
 
         this.currentQuiz = LogicController.getInstance().nextQuiz();
         this.totalAmount = LogicController.getInstance().getCurrentLevelProperty().amountOfQuiz;
+        this.bonusTimes = 0;
         this.roundSlices = [];
 
         this.descPanelElement = this.add.dom(520, 150).createFromCache('desc_panel');
@@ -233,6 +235,7 @@ export class RoundScene extends BaseLogPanelScene {
 
     private onBonus(): void {
         this.showLog('You got extra 2 questions!');
+        this.bonusTimes ++;
         this.totalAmount += 2;
 
         this.bonusPopTxt.setVisible(true);
@@ -342,7 +345,9 @@ export class RoundScene extends BaseLogPanelScene {
             .level(LogicController.getInstance().getCurrentLevel().type)
             .quiz(this.roundSlices)
             .isPass(pass)
+            .bonusTimes(this.bonusTimes)
             .build();
+        // console.log('[RoundScene][uploadLog] ' + JSON.stringify(logSnippet));
         this.historyImpl.add(logSnippet, this.onUploadLogSuccess.bind(this), this.onUploadLogFail.bind(this));
     }
 

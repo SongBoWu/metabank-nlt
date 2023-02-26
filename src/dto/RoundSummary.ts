@@ -15,6 +15,7 @@ export class RoundSummary extends HistoryBase {
     level: LevelType;
     quizzes: RoundSlice[];
     isPass: boolean;
+    bonusTimes: number;
 }
 
 export class RoundSliceBuilder {
@@ -59,7 +60,8 @@ export class RoundSummaryBuilder {
             hType: HistoryType.ROUND,
             level: LevelType.DEPOSIT,
             quizzes: [],
-            isPass: false
+            isPass: false,
+            bonusTimes: 0
         };
     }
 
@@ -95,6 +97,11 @@ export class RoundSummaryBuilder {
 
     isPass(pass: boolean): RoundSummaryBuilder {
         this._rs.isPass = pass;
+        return this;
+    }
+
+    bonusTimes(times: number): RoundSummaryBuilder {
+        this._rs.bonusTimes = times;
         return this;
     }
 
