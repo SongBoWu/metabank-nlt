@@ -14,6 +14,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
     private userInfoApi: UserInfoImpl;
 
     // Data
+    private user: UserData;
     private totalPage: number;
     private currentPage: number;
     private currentUserPageIndex: number;
@@ -46,15 +47,16 @@ export class LeaderboardScene extends BaseLogPanelScene {
     override create(data?: any): void {
         super.create();
         this.showLog('[LeaderboardScene] create ' + JSON.stringify(data));
-
-        this.showBanner(data.from);
-        this.hitoUsers = [];
-
+        
         this.add.rectangle(512, 384, 1024, 768, 0x000000);
-
-
+        this.showBanner(data.from);
         this.scene.launch('LoadingScene');
-        this.userInfoApi.getAllOrderByPoint()
+
+        this.hitoUsers = [];
+        this.user = LogicController.getInstance().getUser();
+
+
+        this.userInfoApi.getAllOrderByPoint(this.user.group)
             .then((users: UserData[]) => {
                 this.prepareHitoUserList(users);
                 this.scene.stop('LoadingScene');
@@ -92,7 +94,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
             hitoUser.rank = tempRank;
             hitoUser.point = value.totalPoints;
             hitoUser.name = value.nickName;
-            hitoUser.isCurrentUser = LogicController.getInstance().getUser().id === value.id;
+            hitoUser.isCurrentUser = this.user.id === value.id;
             hitoUser.title = value.title;
             this.hitoUsers.push(hitoUser);
 

@@ -115,9 +115,9 @@ export class UserInfoImpl {
         });
     }
 
-    async getAllOrderByPoint() : Promise<any[]> {
+    async getAllOrderByPoint(group: GroupType) : Promise<any[]> {
         const collectionRef = collection(this.firestore, COLLECTION_NAME);
-        const docQuery = query(collectionRef, orderBy("totalPoints", "desc"));
+        const docQuery = query(collectionRef, where("group", "==", group), orderBy("totalPoints", "desc"));
         const docSnap = await getDocs(docQuery);
         return new Promise((resolve, reject) => {
             if (!docSnap.empty) {
