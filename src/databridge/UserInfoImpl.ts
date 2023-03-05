@@ -146,6 +146,7 @@ const UserInfoConverter = {
             .group(data.group)
             .level(data.level)
             .points(data.points)
+            .totalPoints(data.totalPoints)
             .title(data.title)
             .entranceScore(data.entranceScore)
             .preExternalLink(data.isPreExternalLink)

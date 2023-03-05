@@ -9,6 +9,7 @@ import { BannerConf } from "../dto/BannerConf";
 import { Level, LevelStatus, LevelType } from "../dto/LevelInfo";
 import { VKSType } from "../dto/VKSHistory";
 import eventsCenter from "../plugins/EventsCenter";
+import 'core-js/features/array/at';
 
 export class PreparationScene extends Phaser.Scene {
 

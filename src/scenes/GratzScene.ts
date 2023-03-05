@@ -55,9 +55,10 @@ export class GratzScene extends Phaser.Scene {
             nextLevel.status = LevelStatus.STARTED;
         }
 
+        console.log('[GratzScene][Initial]', 'user.points: ' + userInfo.points + ", user.totalPoints: " + userInfo.totalPoints);
         userInfo.points += curLevel.points;
         userInfo.totalPoints += curLevel.points;
-        console.log('[GratzScene][Before]', 'user.points: ' + userInfo.points + ", user.totalPoints: " + userInfo.totalPoints);
+        console.log('[GratzScene][AddPoints]', 'user.points: ' + userInfo.points + ", user.totalPoints: " + userInfo.totalPoints);
         
         var isLevelUp;
         var badgeIndex = 0;
@@ -67,7 +68,7 @@ export class GratzScene extends Phaser.Scene {
                 badgeIndex ++;
             }
         } while (isLevelUp);
-        console.log('[GratzScene][After]', 'user.points: ' + userInfo.points + ", user.totalPoints: " + userInfo.totalPoints);
+        console.log('[GratzScene][Final]', 'user.points: ' + userInfo.points + ", user.totalPoints: " + userInfo.totalPoints);
 
         var xCoordStart = (1024/2) - (100/2) * badgeIndex;
         for (var index = 0; index < badgeIndex; index ++) {
@@ -104,19 +105,21 @@ export class GratzScene extends Phaser.Scene {
         });
 
         // update next level info
-        this.levelInfoApi.update(nextLevel)
-        .then(() => {
-            console.log("[GratzScene] update next level Info done!");
-        })
-        .catch((err: string) => {
-            console.log("[GratzScene] update next level Info error! " + err);
-        });
-
+        if (nextLevel) {
+            this.levelInfoApi.update(nextLevel)
+            .then(() => {
+                console.log("[GratzScene] update next level Info done!");
+            })
+            .catch((err: string) => {
+                console.log("[GratzScene] update next level Info error! " + err);
+            });
+        }
         // TODO: 
     }
 
     transformPointToTitile() : Boolean {
         var user = LogicController.getInstance().getUser();
+        console.log('[GratzScene]', '[transformPointToTitle] points: ' + user.points + ", totalPoints: " + user.totalPoints);
         var amountOfTitleType = Object.keys(TitleType).length / 2;
 
         var nextTitle = user.title + 1;
