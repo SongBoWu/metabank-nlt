@@ -57,6 +57,7 @@ export class GratzScene extends Phaser.Scene {
 
         userInfo.points += curLevel.points;
         userInfo.totalPoints += curLevel.points;
+        console.log('[GratzScene][Before]', 'user.points: ' + userInfo.points + ", user.totalPoints: " + userInfo.totalPoints);
         
         var isLevelUp;
         var badgeIndex = 0;
@@ -66,6 +67,7 @@ export class GratzScene extends Phaser.Scene {
                 badgeIndex ++;
             }
         } while (isLevelUp);
+        console.log('[GratzScene][After]', 'user.points: ' + userInfo.points + ", user.totalPoints: " + userInfo.totalPoints);
 
         var xCoordStart = (1024/2) - (100/2) * badgeIndex;
         for (var index = 0; index < badgeIndex; index ++) {
