@@ -15,7 +15,7 @@ export class WelcomeScene extends BaseLogPanelScene {
     // Data
     private levelMap : Map<LevelType, Level>;
     private levelTypes: LevelType[] = [LevelType.DEPOSIT, LevelType.FOREX, LevelType.LOAN];
-    private showExitIcon: boolean = true;
+    private showExitIcon: boolean;
 
     // UI components
     private levelIcons: GameObjects.Image[] = [];
@@ -78,6 +78,7 @@ export class WelcomeScene extends BaseLogPanelScene {
                     icon.setAlpha(0.5);
                     icon.disableInteractive();
                     questionIcon.setVisible(false);
+                    this.showExitIcon = true;
                     break;
             }
         }
