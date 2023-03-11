@@ -1,8 +1,10 @@
 import { GameObjects } from "phaser";
 import { TitleType, TitleTypeName } from "../const/TitleType";
+import { FootprintImpl } from "../databridge/FootprintImpl";
 import { UserInfoImpl } from "../databridge/UserInfoImpl";
 import { LogicController } from "../domain/LogicController";
 import { BannerConf } from "../dto/BannerConf";
+import { FootprintBuilder, FootprintType } from "../dto/FootprintBase";
 import { UserData } from "../dto/UserData";
 import eventsCenter from "../plugins/EventsCenter";
 import { BaseLogPanelScene } from "./BaseLogPanelScene";
@@ -12,6 +14,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
 
     // DB impl
     private userInfoApi: UserInfoImpl;
+    private footprintApi: FootprintImpl;
 
     // Data
     private user: UserData;
@@ -34,6 +37,7 @@ export class LeaderboardScene extends BaseLogPanelScene {
         super('LeaderboardScene');
 
         this.userInfoApi = new UserInfoImpl();
+        this.footprintApi = new FootprintImpl
     }
 
     override preload(): void {
@@ -68,7 +72,13 @@ export class LeaderboardScene extends BaseLogPanelScene {
             .catch(error => {
                 this.showLog(error);
                 this.scene.stop('LoadingScene');
-            })
+            });
+
+        this.footprintApi.add(new FootprintBuilder()
+            .uid(this.user.id)
+            .uname(this.user.nickName)
+            .type(FootprintType.LEADER_BOARD)
+            .build());
 
 
         this.prepareUI();

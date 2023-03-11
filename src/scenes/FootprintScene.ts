@@ -8,12 +8,15 @@ import { HistoryImpl } from "../databridge/HistoryImpl";
 import { RoundSlice, RoundSummary } from "../dto/RoundSummary";
 import { LevelType } from "../dto/LevelInfo";
 import { GroupType } from "../const/GroupType";
+import { FootprintImpl } from "../databridge/FootprintImpl";
+import { FootprintBuilder, FootprintType } from "../dto/FootprintBase";
 
 export class FootprintScene extends BaseLogPanelScene {
     private static PAGE_SIZE: number = 10;
 
     // DB impl
     private historyImpl: HistoryImpl;
+    private footprintImpl: FootprintImpl;
 
     // Data
     private user: UserData;
@@ -36,6 +39,7 @@ export class FootprintScene extends BaseLogPanelScene {
         super('FootprintScene');
 
         this.historyImpl = new HistoryImpl();
+        this.footprintImpl = new FootprintImpl();
     }
 
     override preload(): void {
@@ -71,7 +75,13 @@ export class FootprintScene extends BaseLogPanelScene {
                 this.showLog(error);
                 this.scene.stop('LoadingScene');
                 this.updateList(1);
-            })
+            });
+
+        this.footprintImpl.add(new FootprintBuilder()
+            .uid(this.user.id)
+            .uname(this.user.nickName)
+            .type(FootprintType.TRACE)
+            .build());
 
 
         this.prepareUI();
