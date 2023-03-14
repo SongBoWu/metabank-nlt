@@ -1,4 +1,6 @@
-import { addDoc, collection, Firestore, getFirestore } from "firebase/firestore";
+import { addDoc, collection, Firestore, getDocs, getFirestore, orderBy, query, where } from "firebase/firestore";
+import { FootprintType } from "../dto/FootprintBase";
+import { HistoryType } from "../dto/historyBase";
 import { DatabaseCore } from "./DatabaseCore";
 
 const COLLECTION_NAME = 'footprint';
@@ -26,5 +28,22 @@ export class FootprintImpl {
             console.log('[FootprintImpl] ' + JSON.stringify(e));
             onFailed && onFailed(e);
         }
+    }
+
+    async getFootprint(uid: String, type: FootprintType): Promise<any[]> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docQuery = query(collectionRef, where("uid", "==", uid), where("fType", "==", type), orderBy("date_time", "desc"));
+        const docSnap = await getDocs(docQuery);
+        return new Promise((resolve, reject) => {
+            if (!docSnap.empty) {
+                var ret: Array<any> = [];
+                docSnap.forEach(doc => {
+                    ret.push(doc.data());
+                })
+                resolve(ret);
+            } else {
+                reject('No any history record!');
+            }
+        });
     }
 }

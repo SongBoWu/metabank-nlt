@@ -60,7 +60,7 @@ export class SettingsScene extends Phaser.Scene {
     create(): void {
         console.log('[SettingsScene] onCreate');
 
-        this.add.rectangle(512, 20, 1024, 40, 0xffffff);
+        this.add.rectangle(512, 20, 1024, 40, 0xf5f5f3);
 
         // User icon/name
         this.userIcon = this.add.image(30, 16, 'user_icon');

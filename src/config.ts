@@ -28,7 +28,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
   scale: {
     parent: 'game',
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+    autoCenter: Phaser.Scale.NO_CENTER,
     width: 1024,
     height: 768
   },

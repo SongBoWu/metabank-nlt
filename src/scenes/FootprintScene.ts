@@ -126,7 +126,7 @@ export class FootprintScene extends BaseLogPanelScene {
         this.make.text({x: baseCoordX + (distanceInRow * 3),    y: baseCoordY, text: '答對題數', style: { font: 'bold 28px Arial', color: '#9df791' }});
         this.make.text({x: baseCoordX + (distanceInRow * 5),    y: baseCoordY, text: '答錯題數', style: { font: 'bold 28px Arial', color: '#9df791' }});
         if(hasBounsColumn) {
-            this.make.text({x: baseCoordX + (distanceInRow * 7),    y: baseCoordY, text: '額外增加', style: { font: 'bold 28px Arial', color: '#9df791' }});
+            this.make.text({x: baseCoordX + (distanceInRow * 7),    y: baseCoordY, text: '額外增加次數', style: { font: 'bold 28px Arial', color: '#9df791' }});
         }
         
         
