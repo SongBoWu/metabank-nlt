@@ -9,9 +9,6 @@ import { SettingsScene } from "./scenes/SettingsScene"
 import { SignUpScene } from "./scenes/SignUpScene"
 import { LoadingScene} from "./scenes/LoadingScene"
 import { WelcomeScene } from "./scenes/WelcomeScene"
-import { EntranceExamScene } from "./scenes/EntranceExamScene"
-import { PreparationScene } from "./scenes/PreparationScene"
-import { VKSScene } from "./scenes/vksScene"
 import { GuideScene } from "./scenes/GuideScene"
 import { FootprintScene } from "./scenes/FootprintScene"
 
@@ -47,9 +44,6 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     GratzScene,
     LeaderboardScene,
     FootprintScene,
-    EntranceExamScene,
-    PreparationScene,
-    VKSScene,
     SettingsScene,
     LoadingScene,
   ]

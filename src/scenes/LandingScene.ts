@@ -49,6 +49,6 @@ export class LandingScene extends Phaser.Scene {
     }
 
     private startGame(): void {
-        this.scene.start('PreparationScene');
+        this.scene.start('GuideScene');
     }
 }
