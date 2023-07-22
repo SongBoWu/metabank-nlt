@@ -14,6 +14,8 @@ import { PreparationScene } from "./scenes/PreparationScene"
 import { VKSScene } from "./scenes/vksScene"
 import { GuideScene } from "./scenes/GuideScene"
 import { FootprintScene } from "./scenes/FootprintScene"
+import { AnalysisScene } from "./scenes/AnalysisScene"
+import { AnalysisBehaviorScene } from "./scenes/AnalysisBehaviorScene"
 
 export const GameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -52,5 +54,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     VKSScene,
     SettingsScene,
     LoadingScene,
+    AnalysisScene,
+    AnalysisBehaviorScene,
   ]
 }

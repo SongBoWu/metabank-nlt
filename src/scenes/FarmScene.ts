@@ -202,6 +202,7 @@ export class FarmScene extends BaseLogPanelScene {
 
 
     private writeCollection(): void {
+        
         var lib_arti = this.cache.text.get('library_artifact');
         var lib_list = lib_arti.split('\n');
         lib_list.forEach((element: string) => {

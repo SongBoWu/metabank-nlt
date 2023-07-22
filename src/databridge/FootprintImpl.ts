@@ -46,4 +46,21 @@ export class FootprintImpl {
             }
         });
     }
+
+    async getAll(): Promise<any[]> {
+        const collectionRef = collection(this.firestore, COLLECTION_NAME);
+        const docQuery = query(collectionRef, orderBy("uid", "desc"));
+        const docSnap = await getDocs(docQuery);
+        return new Promise((resolve, reject) => {
+            if (!docSnap.empty) {
+                var ret: Array<any> = [];
+                docSnap.forEach(doc => {
+                    ret.push(doc.data());
+                })
+                resolve(ret);
+            } else {
+                reject('No any history record!');
+            }
+        });
+    }
 }

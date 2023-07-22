@@ -137,6 +137,28 @@ export class PreparationScene extends Phaser.Scene {
             this.scene.start('GuideScene');
         })
 
+        var goAnalysisBtn = this.make.text({
+            x: 50,
+            y: 100,
+            text: 'go Analysis',
+            style: { font: 'bold 20px Arial', color: '#00ff00' }
+        });
+        goAnalysisBtn.on('pointerdown', () => {
+            this.scene.run('AnalysisScene');
+        });
+        goAnalysisBtn.setInteractive();
+
+        var goAnalysisBehaviorBtn = this.make.text({
+            x: 50,
+            y: 150,
+            text: 'go Analysis2',
+            style: { font: 'bold 20px Arial', color: '#00ff00' }
+        });
+        goAnalysisBehaviorBtn.on('pointerdown', () => {
+            this.scene.run('AnalysisBehaviorScene');
+        });
+        goAnalysisBehaviorBtn.setInteractive();
+
 
         this.createArrows();
 
